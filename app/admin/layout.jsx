@@ -9,6 +9,7 @@ export function useAdmin() { return useContext(AdminContext) }
 
 const NAV = [
   { href: '/admin',             label: 'Dashboard'    },
+  { href: '/admin/capture',     label: '⚡ Capture'   },
   { href: '/admin/content',     label: 'Content'      },
   { href: '/admin/images',      label: 'Images'       },
   { href: '/admin/videos',      label: 'Videos'       },

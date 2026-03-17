@@ -42,3 +42,20 @@ export async function PATCH(req) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }
+
+export async function POST(req) {
+  if (!auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { url, label, alt_text, scene_type } = await req.json()
+  if (!url) return NextResponse.json({ error: 'url required' }, { status: 400 })
+  const { data, error } = await sb().from('media').insert({
+    url,
+    label:      label      || null,
+    alt_text:   alt_text   || null,
+    scene_type: scene_type || 'other',
+    category:   'gallery',
+    active:     true,
+    quality:    50,
+  }).select().single()
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
+}
