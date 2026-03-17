@@ -24,23 +24,38 @@ export default function AdminLayout({ children }) {
   const [error, setError]       = useState('')
   const pathname = usePathname()
 
-  // Persist password in sessionStorage (clears on tab close)
+  const EXPIRY_DAYS = 30
+
+  // Persist password in localStorage with 30-day expiry
   useEffect(() => {
-    const saved = sessionStorage.getItem('admin_pw')
-    if (saved) setPassword(saved)
+    try {
+      const raw = localStorage.getItem('admin_session')
+      if (!raw) return
+      const { pw, expires } = JSON.parse(raw)
+      if (Date.now() > expires) { localStorage.removeItem('admin_session'); return }
+      setPassword(pw)
+    } catch {
+      localStorage.removeItem('admin_session')
+    }
   }, [])
 
   async function handleLogin(e) {
     e.preventDefault()
     setError('')
-    const res = await fetch('/api/availability', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': input },
-      body: JSON.stringify({}),
-    })
-    if (res.status === 401) { setError('Wrong password.'); return }
-    sessionStorage.setItem('admin_pw', input)
-    setPassword(input)
+    try {
+      const res = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: input }),
+      })
+      if (res.status === 401) { setError('Wrong password.'); return }
+      if (!res.ok) { setError('Server error — try again.'); return }
+      const expires = Date.now() + EXPIRY_DAYS * 24 * 60 * 60 * 1000
+      localStorage.setItem('admin_session', JSON.stringify({ pw: input, expires }))
+      setPassword(input)
+    } catch {
+      setError('Network error — are you online?')
+    }
   }
 
   if (!password) {
@@ -101,7 +116,7 @@ export default function AdminLayout({ children }) {
           </nav>
           <div style={{ marginLeft: 'auto' }}>
             <button
-              onClick={() => { sessionStorage.removeItem('admin_pw'); setPassword('') }}
+              onClick={() => { localStorage.removeItem('admin_session'); setPassword('') }}
               style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-ui)' }}
             >
               Sign out
