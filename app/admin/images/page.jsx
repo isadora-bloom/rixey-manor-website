@@ -122,7 +122,7 @@ function ImageSlot({ slot, password, onUpdated }) {
   async function handleFile(e) {
     const file = e.target.files[0]
     if (!file) return
-    setUploading(true); setStatus('')
+    setUploading(true); setStatus('uploading')
     try {
       const ext  = file.name.split('.').pop()
       const form = new FormData()
@@ -135,14 +135,34 @@ function ImageSlot({ slot, password, onUpdated }) {
       })
       if (!upRes.ok) throw new Error('Upload failed')
       const { url } = await upRes.json()
+
+      // Auto-caption with Claude Vision
+      setStatus('captioning')
+      let autoAlt = ''
+      try {
+        const captureForm = new FormData()
+        captureForm.append('file', file)
+        const capRes = await fetch('/api/admin/capture', {
+          method: 'POST',
+          headers: { 'x-admin-password': password },
+          body: captureForm,
+        })
+        if (capRes.ok) {
+          const analysis = await capRes.json()
+          const suggestion = analysis.suggestions?.find(s => s.alt_text)
+          autoAlt = suggestion?.alt_text || ''
+        }
+      } catch { /* caption is optional */ }
+
       await fetch('/api/admin/images', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-        body: JSON.stringify({ id: slot.id, url }),
+        body: JSON.stringify({ id: slot.id, url, ...(autoAlt && { alt_text: autoAlt }) }),
       })
-      onUpdated(slot.id, { url })
-      setStatus('saved')
-      setTimeout(() => setStatus(''), 2000)
+      onUpdated(slot.id, { url, ...(autoAlt && { alt_text: autoAlt }) })
+      if (autoAlt) setAltVal(autoAlt)
+      setStatus(autoAlt ? 'saved-captioned' : 'saved')
+      setTimeout(() => setStatus(''), 3000)
     } catch (err) {
       setStatus('error: ' + err.message)
     } finally {
@@ -168,10 +188,28 @@ function ImageSlot({ slot, password, onUpdated }) {
       })
       if (!upRes.ok) throw new Error('Upload failed')
       const { url } = await upRes.json()
+
+      // Auto-caption with Claude Vision
+      let autoAlt = ''
+      try {
+        const captureForm = new FormData()
+        captureForm.append('file', file)
+        const capRes = await fetch('/api/admin/capture', {
+          method: 'POST',
+          headers: { 'x-admin-password': password },
+          body: captureForm,
+        })
+        if (capRes.ok) {
+          const analysis = await capRes.json()
+          const suggestion = analysis.suggestions?.find(s => s.alt_text)
+          autoAlt = suggestion?.alt_text || ''
+        }
+      } catch { /* caption is optional */ }
+
       const addRes = await fetch('/api/admin/image-extras', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-        body: JSON.stringify({ slot_id: slot.id, url, alt_text: '' }),
+        body: JSON.stringify({ slot_id: slot.id, url, alt_text: autoAlt }),
       })
       if (addRes.ok) {
         const newExtra = await addRes.json()
@@ -275,7 +313,7 @@ function ImageSlot({ slot, password, onUpdated }) {
 
         {status && (
           <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: status.startsWith('error') ? 'var(--rose)' : 'var(--forest)', marginBottom: 4 }}>
-            {status === 'saved' ? '✓ Saved' : status}
+            {status === 'uploading' ? 'Uploading…' : status === 'captioning' ? 'Auto-captioning…' : status === 'saved-captioned' ? '✓ Saved · alt text auto-generated' : status === 'saved' ? '✓ Saved' : status}
           </p>
         )}
 

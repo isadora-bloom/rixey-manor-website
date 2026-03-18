@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAdmin } from '../layout'
 import Image from 'next/image'
 
@@ -128,6 +128,167 @@ function PhotoCard({ photo, password, onUpdate }) {
   )
 }
 
+// Map capture scene_type values to gallery scene_type values
+const CAPTURE_TO_SCENE = {
+  ceremony: 'ceremony',
+  ballroom: 'reception',
+  terrace: 'venue',
+  grounds: 'venue',
+  rooms: 'other',
+  details: 'detail',
+  couple: 'portraits',
+  reception: 'reception',
+  portraits: 'portraits',
+  other: 'other',
+}
+
+function UploadPanel({ password, onUploaded }) {
+  const [open, setOpen]         = useState(false)
+  const [queue, setQueue]       = useState([])   // [{ file, status, result }]
+  const [running, setRunning]   = useState(false)
+  const fileRef = useRef()
+
+  function addFiles(e) {
+    const files = Array.from(e.target.files || [])
+    const ts = Date.now()
+    setQueue(prev => [...prev, ...files.map((f, i) => ({ id: ts + i, file: f, status: 'pending', result: null }))])
+    fileRef.current.value = ''
+  }
+
+  function updateItem(id, fields) {
+    setQueue(prev => prev.map(q => q.id === id ? { ...q, ...fields } : q))
+  }
+
+  async function processQueue() {
+    setRunning(true)
+    const snapshot = queue.filter(q => q.status === 'pending')
+
+    for (const item of snapshot) {
+      // 1. Upload file to storage
+      const ext  = item.file.name.split('.').pop()
+      const ts   = Date.now()
+      const form = new FormData()
+      form.append('file', item.file)
+      form.append('path', `gallery/${ts}.${ext}`)
+      updateItem(item.id, { status: 'uploading' })
+      let url = ''
+      try {
+        const upRes = await fetch('/api/admin/upload', {
+          method: 'POST',
+          headers: { 'x-admin-password': password },
+          body: form,
+        })
+        if (!upRes.ok) throw new Error('Upload failed')
+        ;({ url } = await upRes.json())
+      } catch (err) {
+        updateItem(item.id, { status: 'error', result: err.message })
+        continue
+      }
+
+      // 2. Auto-caption with Claude Vision
+      updateItem(item.id, { status: 'captioning' })
+      let alt_text = ''
+      let scene_type = 'other'
+      try {
+        const capForm = new FormData()
+        capForm.append('file', item.file)
+        const capRes = await fetch('/api/admin/capture', {
+          method: 'POST',
+          headers: { 'x-admin-password': password },
+          body: capForm,
+        })
+        if (capRes.ok) {
+          const analysis = await capRes.json()
+          const sug = analysis.suggestions?.find(s => s.action === 'add_to_gallery') || analysis.suggestions?.[0]
+          alt_text   = sug?.alt_text   || ''
+          scene_type = CAPTURE_TO_SCENE[sug?.scene_type] || 'other'
+        }
+      } catch { /* caption is optional */ }
+
+      // 3. Insert into media table
+      try {
+        const insRes = await fetch('/api/admin/gallery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+          body: JSON.stringify({ url, alt_text, scene_type, label: item.file.name }),
+        })
+        if (!insRes.ok) throw new Error('DB insert failed')
+        const newPhoto = await insRes.json()
+        updateItem(item.id, { status: 'done', result: { alt_text, scene_type } })
+        onUploaded(newPhoto)
+      } catch (err) {
+        updateItem(item.id, { status: 'error', result: err.message })
+      }
+    }
+    setRunning(false)
+  }
+
+  const pending = queue.filter(q => q.status === 'pending').length
+  const done    = queue.filter(q => q.status === 'done').length
+
+  return (
+    <div style={{ background: 'white', border: '1px solid var(--border)', marginBottom: 24 }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--ink)' }}
+      >
+        <span>↑ Upload photos to gallery</span>
+        <span style={{ fontSize: 10, color: 'var(--ink-light)' }}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div style={{ padding: '0 14px 14px', borderTop: '1px solid var(--border)' }}>
+          <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--ink-light)', margin: '10px 0 10px' }}>
+            Select one or more photos. Each will be auto-tagged and captioned by AI, then added to the gallery.
+          </p>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <input ref={fileRef} type="file" accept="image/*" multiple onChange={addFiles} style={{ display: 'none' }} />
+            <button
+              onClick={() => fileRef.current.click()}
+              style={{ padding: '6px 14px', background: '#e8e4de', color: 'var(--ink)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 12 }}
+            >
+              Choose files
+            </button>
+            {pending > 0 && (
+              <button
+                onClick={processQueue}
+                disabled={running}
+                style={{ padding: '6px 14px', background: 'var(--forest)', color: 'white', border: 'none', cursor: running ? 'default' : 'pointer', fontFamily: 'var(--font-ui)', fontSize: 12 }}
+              >
+                {running ? 'Processing…' : `Upload ${pending} photo${pending !== 1 ? 's' : ''}`}
+              </button>
+            )}
+            {done > 0 && queue.every(q => q.status !== 'pending') && (
+              <button
+                onClick={() => setQueue([])}
+                style={{ padding: '6px 14px', background: '#e8e4de', color: 'var(--ink)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 12 }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          {queue.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {queue.map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-ui)', fontSize: 11 }}>
+                  <span style={{ color: item.status === 'done' ? 'var(--forest)' : item.status === 'error' ? 'var(--rose)' : 'var(--ink-light)', minWidth: 80 }}>
+                    {item.status === 'pending' ? 'Queued' : item.status === 'uploading' ? 'Uploading…' : item.status === 'captioning' ? 'Captioning…' : item.status === 'done' ? '✓ Done' : `Error: ${item.result}`}
+                  </span>
+                  <span style={{ color: 'var(--ink)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.file.name}</span>
+                  {item.status === 'done' && item.result && (
+                    <span style={{ color: 'var(--ink-light)', fontSize: 10 }}>
+                      {SCENE_LABELS[item.result.scene_type] || item.result.scene_type} · {item.result.alt_text ? item.result.alt_text.slice(0, 60) : 'no caption'}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function GalleryPage() {
   const { password } = useAdmin()
   const [photos, setPhotos]         = useState([])
@@ -156,6 +317,11 @@ export default function GalleryPage() {
     if (fields.active !== undefined) setTotal(t => t - 1)
   }
 
+  function handleUploaded(photo) {
+    setPhotos(prev => [photo, ...prev])
+    setTotal(t => t + 1)
+  }
+
   const totalPages = Math.ceil(total / 60)
 
   return (
@@ -164,6 +330,8 @@ export default function GalleryPage() {
       <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--ink-light)', marginBottom: 16 }}>
         {total} photos. Hover and click <strong>Hide/Show</strong> to toggle visibility. Click the tag row below each photo to edit its category and alt text.
       </p>
+
+      <UploadPanel password={password} onUploaded={handleUploaded} />
 
       {/* Tag legend */}
       <div style={{ background: 'white', border: '1px solid var(--border)', padding: '10px 14px', marginBottom: 20, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
