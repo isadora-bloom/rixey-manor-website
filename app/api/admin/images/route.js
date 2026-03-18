@@ -23,7 +23,8 @@ export async function PATCH(req) {
   if (url           !== undefined) update.url            = url
   if (alt_text      !== undefined) update.alt_text       = alt_text
   if (object_position !== undefined) update.object_position = object_position
-  const { error } = await sb().from('site_images').update(update).eq('id', id)
+  // upsert so uploading to a slot that doesn't have a DB row yet creates it
+  const { error } = await sb().from('site_images').upsert({ id, ...update }, { onConflict: 'id' })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }

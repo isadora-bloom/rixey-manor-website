@@ -36,9 +36,15 @@ export async function GET(req) {
 
 export async function PATCH(req) {
   if (!auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const { id, active } = await req.json()
-  if (!id || active === undefined) return NextResponse.json({ error: 'id and active required' }, { status: 400 })
-  const { error } = await sb().from('media').update({ active }).eq('id', id)
+  const { id, active, scene_type, alt_text, mood } = await req.json()
+  if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+  const update = {}
+  if (active     !== undefined) update.active     = active
+  if (scene_type !== undefined) update.scene_type = scene_type
+  if (alt_text   !== undefined) update.alt_text   = alt_text
+  if (mood       !== undefined) update.mood       = mood
+  if (Object.keys(update).length === 0) return NextResponse.json({ error: 'nothing to update' }, { status: 400 })
+  const { error } = await sb().from('media').update(update).eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }

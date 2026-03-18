@@ -4,22 +4,17 @@ import { useState, useEffect } from 'react'
 import { useAdmin } from '../layout'
 
 const FIELD_LABELS = {
-  phone:                   'Phone number',
-  email:                   'Email address',
-  one_day_from:            'One-day wedding price (e.g. $6,000)',
-  weekend_from:            'Weekend price (e.g. $20,000+)',
-  availability_blurb:      'Availability blurb (shown on home page)',
-  calendly_url:            'Calendly booking URL',
-  feature_video_url:       'Featured video URL (terrace viral video)',
-  meta_title_home:         'Home page meta title',
-  meta_description_home:   'Home page meta description',
-  meta_title_venue:        'Venue page meta title',
-  meta_description_venue:  'Venue page meta description',
-  portal_url:              'Couple portal URL (e.g. https://portal.rixeymanor.com)',
-  portal_api_url:          'Portal API URL for Sage live demo (Railway backend)',
+  calendly_url:              'Calendly booking URL (e.g. https://calendly.com/rixeymanor/manortour)',
+  pricing_one_day_from:      'One-day price — number only (e.g. 6000)',
+  pricing_weekend_from:      'Weekend price — number only (e.g. 10000)',
+  availability_blurb:        'Availability blurb (shown on home page below pricing)',
+  portal_url:                'Couple portal URL (e.g. https://portal.rixeymanor.com)',
+  portal_api_url:            'Portal Sage API URL (Railway backend URL)',
+  phone:                     'Phone number (e.g. +15402124545)',
+  email:                     'Email address',
 }
 
-const MULTILINE = ['availability_blurb', 'meta_description_home', 'meta_description_venue']
+const MULTILINE = ['availability_blurb']
 
 function Field({ item, password, onSaved }) {
   const [value, setValue] = useState(item.value || '')

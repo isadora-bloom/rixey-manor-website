@@ -2,10 +2,12 @@ import Link from 'next/link'
 import FadeUp from '@/components/ui/FadeUp'
 import { supabase } from '@/lib/supabase'
 import SageDemo from '@/components/portal/SageDemo'
+import { getOgImage } from '@/lib/getPageSeo'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
+  const ogImage = await getOgImage('portal')
   return {
     title: { absolute: 'The Couple\'s Portal — Rixey Manor' },
     description: 'A private planning portal built exclusively for Rixey Manor couples. Timeline, seating, vendors, AI assistant, and direct coordinator access — all in one place.',
@@ -14,8 +16,18 @@ export async function generateMetadata() {
       title: 'The Couple\'s Portal — Rixey Manor',
       description: 'A private planning portal built exclusively for Rixey Manor couples.',
       url: 'https://www.rixeymanor.com/portal',
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630 }] }),
     },
   }
+}
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Rixey Manor', item: 'https://www.rixeymanor.com' },
+    { '@type': 'ListItem', position: 2, name: 'The Couple\'s Portal', item: 'https://www.rixeymanor.com/portal' },
+  ],
 }
 
 const FEATURES = [
@@ -110,6 +122,7 @@ export default async function PortalPage() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       {/* Hero */}
       <section className="section-cream py-28 lg:py-40 px-6 lg:px-10 border-b border-[var(--border)]">
         <div className="max-w-3xl mx-auto text-center">

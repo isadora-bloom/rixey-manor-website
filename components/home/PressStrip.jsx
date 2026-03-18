@@ -14,7 +14,7 @@ const defaultPress = [
     publication: 'People',
     logo_url: null,
     logo_alt: 'People',
-    url: 'https://people.com',
+    url: 'https://people.com/style/model-with-down-syndrome-madeline-stuart-stars-in-new-romantic-wedding-photoshoot/',
   },
   {
     id: 'huffpost',
@@ -42,21 +42,14 @@ const defaultPress = [
     publication: 'Washingtonian',
     logo_url: null,
     logo_alt: 'Washingtonian',
-    url: 'https://www.washingtonian.com',
+    url: 'https://washingtonian.com/2015/10/07/this-couple-just-opened-a-new-wedding-venue-in-virginia-then-got-married-there/',
   },
   {
-    id: 'martha-stewart',
-    publication: 'Martha Stewart Weddings',
+    id: 'wedding-chicks',
+    publication: 'Wedding Chicks',
     logo_url: null,
-    logo_alt: 'Martha Stewart Weddings',
-    url: 'https://www.marthastewart.com/weddings',
-  },
-  {
-    id: 'style-me-pretty',
-    publication: 'Style Me Pretty',
-    logo_url: null,
-    logo_alt: 'Style Me Pretty',
-    url: 'https://www.stylemepretty.com',
+    logo_alt: 'Wedding Chicks',
+    url: 'https://www.weddingchicks.com/new-wedding-ideas/classic-romance-wedding-ideas-with-madeline-stuart/',
   },
   {
     id: 'the-knot',
@@ -70,7 +63,7 @@ const defaultPress = [
     publication: 'WeddingWire',
     logo_url: null,
     logo_alt: 'WeddingWire',
-    url: 'https://www.weddingwire.com',
+    url: 'https://www.weddingwire.com/biz/rixey-manor-rixeyville/ce916f124034d2e2.html',
   },
 ]
 

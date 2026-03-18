@@ -4,69 +4,138 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAdmin } from '../layout'
 import Image from 'next/image'
 
-const SCENES = ['', 'ceremony', 'reception', 'portraits', 'getting-ready', 'detail', 'venue', 'other']
-const QUALITY_COLOR = { 5: '#2E7D54', 4: '#5a9e7a', 3: '#b0956a', 2: '#c97070', 1: '#aa4444' }
+const SCENE_OPTIONS = [
+  { value: '',              label: 'All tags'        },
+  { value: 'ceremony',      label: 'Ceremony'        },
+  { value: 'reception',     label: 'Reception'       },
+  { value: 'portraits',     label: 'Portraits'       },
+  { value: 'getting-ready', label: 'Getting Ready'   },
+  { value: 'detail',        label: 'Details'         },
+  { value: 'venue',         label: 'Venue / Grounds' },
+  { value: 'other',         label: 'Other'           },
+]
 
-function PhotoCard({ photo, password, onToggle }) {
-  const [toggling, setToggling] = useState(false)
+const SCENE_LABELS = Object.fromEntries(SCENE_OPTIONS.filter(o => o.value).map(o => [o.value, o.label]))
 
-  async function toggle() {
+function qualityStars(q) {
+  const n = Math.round(Number(q) / 20) || 0
+  return '★'.repeat(n) + '☆'.repeat(5 - n)
+}
+
+function PhotoCard({ photo, password, onUpdate }) {
+  const [toggling, setToggling]   = useState(false)
+  const [editing, setEditing]     = useState(false)
+  const [sceneVal, setSceneVal]   = useState(photo.scene_type || '')
+  const [altVal, setAltVal]       = useState(photo.alt_text || '')
+  const [saving, setSaving]       = useState(false)
+
+  async function toggleActive() {
     setToggling(true)
     const res = await fetch('/api/admin/gallery', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
       body: JSON.stringify({ id: photo.id, active: !photo.active }),
     })
-    if (res.ok) onToggle(photo.id, !photo.active)
+    if (res.ok) onUpdate(photo.id, { active: !photo.active })
     setToggling(false)
   }
 
-  return (
-    <div style={{ position: 'relative', background: 'var(--sage-light)', overflow: 'hidden', aspectRatio: '4/3' }}>
-      <Image src={photo.url} alt={photo.alt_text || photo.label} fill style={{ objectFit: 'cover', opacity: photo.active ? 1 : 0.35, transition: 'opacity 0.2s' }} sizes="200px" />
+  async function saveMeta() {
+    setSaving(true)
+    const res = await fetch('/api/admin/gallery', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+      body: JSON.stringify({ id: photo.id, scene_type: sceneVal, alt_text: altVal }),
+    })
+    if (res.ok) { onUpdate(photo.id, { scene_type: sceneVal, alt_text: altVal }); setEditing(false) }
+    setSaving(false)
+  }
 
-      {/* Quality badge */}
-      <div style={{ position: 'absolute', top: 5, left: 5, background: QUALITY_COLOR[photo.quality] || '#888', color: 'white', fontFamily: 'var(--font-ui)', fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 2 }}>
-        q{photo.quality}
+  const stars = qualityStars(photo.quality)
+  const sceneLabel = SCENE_LABELS[photo.scene_type] || photo.scene_type || 'Untagged'
+
+  return (
+    <div style={{ position: 'relative', background: 'var(--sage-light)', overflow: 'visible' }}>
+      <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
+        <Image
+          src={photo.url}
+          alt={photo.alt_text || photo.label || ''}
+          fill
+          style={{ objectFit: 'cover', opacity: photo.active ? 1 : 0.3, transition: 'opacity 0.2s' }}
+          sizes="200px"
+        />
+
+        {/* Quality stars */}
+        <div title={`Quality: ${photo.quality}/100`} style={{ position: 'absolute', top: 4, left: 4, background: 'rgba(0,0,0,0.55)', color: photo.quality >= 70 ? '#8ecfa0' : photo.quality >= 40 ? '#e8d080' : '#e89090', fontFamily: 'monospace', fontSize: 10, padding: '2px 5px', letterSpacing: 1 }}>
+          {stars}
+        </div>
+
+        {/* Show/Hide button */}
+        <button
+          onClick={toggleActive}
+          disabled={toggling}
+          title={photo.active ? 'Click to hide' : 'Click to show'}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 5, opacity: 0, transition: 'opacity 0.15s' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = 1}
+          onMouseLeave={e => e.currentTarget.style.opacity = 0}
+        >
+          <span style={{ background: photo.active ? '#b84040' : '#2E7D54', color: 'white', fontFamily: 'var(--font-ui)', fontSize: 11, padding: '3px 10px' }}>
+            {toggling ? '…' : photo.active ? 'Hide' : 'Show'}
+          </span>
+        </button>
       </div>
 
-      {/* Scene badge */}
-      {photo.scene_type && (
-        <div style={{ position: 'absolute', top: 5, right: 5, background: 'rgba(0,0,0,0.55)', color: 'white', fontFamily: 'var(--font-ui)', fontSize: 9, padding: '2px 5px', borderRadius: 2 }}>
-          {photo.scene_type}
+      {/* Tag + edit row */}
+      {editing ? (
+        <div style={{ padding: '6px 6px 8px', background: 'white', borderTop: '1px solid var(--border)' }}>
+          <select
+            value={sceneVal}
+            onChange={e => setSceneVal(e.target.value)}
+            style={{ width: '100%', padding: '4px 6px', border: '1px solid var(--border)', fontFamily: 'var(--font-ui)', fontSize: 11, background: 'white', marginBottom: 4 }}
+          >
+            {SCENE_OPTIONS.filter(o => o.value).map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+          <input
+            value={altVal}
+            onChange={e => setAltVal(e.target.value)}
+            placeholder="Alt text"
+            style={{ width: '100%', padding: '4px 6px', border: '1px solid var(--border)', fontFamily: 'var(--font-ui)', fontSize: 11, marginBottom: 4, boxSizing: 'border-box' }}
+          />
+          <div style={{ display: 'flex', gap: 4 }}>
+            <button onClick={saveMeta} disabled={saving} style={{ flex: 1, padding: '4px 0', background: 'var(--forest)', color: 'white', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 10 }}>
+              {saving ? '…' : 'Save'}
+            </button>
+            <button onClick={() => setEditing(false)} style={{ flex: 1, padding: '4px 0', background: '#e8e4de', color: 'var(--ink)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 10 }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 6px', background: '#f5f2ee', borderTop: '1px solid var(--border)', cursor: 'pointer' }}
+          onClick={() => setEditing(true)}
+          title="Click to edit tag + alt text"
+        >
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 9, color: photo.scene_type ? 'var(--ink-mid)' : 'var(--ink-light)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            {sceneLabel}
+          </span>
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 9, color: 'var(--ink-light)' }}>edit</span>
         </div>
       )}
-
-      {/* Toggle overlay */}
-      <button
-        onClick={toggle}
-        disabled={toggling}
-        title={photo.active ? 'Click to hide' : 'Click to show'}
-        style={{
-          position: 'absolute', inset: 0, width: '100%', height: '100%',
-          background: 'transparent', border: 'none', cursor: 'pointer',
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 6,
-          opacity: 0, transition: 'opacity 0.15s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.opacity = 1}
-        onMouseLeave={e => e.currentTarget.style.opacity = 0}
-      >
-        <span style={{ background: photo.active ? '#c05050' : '#2E7D54', color: 'white', fontFamily: 'var(--font-ui)', fontSize: 11, padding: '4px 10px' }}>
-          {toggling ? '…' : photo.active ? 'Hide' : 'Show'}
-        </span>
-      </button>
     </div>
   )
 }
 
 export default function GalleryPage() {
   const { password } = useAdmin()
-  const [photos, setPhotos]   = useState([])
-  const [total, setTotal]     = useState(0)
-  const [page, setPage]       = useState(1)
+  const [photos, setPhotos]         = useState([])
+  const [total, setTotal]           = useState(0)
+  const [page, setPage]             = useState(1)
   const [activeFilter, setActiveFilter] = useState('true')
   const [sceneFilter, setSceneFilter]   = useState('')
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading]       = useState(false)
 
   const load = useCallback(async (pg = 1, active = activeFilter, scene = sceneFilter) => {
     setLoading(true)
@@ -82,9 +151,9 @@ export default function GalleryPage() {
 
   useEffect(() => { load(1, activeFilter, sceneFilter) }, [activeFilter, sceneFilter]) // eslint-disable-line
 
-  function handleToggle(id, newActive) {
-    setPhotos(prev => prev.map(p => p.id === id ? { ...p, active: newActive } : p))
-    setTotal(t => t - 1)
+  function handleUpdate(id, fields) {
+    setPhotos(prev => prev.map(p => p.id === id ? { ...p, ...fields } : p))
+    if (fields.active !== undefined) setTotal(t => t - 1)
   }
 
   const totalPages = Math.ceil(total / 60)
@@ -92,14 +161,31 @@ export default function GalleryPage() {
   return (
     <div>
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--ink)', marginBottom: 6 }}>Gallery</h1>
-      <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--ink-light)', marginBottom: 24 }}>
-        {total} photos. Hover a photo and click Hide/Show to toggle visibility. Changes are instant.
+      <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--ink-light)', marginBottom: 16 }}>
+        {total} photos. Hover and click <strong>Hide/Show</strong> to toggle visibility. Click the tag row below each photo to edit its category and alt text.
       </p>
 
+      {/* Tag legend */}
+      <div style={{ background: 'white', border: '1px solid var(--border)', padding: '10px 14px', marginBottom: 20, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontFamily: 'var(--font-ui)', fontSize: 10, color: 'var(--ink-light)', letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: 4 }}>Tags:</span>
+        {SCENE_OPTIONS.filter(o => o.value).map(o => (
+          <span
+            key={o.value}
+            onClick={() => { setSceneFilter(o.value === sceneFilter ? '' : o.value); setPage(1) }}
+            style={{ fontFamily: 'var(--font-ui)', fontSize: 11, padding: '3px 10px', background: sceneFilter === o.value ? 'var(--forest)' : '#e8e4de', color: sceneFilter === o.value ? 'white' : 'var(--ink)', cursor: 'pointer', borderRadius: 2 }}
+          >
+            {o.label}
+          </span>
+        ))}
+        <span style={{ fontFamily: 'var(--font-ui)', fontSize: 10, color: 'var(--ink-light)', marginLeft: 8 }}>
+          ★ = quality rating assigned by AI when uploaded (1–5 stars). Higher = more likely to show first.
+        </span>
+      </div>
+
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: 0 }}>
-          {[['true', 'Active'], ['false', 'Hidden'], ['', 'All']].map(([val, label]) => (
+          {[['true', 'Visible'], ['false', 'Hidden'], ['', 'All']].map(([val, label]) => (
             <button key={val} onClick={() => { setActiveFilter(val); setPage(1) }}
               style={{ padding: '6px 14px', background: activeFilter === val ? 'var(--forest)' : 'white', color: activeFilter === val ? 'white' : 'var(--ink)', border: '1px solid var(--border)', borderRight: val === '' ? undefined : 'none', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 12 }}>
               {label}
@@ -107,11 +193,12 @@ export default function GalleryPage() {
           ))}
         </div>
 
-        <select value={sceneFilter} onChange={e => { setSceneFilter(e.target.value); setPage(1) }}
-          style={{ padding: '6px 10px', border: '1px solid var(--border)', fontFamily: 'var(--font-ui)', fontSize: 12, background: 'white', color: 'var(--ink)' }}>
-          <option value="">All scenes</option>
-          {SCENES.filter(Boolean).map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
+        {sceneFilter && (
+          <button onClick={() => { setSceneFilter(''); setPage(1) }}
+            style={{ padding: '6px 12px', background: 'var(--forest)', color: 'white', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 11 }}>
+            {SCENE_LABELS[sceneFilter] || sceneFilter} ×
+          </button>
+        )}
 
         {loading && <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'var(--ink-light)' }}>Loading…</span>}
       </div>
@@ -119,7 +206,7 @@ export default function GalleryPage() {
       {/* Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 6, marginBottom: 24 }}>
         {photos.map(photo => (
-          <PhotoCard key={photo.id} photo={photo} password={password} onToggle={handleToggle} />
+          <PhotoCard key={photo.id} photo={photo} password={password} onUpdate={handleUpdate} />
         ))}
       </div>
 

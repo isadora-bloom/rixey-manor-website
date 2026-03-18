@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import FadeUp from '@/components/ui/FadeUp'
+import ImageCarousel from '@/components/ui/ImageCarousel'
 
 const MANOR_ROOMS = [
   {
@@ -29,17 +30,19 @@ const MANOR_ROOMS = [
 ]
 
 function RoomCard({ room, image }) {
+  const allImages = image
+    ? [{ url: image.url, alt_text: image.alt_text || room.name, object_position: image.object_position }, ...(image.extras || [])]
+    : []
+
   return (
     <FadeUp>
       <div className="flex flex-col">
         <div className="relative w-full aspect-[4/3] bg-[var(--sage-light)] overflow-hidden mb-5">
-          {image ? (
-            <Image
-              src={image.url}
-              alt={image.alt_text || room.name}
-              fill
-              className="object-cover"
+          {allImages.length > 0 ? (
+            <ImageCarousel
+              images={allImages}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="w-full h-full"
             />
           ) : (
             <div className="w-full h-full bg-[var(--sage-light)]" />

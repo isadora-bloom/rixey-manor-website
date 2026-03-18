@@ -1,231 +1,252 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
+import { useAdmin } from '../layout'
 
-export default function AdminAvailabilityPage() {
-  const [password, setPassword]       = useState('')
-  const [authed, setAuthed]           = useState(false)
-  const [authError, setAuthError]     = useState('')
-  const [bookedDates, setBookedDates] = useState([])
-  const [startDate, setStartDate]     = useState('')
-  const [endDate, setEndDate]         = useState('')
-  const [notes, setNotes]             = useState('')
-  const [saving, setSaving]           = useState(false)
-  const [error, setError]             = useState('')
-  const [success, setSuccess]         = useState('')
+const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
-  const headers = { 'Content-Type': 'application/json', 'x-admin-password': password }
+function toDateStr(date) {
+  return date.toISOString().slice(0, 10)
+}
 
-  const loadDates = useCallback(async () => {
-    const res = await fetch('/api/availability')
-    const data = await res.json()
-    setBookedDates(Array.isArray(data) ? data : [])
-  }, [])
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T12:00:00')
+  d.setDate(d.getDate() + n)
+  return toDateStr(d)
+}
 
-  // Verify password against the API
-  async function handleLogin(e) {
-    e.preventDefault()
-    setAuthError('')
-    // Try a POST with a clearly invalid body — 401 = wrong password, 400 = right password (bad body)
-    const res = await fetch('/api/availability', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({}),
-    })
-    if (res.status === 401) {
-      setAuthError('Wrong password.')
-    } else {
-      setAuthed(true)
-      loadDates()
-    }
-  }
+// Given a date, return the Fri–Sun range that contains it (or just that day if weekday)
+function getBookingRange(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00')
+  const dow = d.getDay() // 0=Sun, 5=Fri, 6=Sat
+  if (dow === 5) return { start: dateStr, end: addDays(dateStr, 2) }           // Fri → Fri–Sun
+  if (dow === 6) return { start: addDays(dateStr, -1), end: addDays(dateStr, 1) } // Sat → Fri–Sun
+  if (dow === 0) return { start: addDays(dateStr, -2), end: dateStr }           // Sun → Fri–Sun
+  return { start: dateStr, end: dateStr }                                        // weekday → single day
+}
 
-  useEffect(() => {
-    if (authed) loadDates()
-  }, [authed, loadDates])
+function MonthGrid({ monthDate, today, isBooked, onToggle, saving }) {
+  const year = monthDate.getFullYear()
+  const month = monthDate.getMonth()
+  const label = monthDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const firstDow = new Date(year, month, 1).getDay()
 
-  async function handleAdd(e) {
-    e.preventDefault()
-    if (!startDate || !endDate) { setError('Both dates required.'); return }
-    if (endDate < startDate) { setError('End date must be on or after start date.'); return }
-    setSaving(true)
-    setError('')
-    setSuccess('')
-
-    const res = await fetch('/api/availability', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ start_date: startDate, end_date: endDate, notes }),
-    })
-
-    if (res.status === 401) { setError('Wrong password.'); setSaving(false); return }
-    if (!res.ok) { const d = await res.json(); setError(d.error || 'Failed.'); setSaving(false); return }
-
-    setStartDate('')
-    setEndDate('')
-    setNotes('')
-    setSuccess('Saved.')
-    setTimeout(() => setSuccess(''), 3000)
-    await loadDates()
-    setSaving(false)
-  }
-
-  async function handleDelete(id) {
-    if (!confirm('Remove this booked date?')) return
-    const res = await fetch('/api/availability', {
-      method: 'DELETE',
-      headers,
-      body: JSON.stringify({ id }),
-    })
-    if (res.ok) await loadDates()
-  }
-
-  function formatDate(str) {
-    return new Date(str + 'T00:00:00').toLocaleDateString('en-US', {
-      weekday: 'short', year: 'numeric', month: 'long', day: 'numeric',
-    })
-  }
-
-  if (!authed) {
-    return (
-      <div className="min-h-screen bg-[var(--cream)] flex items-center justify-center px-6">
-        <div className="w-full max-w-sm">
-          <p className="eyebrow mb-6">Admin</p>
-          <h1 className="text-[28px] text-[var(--ink)] mb-8" style={{ fontFamily: 'var(--font-display)' }}>
-            Availability Manager
-          </h1>
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="border border-[var(--border)] bg-white px-4 py-3 text-[var(--ink)] w-full focus:outline-none focus:border-[var(--sage)]"
-              style={{ fontFamily: 'var(--font-body)' }}
-            />
-            {authError && (
-              <p className="text-[var(--rose)] text-sm" style={{ fontFamily: 'var(--font-body)' }}>{authError}</p>
-            )}
-            <button type="submit" className="btn-primary w-full justify-center">
-              Sign in
-            </button>
-          </form>
-        </div>
-      </div>
-    )
+  const cells = []
+  for (let i = 0; i < firstDow; i++) cells.push(null)
+  for (let d = 1; d <= daysInMonth; d++) {
+    cells.push(`${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`)
   }
 
   return (
-    <div className="min-h-screen bg-[var(--warm-white)] pt-20 px-6 pb-20">
-      <div className="max-w-3xl mx-auto">
-
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <p className="eyebrow mb-2">Admin</p>
-            <h1 className="text-[32px] text-[var(--ink)]" style={{ fontFamily: 'var(--font-display)' }}>
-              Availability Manager
-            </h1>
+    <div>
+      <p style={{ fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--ink)', marginBottom: 8, letterSpacing: '0.05em' }}>
+        {label}
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
+        {DAY_LABELS.map(d => (
+          <div key={d} style={{ textAlign: 'center', fontFamily: 'var(--font-ui)', fontSize: 9, color: 'var(--ink-light)', padding: '2px 0', letterSpacing: '0.05em' }}>
+            {d}
           </div>
-          <button
-            onClick={() => setAuthed(false)}
-            className="text-[12px] tracking-[0.1em] uppercase text-[var(--ink-light)] hover:text-[var(--ink)] transition-colors"
-            style={{ fontFamily: 'var(--font-ui)' }}
-          >
-            Sign out
-          </button>
-        </div>
+        ))}
+        {cells.map((dateStr, i) => {
+          if (!dateStr) return <div key={`e${i}`} />
+          const isPast = dateStr < today
+          const booked = isBooked(dateStr)
+          const isToday = dateStr === today
+          const isSaving = saving === dateStr
+          const dow = new Date(dateStr + 'T12:00:00').getDay()
+          const isWeekend = dow === 5 || dow === 6 || dow === 0
 
-        {/* Add new */}
-        <section className="bg-white border border-[var(--border)] p-8 mb-10">
-          <h2 className="text-[18px] text-[var(--ink)] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
-            Mark dates as booked
-          </h2>
-          <form onSubmit={handleAdd} className="flex flex-col gap-4">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[11px] tracking-[0.15em] uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
-                  First day (usually Friday)
-                </label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={e => setStartDate(e.target.value)}
-                  className="border border-[var(--border)] bg-[var(--warm-white)] px-4 py-3 text-[var(--ink)] w-full focus:outline-none focus:border-[var(--sage)]"
-                  style={{ fontFamily: 'var(--font-body)' }}
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] tracking-[0.15em] uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
-                  Last day (usually Sunday)
-                </label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={e => setEndDate(e.target.value)}
-                  className="border border-[var(--border)] bg-[var(--warm-white)] px-4 py-3 text-[var(--ink)] w-full focus:outline-none focus:border-[var(--sage)]"
-                  style={{ fontFamily: 'var(--font-body)' }}
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[11px] tracking-[0.15em] uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
-                Notes (internal only, never shown publicly)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Smith / Johnson wedding"
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-                className="border border-[var(--border)] bg-[var(--warm-white)] px-4 py-3 text-[var(--ink)] w-full focus:outline-none focus:border-[var(--sage)]"
-                style={{ fontFamily: 'var(--font-body)' }}
-              />
-            </div>
-            {error && <p className="text-[var(--rose)] text-sm" style={{ fontFamily: 'var(--font-body)' }}>{error}</p>}
-            {success && <p className="text-[var(--forest)] text-sm" style={{ fontFamily: 'var(--font-body)' }}>{success}</p>}
-            <button type="submit" disabled={saving} className="btn-primary self-start">
-              {saving ? 'Saving…' : 'Save booked dates'}
+          return (
+            <button
+              key={dateStr}
+              onClick={() => !isPast && onToggle(dateStr)}
+              disabled={isPast || isSaving}
+              title={dateStr}
+              style={{
+                padding: '5px 0',
+                textAlign: 'center',
+                fontFamily: 'var(--font-ui)',
+                fontSize: 11,
+                border: isToday ? '1px solid var(--forest)' : '1px solid transparent',
+                cursor: isPast ? 'default' : 'pointer',
+                background: booked ? '#b84040' : isPast ? 'transparent' : isWeekend ? '#e8e4de' : '#f5f2ee',
+                color: booked ? 'white' : isPast ? '#ccc' : 'var(--ink)',
+                opacity: isSaving ? 0.4 : 1,
+                transition: 'background 0.1s',
+                fontWeight: isWeekend ? 500 : 400,
+              }}
+            >
+              {new Date(dateStr + 'T12:00:00').getDate()}
             </button>
-          </form>
-        </section>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
-        {/* Existing booked dates */}
-        <section>
-          <h2 className="text-[18px] text-[var(--ink)] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
-            Currently booked — {bookedDates.length} {bookedDates.length === 1 ? 'range' : 'ranges'}
-          </h2>
+export default function AdminAvailabilityPage() {
+  const { password } = useAdmin()
+  const [ranges, setRanges] = useState([])
+  const [saving, setSaving] = useState(null)
+  const [error, setError] = useState('')
 
-          {bookedDates.length === 0 ? (
-            <p className="body-copy text-[var(--ink-light)]">No booked dates yet.</p>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {bookedDates.map(b => (
-                <div
-                  key={b.id}
-                  className="flex items-center justify-between bg-white border border-[var(--border)] px-6 py-4"
-                >
-                  <div>
-                    <p className="text-[14px] text-[var(--ink)]" style={{ fontFamily: 'var(--font-body)' }}>
-                      {formatDate(b.start_date)} — {formatDate(b.end_date)}
-                    </p>
-                    {b.notes && (
-                      <p className="text-[12px] text-[var(--ink-light)] mt-0.5" style={{ fontFamily: 'var(--font-ui)' }}>
-                        {b.notes}
-                      </p>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => handleDelete(b.id)}
-                    className="text-[11px] tracking-[0.1em] uppercase text-[var(--rose)] hover:text-[var(--ink)] transition-colors ml-6 shrink-0"
-                    style={{ fontFamily: 'var(--font-ui)' }}
-                  >
-                    Remove
-                  </button>
+  const today = toDateStr(new Date())
+  const headers = { 'Content-Type': 'application/json', 'x-admin-password': password }
+
+  async function loadRanges() {
+    const res = await fetch('/api/availability')
+    const data = await res.json()
+    setRanges(Array.isArray(data) ? data : [])
+  }
+
+  useEffect(() => { loadRanges() }, []) // eslint-disable-line
+
+  function isBooked(dateStr) {
+    return ranges.some(r => dateStr >= r.start_date && dateStr <= r.end_date)
+  }
+
+  function getRangeFor(dateStr) {
+    return ranges.find(r => dateStr >= r.start_date && dateStr <= r.end_date)
+  }
+
+  async function toggleDate(dateStr) {
+    if (dateStr < today) return
+    setSaving(dateStr)
+    setError('')
+
+    const existing = getRangeFor(dateStr)
+
+    if (existing) {
+      const res = await fetch('/api/availability', {
+        method: 'DELETE', headers,
+        body: JSON.stringify({ id: existing.id }),
+      })
+      if (res.ok) {
+        setRanges(prev => prev.filter(r => r.id !== existing.id))
+      } else {
+        setError('Failed to remove date.')
+      }
+    } else {
+      const { start, end } = getBookingRange(dateStr)
+      const res = await fetch('/api/availability', {
+        method: 'POST', headers,
+        body: JSON.stringify({ start_date: start, end_date: end, notes: '' }),
+      })
+      if (res.ok) {
+        await loadRanges()
+      } else {
+        setError('Failed to book date.')
+      }
+    }
+
+    setSaving(null)
+  }
+
+  async function removeRange(id) {
+    const res = await fetch('/api/availability', {
+      method: 'DELETE', headers,
+      body: JSON.stringify({ id }),
+    })
+    if (res.ok) setRanges(prev => prev.filter(r => r.id !== id))
+  }
+
+  function formatDate(str) {
+    return new Date(str + 'T12:00:00').toLocaleDateString('en-US', {
+      weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+    })
+  }
+
+  // 8 months starting from today
+  const months = Array.from({ length: 8 }, (_, i) => {
+    const d = new Date()
+    d.setDate(1)
+    d.setMonth(d.getMonth() + i)
+    return d
+  })
+
+  const upcoming = ranges
+    .filter(r => r.end_date >= today)
+    .sort((a, b) => a.start_date.localeCompare(b.start_date))
+
+  return (
+    <div style={{ maxWidth: 820 }}>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--ink)', marginBottom: 6 }}>
+        Availability
+      </h1>
+      <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--ink-light)', marginBottom: 4 }}>
+        Click any date to book or unbook it. Clicking a Fri/Sat/Sun books the whole weekend automatically.
+      </p>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 16, marginBottom: 24, alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ width: 14, height: 14, background: '#b84040' }} />
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--ink-light)' }}>Booked</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ width: 14, height: 14, background: '#e8e4de', border: '1px solid #d4cfc9' }} />
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--ink-light)' }}>Weekend (available)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ width: 14, height: 14, border: '1px solid var(--forest)' }} />
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--ink-light)' }}>Today</span>
+        </div>
+      </div>
+
+      {error && (
+        <p style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'var(--rose)', marginBottom: 12 }}>{error}</p>
+      )}
+
+      {/* Calendar grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 28, marginBottom: 40 }}>
+        {months.map(m => (
+          <MonthGrid
+            key={m.toISOString()}
+            monthDate={m}
+            today={today}
+            isBooked={isBooked}
+            onToggle={toggleDate}
+            saving={saving}
+          />
+        ))}
+      </div>
+
+      {/* Upcoming booked list */}
+      <div>
+        <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink-light)', marginBottom: 12 }}>
+          Upcoming booked — {upcoming.length} {upcoming.length === 1 ? 'block' : 'blocks'}
+        </p>
+        {upcoming.length === 0 ? (
+          <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--ink-light)' }}>Nothing booked yet.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {upcoming.map(r => (
+              <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', border: '1px solid var(--border)', padding: '10px 16px' }}>
+                <div>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--ink)' }}>
+                    {r.start_date === r.end_date
+                      ? formatDate(r.start_date)
+                      : `${formatDate(r.start_date)} — ${formatDate(r.end_date)}`}
+                  </span>
+                  {r.notes && (
+                    <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--ink-light)', marginLeft: 12 }}>
+                      {r.notes}
+                    </span>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
-
+                <button
+                  onClick={() => removeRange(r.id)}
+                  style={{ fontFamily: 'var(--font-ui)', fontSize: 11, letterSpacing: '0.08em', color: 'var(--rose)', background: 'none', border: 'none', cursor: 'pointer', marginLeft: 16 }}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

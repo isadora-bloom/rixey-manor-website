@@ -20,6 +20,15 @@ export default function SchemaMarkup() {
       latitude: 38.5612,
       longitude: -77.9483,
     },
+    image: [
+      'https://www.rixeymanor.com/assets/hero-main.webp',
+    ],
+    sameAs: [
+      'https://www.instagram.com/rixeymanor',
+      'https://www.facebook.com/rixeymanor',
+      'https://www.theknot.com/marketplace/rixey-manor',
+      'https://www.weddingwire.com/biz/rixey-manor-rixeyville/ce916f124034d2e2.html',
+    ],
     priceRange: '$$$',
     currenciesAccepted: 'USD',
     openingHoursSpecification: { '@type': 'OpeningHoursSpecification', description: 'By appointment' },
