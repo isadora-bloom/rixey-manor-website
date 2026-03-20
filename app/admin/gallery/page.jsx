@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAdmin } from '../layout'
 import Image from 'next/image'
+import { resizeImage } from '@/lib/resizeImage'
 
 const SCENE_OPTIONS = [
   { value: '',              label: 'All tags'        },
@@ -164,12 +165,12 @@ function UploadPanel({ password, onUploaded }) {
     const snapshot = queue.filter(q => q.status === 'pending')
 
     for (const item of snapshot) {
-      // 1. Upload file to storage
-      const ext  = item.file.name.split('.').pop()
+      // 1. Resize then upload
+      const resized = await resizeImage(item.file)
       const ts   = Date.now()
       const form = new FormData()
-      form.append('file', item.file)
-      form.append('path', `gallery/${ts}.${ext}`)
+      form.append('file', resized)
+      form.append('path', `gallery/${ts}.webp`)
       updateItem(item.id, { status: 'uploading' })
       let url = ''
       try {
@@ -191,7 +192,7 @@ function UploadPanel({ password, onUploaded }) {
       let scene_type = 'other'
       try {
         const capForm = new FormData()
-        capForm.append('file', item.file)
+        capForm.append('file', resized)
         const capRes = await fetch('/api/admin/capture', {
           method: 'POST',
           headers: { 'x-admin-password': password },

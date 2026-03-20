@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAdmin } from '../layout'
 import Image from 'next/image'
+import { resizeImage } from '@/lib/resizeImage'
 
 // All slots keyed by their exact ID used in getSiteImages()
 const SLOT_CONFIG = {
@@ -124,10 +125,10 @@ function ImageSlot({ slot, password, onUpdated }) {
     if (!file) return
     setUploading(true); setStatus('uploading')
     try {
-      const ext  = file.name.split('.').pop()
+      const resized = await resizeImage(file)
       const form = new FormData()
-      form.append('file', file)
-      form.append('path', `site/${slot.id}.${ext}`)
+      form.append('file', resized)
+      form.append('path', `site/${slot.id}.webp`)
       const upRes = await fetch('/api/admin/upload', {
         method: 'POST',
         headers: { 'x-admin-password': password },
@@ -141,7 +142,7 @@ function ImageSlot({ slot, password, onUpdated }) {
       let autoAlt = ''
       try {
         const captureForm = new FormData()
-        captureForm.append('file', file)
+        captureForm.append('file', resized)
         const capRes = await fetch('/api/admin/capture', {
           method: 'POST',
           headers: { 'x-admin-password': password },
@@ -176,11 +177,11 @@ function ImageSlot({ slot, password, onUpdated }) {
     if (!file) return
     setUploadingExtra(true)
     try {
-      const ext  = file.name.split('.').pop()
+      const resized = await resizeImage(file)
       const ts   = Date.now()
       const form = new FormData()
-      form.append('file', file)
-      form.append('path', `site/${slot.id}-extra-${ts}.${ext}`)
+      form.append('file', resized)
+      form.append('path', `site/${slot.id}-extra-${ts}.webp`)
       const upRes = await fetch('/api/admin/upload', {
         method: 'POST',
         headers: { 'x-admin-password': password },
@@ -193,7 +194,7 @@ function ImageSlot({ slot, password, onUpdated }) {
       let autoAlt = ''
       try {
         const captureForm = new FormData()
-        captureForm.append('file', file)
+        captureForm.append('file', resized)
         const capRes = await fetch('/api/admin/capture', {
           method: 'POST',
           headers: { 'x-admin-password': password },
