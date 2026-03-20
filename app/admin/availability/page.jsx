@@ -9,21 +9,7 @@ function toDateStr(date) {
   return date.toISOString().slice(0, 10)
 }
 
-function addDays(dateStr, n) {
-  const d = new Date(dateStr + 'T12:00:00')
-  d.setDate(d.getDate() + n)
-  return toDateStr(d)
-}
 
-// Given a date, return the Fri–Sun range that contains it (or just that day if weekday)
-function getBookingRange(dateStr) {
-  const d = new Date(dateStr + 'T12:00:00')
-  const dow = d.getDay() // 0=Sun, 5=Fri, 6=Sat
-  if (dow === 5) return { start: dateStr, end: addDays(dateStr, 2) }           // Fri → Fri–Sun
-  if (dow === 6) return { start: addDays(dateStr, -1), end: addDays(dateStr, 1) } // Sat → Fri–Sun
-  if (dow === 0) return { start: addDays(dateStr, -2), end: dateStr }           // Sun → Fri–Sun
-  return { start: dateStr, end: dateStr }                                        // weekday → single day
-}
 
 function MonthGrid({ monthDate, today, isBooked, onToggle, saving }) {
   const year = monthDate.getFullYear()
@@ -130,10 +116,9 @@ export default function AdminAvailabilityPage() {
         setError('Failed to remove date.')
       }
     } else {
-      const { start, end } = getBookingRange(dateStr)
       const res = await fetch('/api/availability', {
         method: 'POST', headers,
-        body: JSON.stringify({ start_date: start, end_date: end, notes: '' }),
+        body: JSON.stringify({ start_date: dateStr, end_date: dateStr, notes: '' }),
       })
       if (res.ok) {
         await loadRanges()
@@ -159,12 +144,10 @@ export default function AdminAvailabilityPage() {
     })
   }
 
-  // 8 months starting from today
-  const months = Array.from({ length: 8 }, (_, i) => {
-    const d = new Date()
-    d.setDate(1)
-    d.setMonth(d.getMonth() + i)
-    return d
+  // 24 months starting from today — computed once with stable keys
+  const months = Array.from({ length: 24 }, (_, i) => {
+    const now = new Date()
+    return new Date(now.getFullYear(), now.getMonth() + i, 1)
   })
 
   const upcoming = ranges
@@ -177,7 +160,7 @@ export default function AdminAvailabilityPage() {
         Availability
       </h1>
       <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--ink-light)', marginBottom: 4 }}>
-        Click any date to book or unbook it. Clicking a Fri/Sat/Sun books the whole weekend automatically.
+        Click any date to book or unbook it. Click multiple days to block out a range.
       </p>
 
       {/* Legend */}
@@ -204,7 +187,7 @@ export default function AdminAvailabilityPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 28, marginBottom: 40 }}>
         {months.map(m => (
           <MonthGrid
-            key={m.toISOString()}
+            key={`${m.getFullYear()}-${m.getMonth()}`}
             monthDate={m}
             today={today}
             isBooked={isBooked}
