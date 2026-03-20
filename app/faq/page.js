@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import FadeUp from '@/components/ui/FadeUp'
 import FaqAccordion from '@/components/faq/FaqAccordion'
 import { getOgImage } from '@/lib/getPageSeo'
+const supabase = supabaseServer()
 
 export const dynamic = 'force-dynamic'
 

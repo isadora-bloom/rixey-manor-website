@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import Quiz from '@/components/quiz/Quiz'
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
+const supabase = supabaseServer()
 
 async function getCalendlyUrl() {
   const { data } = await supabase.from('site_content').select('value').eq('key', 'calendly_url').single()

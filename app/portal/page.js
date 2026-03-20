@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import FadeUp from '@/components/ui/FadeUp'
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
 import SageDemo from '@/components/portal/SageDemo'
 import { getOgImage } from '@/lib/getPageSeo'
+const supabase = supabaseServer()
 
 export const dynamic = 'force-dynamic'
 

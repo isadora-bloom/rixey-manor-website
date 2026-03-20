@@ -4,9 +4,10 @@ import FadeUp from '@/components/ui/FadeUp'
 import PricingCalculator from '@/components/pricing/PricingCalculator'
 import FinalCTA from '@/components/home/FinalCTA'
 import CalendlyInline from '@/components/ui/CalendlyInline'
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import { getOgImage } from '@/lib/getPageSeo'
+const supabase = supabaseServer()
 
 export const dynamic = 'force-dynamic'
 

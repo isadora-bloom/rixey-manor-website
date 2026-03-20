@@ -1,10 +1,11 @@
 import Image from 'next/image'
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import { getOgImage } from '@/lib/getPageSeo'
 import FadeUp from '@/components/ui/FadeUp'
 import AvailabilityCalendar from '@/components/availability/AvailabilityCalendar'
 import FinalCTA from '@/components/home/FinalCTA'
+const supabase = supabaseServer()
 
 export const dynamic = 'force-dynamic'
 

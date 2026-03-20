@@ -3,7 +3,8 @@ import Script from 'next/script'
 import './globals.css'
 import SiteChrome from '@/components/layout/SiteChrome'
 import SchemaMarkup from '@/components/SchemaMarkup'
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
+const supabase = supabaseServer()
 
 const playfair = Playfair_Display({
   variable: '--font-playfair',

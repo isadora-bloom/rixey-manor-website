@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import { getOgImage } from '@/lib/getPageSeo'
 
@@ -15,6 +15,7 @@ import StorySection from '@/components/home/StorySection'
 import FinalCTA from '@/components/home/FinalCTA'
 import PortalSection from '@/components/home/PortalSection'
 import VideoSection from '@/components/ui/VideoSection'
+const supabase = supabaseServer()
 
 export async function generateMetadata() {
   const ogImage = await getOgImage('home')

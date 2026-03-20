@@ -1,7 +1,8 @@
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
 import FadeUp from '@/components/ui/FadeUp'
 import GalleryGrid from '@/components/gallery/GalleryGrid'
 import { getOgImage } from '@/lib/getPageSeo'
+const supabase = supabaseServer()
 
 export const dynamic = 'force-dynamic'
 

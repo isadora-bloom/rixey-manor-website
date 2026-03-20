@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
+const supabase = supabaseServer()
 
 export default async function sitemap() {
   const { data: posts } = await supabase

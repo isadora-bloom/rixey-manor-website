@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import { getOgImage } from '@/lib/getPageSeo'
 import VenueHero from '@/components/venue/VenueHero'
@@ -12,6 +12,7 @@ import Inclusions from '@/components/venue/Inclusions'
 import DetailsSection from '@/components/venue/DetailsSection'
 import FinalCTA from '@/components/home/FinalCTA'
 import VideoSection from '@/components/ui/VideoSection'
+const supabase = supabaseServer()
 
 export const dynamic = 'force-dynamic'
 
