@@ -155,11 +155,15 @@ function ImageSlot({ slot, password, onUpdated }) {
         }
       } catch { /* caption is optional */ }
 
-      await fetch('/api/admin/images', {
+      const patchRes = await fetch('/api/admin/images', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
         body: JSON.stringify({ id: slot.id, url, ...(autoAlt && { alt_text: autoAlt }) }),
       })
+      if (!patchRes.ok) {
+        const err = await patchRes.json().catch(() => ({}))
+        throw new Error('DB save failed: ' + (err.error || patchRes.status))
+      }
       onUpdated(slot.id, { url, ...(autoAlt && { alt_text: autoAlt }) })
       if (autoAlt) setAltVal(autoAlt)
       setStatus(autoAlt ? 'saved-captioned' : 'saved')
