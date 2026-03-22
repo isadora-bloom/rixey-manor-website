@@ -17,6 +17,9 @@ CREATE TABLE IF NOT EXISTS site_images (
   updated_at       TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Drop NOT NULL on label if it was created that way
+ALTER TABLE site_images ALTER COLUMN label DROP NOT NULL;
+
 ALTER TABLE site_images ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "site_images_public_read" ON site_images;
