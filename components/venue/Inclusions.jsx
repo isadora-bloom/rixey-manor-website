@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import FadeUp from '@/components/ui/FadeUp'
 
 const BLOCKS = [
@@ -86,6 +87,17 @@ export default function Inclusions({ accentImages = [] }) {
                 <p className="body-copy text-[14px]">
                   5% off for ceremony held off-site, early event finish, or using only recommended vendors. 10% off for military, veterans, and first responders. Early 2026 dates may qualify for an additional 10%. Discounts are reflected in the <a href="/pricing#calculator" className="text-link">pricing calculator</a>.
                 </p>
+              </div>
+            </FadeUp>
+
+            <FadeUp>
+              <div className="mt-10 pt-10 border-t border-[var(--border)]">
+                <p className="body-copy text-[14px] text-[var(--ink-light)]">
+                  The list above covers what is always included. Then there is everything else couples have done here — horses, lion dances, live painters, burying a bottle of whiskey, fire pits until 2am.
+                </p>
+                <Link href="/extras" className="text-link inline-block mt-3" style={{ fontFamily: 'var(--font-ui)', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  Only at Rixey →
+                </Link>
               </div>
             </FadeUp>
           </div>

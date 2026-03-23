@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import FadeUp from '@/components/ui/FadeUp'
 
 const ITEMS = [
@@ -37,6 +38,14 @@ export default function IncludedStrip() {
             </div>
           ))}
         </div>
+        <FadeUp delay={120}>
+          <p className="text-center mt-10" style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--ink-light)' }}>
+            And then there are the things no venue checklist covers.{' '}
+            <Link href="/extras" className="text-link" style={{ fontFamily: 'var(--font-body)' }}>
+              Only at Rixey →
+            </Link>
+          </p>
+        </FadeUp>
       </FadeUp>
     </section>
   )

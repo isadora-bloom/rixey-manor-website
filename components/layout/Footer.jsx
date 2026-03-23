@@ -31,6 +31,7 @@ export default function Footer() {
             {[
               { label: 'The Venue', href: '/venue' },
               { label: 'Pricing', href: '/pricing' },
+              { label: 'Only at Rixey', href: '/extras' },
               { label: 'Gallery', href: '/gallery' },
               { label: 'FAQs', href: '/faq' },
               { label: 'Blog', href: '/blog' },

@@ -10,6 +10,7 @@ const navLinks = [
   { label: 'The Venue', href: '/venue' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Availability', href: '/availability' },
+  { label: 'Only at Rixey', href: '/extras' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Portal', href: '/portal' },
