@@ -1,7 +1,3 @@
-'use client'
-
-import Script from 'next/script'
-
 export default function TikTokMoment() {
   return (
     <section style={{
@@ -36,16 +32,19 @@ export default function TikTokMoment() {
         </h2>
       </div>
 
-      <blockquote
-        className="tiktok-embed"
-        cite="https://www.tiktok.com/@rixeymanorteam/video/7565507952648424718"
-        data-video-id="7565507952648424718"
-        style={{ maxWidth: 605, minWidth: 325, margin: 0 }}
-      >
-        <section />
-      </blockquote>
-
-      <Script src="https://www.tiktok.com/embed.js" strategy="lazyOnload" />
+      <iframe
+        src="https://www.tiktok.com/embed/v2/7565507952648424718"
+        style={{
+          width: '100%',
+          maxWidth: 380,
+          height: 700,
+          border: 'none',
+          display: 'block',
+        }}
+        allowFullScreen
+        allow="encrypted-media"
+        title="Rixey Manor — first dance lift"
+      />
     </section>
   )
 }
