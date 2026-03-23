@@ -16,6 +16,7 @@ const NAV = [
   { href: '/admin/gallery',     label: 'Gallery'      },
   { href: '/admin/blog',        label: 'Blog'         },
   { href: '/admin/availability',label: 'Availability' },
+  { href: '/admin/extras',      label: 'Extras'       },
 ]
 
 export default function AdminLayout({ children }) {
