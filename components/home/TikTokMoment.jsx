@@ -1,4 +1,4 @@
-export default function TikTokMoment() {
+export default function TikTokMoment({ videoId, eyebrow, heading, title }) {
   return (
     <section style={{
       background: 'var(--warm-white)',
@@ -19,7 +19,7 @@ export default function TikTokMoment() {
           color: 'var(--ink-light)',
           marginBottom: 12,
         }}>
-          Shot on site
+          {eyebrow}
         </p>
         <h2 style={{
           fontFamily: 'var(--font-display)',
@@ -28,12 +28,12 @@ export default function TikTokMoment() {
           lineHeight: 1.15,
           fontStyle: 'italic',
         }}>
-          This lift is life.
+          {heading}
         </h2>
       </div>
 
       <iframe
-        src="https://www.tiktok.com/embed/v2/7565507952648424718"
+        src={`https://www.tiktok.com/embed/v2/${videoId}`}
         style={{
           width: '100%',
           maxWidth: 380,
@@ -43,7 +43,7 @@ export default function TikTokMoment() {
         }}
         allowFullScreen
         allow="encrypted-media"
-        title="Rixey Manor — first dance lift"
+        title={title}
       />
     </section>
   )

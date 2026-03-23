@@ -124,8 +124,19 @@ export default async function HomePage() {
         heading={<>30 seconds.<br /><em>See it before you visit.</em></>}
       />
       <TestimonialsSection testimonials={testimonials} />
+      <TikTokMoment
+        videoId="7613243160164191519"
+        eyebrow="A 2027 bride"
+        heading='"I love Rixey Manor."'
+        title="Bride vlog — planning a wedding at Rixey Manor"
+      />
       <SpacesSection spaces={spaces} spaceImages={spaceImages} />
-      <TikTokMoment />
+      <TikTokMoment
+        videoId="7565507952648424718"
+        eyebrow="Shot on site"
+        heading="This lift is life."
+        title="Rixey Manor — first dance lift"
+      />
       <VideoSection
         videoUrl={terraceVideoUrl}
         eyebrow="The terrace"
