@@ -83,20 +83,29 @@ function VideoSlot({ slotDef, currentValue, password, onSaved }) {
     setUploading(true)
     setStatus('uploading')
     try {
-      const ext  = file.name.split('.').pop()
+      const ext  = file.name.split('.').pop().toLowerCase()
       const ts   = Date.now()
-      const form = new FormData()
-      form.append('file', file)
-      form.append('path', `videos/${slotDef.key}-${ts}.${ext}`)
-      const upRes = await fetch('/api/admin/upload', {
+      const path = `videos/${slotDef.key}-${ts}.${ext}`
+
+      // Step 1: get a signed upload URL from the server (bypasses Vercel body limit)
+      const sigRes = await fetch('/api/admin/signed-upload-url', {
         method: 'POST',
-        headers: { 'x-admin-password': password },
-        body: form,
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+        body: JSON.stringify({ path }),
       })
-      if (!upRes.ok) throw new Error('Upload failed')
-      const { url } = await upRes.json()
-      setValue(url)
-      await save(url)
+      if (!sigRes.ok) throw new Error('Could not get upload URL')
+      const { signedUrl, publicUrl } = await sigRes.json()
+
+      // Step 2: PUT the file directly to Supabase Storage (no size limit)
+      const putRes = await fetch(signedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'video/mp4' },
+        body: file,
+      })
+      if (!putRes.ok) throw new Error('Upload to storage failed')
+
+      setValue(publicUrl)
+      await save(publicUrl)
     } catch (err) {
       setStatus('upload error: ' + err.message)
     } finally {

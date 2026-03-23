@@ -216,10 +216,12 @@ function ImageSlot({ slot, password, onUpdated }) {
         headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
         body: JSON.stringify({ slot_id: slot.id, url, alt_text: autoAlt }),
       })
-      if (addRes.ok) {
-        const newExtra = await addRes.json()
-        setExtras(prev => [...prev, newExtra])
+      if (!addRes.ok) {
+        const err = await addRes.json().catch(() => ({}))
+        throw new Error('DB save failed: ' + (err.error || addRes.status))
       }
+      const newExtra = await addRes.json()
+      setExtras(prev => [...prev, newExtra])
     } catch (err) {
       setStatus('extra upload error: ' + err.message)
     } finally {
@@ -322,10 +324,13 @@ function ImageSlot({ slot, password, onUpdated }) {
           </p>
         )}
 
-        {/* Multi-image extras — available on all slots, carousel activates on frontend only if extras are uploaded */}
+        {/* Multi-image extras */}
         <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
-            <p style={{ fontFamily: 'var(--font-ui)', fontSize: 10, color: 'var(--ink-light)', marginBottom: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Gallery ({extras.length} extra {extras.length === 1 ? 'photo' : 'photos'})
+            <p style={{ fontFamily: 'var(--font-ui)', fontSize: 10, color: 'var(--ink-light)', marginBottom: 2, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Extra photos ({extras.length}) — show as carousel with ‹ › arrows on the site
+            </p>
+            <p style={{ fontFamily: 'var(--font-ui)', fontSize: 10, color: 'var(--ink-light)', marginBottom: 6, opacity: 0.7 }}>
+              Upload additional photos here. The main photo + these will cycle with arrows on the venue page.
             </p>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
               {extras.map(ex => (

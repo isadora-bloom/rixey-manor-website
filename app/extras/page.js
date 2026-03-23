@@ -68,16 +68,15 @@ export default async function ExtrasPage() {
         </p>
       </section>
 
-      {/* Grid */}
+      {/* Masonry tiles */}
       <section style={{
         padding: 'clamp(40px, 6vw, 80px) clamp(20px, 5vw, 60px)',
-        maxWidth: 1280,
+        maxWidth: 1400,
         margin: '0 auto',
       }}>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: 'clamp(16px, 2vw, 28px)',
+          columns: '3 280px',
+          columnGap: 'clamp(14px, 2vw, 24px)',
         }}>
           {items.map(extra => (
             <ExtraCard key={extra.id} extra={extra} />
@@ -93,28 +92,27 @@ export default async function ExtrasPage() {
 function ExtraCard({ extra }) {
   return (
     <article style={{
+      breakInside: 'avoid',
+      marginBottom: 'clamp(14px, 2vw, 24px)',
       background: 'white',
       border: '1px solid var(--border)',
-      display: 'flex',
-      flexDirection: 'column',
     }}>
       {extra.image_url && (
-        <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden', flexShrink: 0 }}>
-          <Image
-            src={extra.image_url}
-            alt={extra.title}
-            fill
-            style={{ objectFit: 'cover' }}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        </div>
+        <Image
+          src={extra.image_url}
+          alt={extra.title}
+          width={0}
+          height={0}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+        />
       )}
-      <div style={{ padding: '22px 24px 28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: '20px 22px 26px' }}>
         <h2 style={{
           fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(18px, 2vw, 22px)',
+          fontSize: 'clamp(17px, 1.8vw, 21px)',
           color: 'var(--ink)',
-          marginBottom: 10,
+          marginBottom: 8,
           lineHeight: 1.2,
         }}>
           {extra.title}
@@ -122,11 +120,10 @@ function ExtraCard({ extra }) {
         {extra.description && (
           <p style={{
             fontFamily: 'var(--font-body)',
-            fontSize: 15,
+            fontSize: 14,
             color: 'var(--ink-light)',
             lineHeight: 1.7,
-            marginBottom: extra.quote ? 16 : 0,
-            flex: 1,
+            marginBottom: extra.quote ? 14 : 0,
           }}>
             {extra.description}
           </p>
@@ -134,7 +131,7 @@ function ExtraCard({ extra }) {
         {extra.quote && (
           <blockquote style={{
             borderLeft: '2px solid var(--rose)',
-            paddingLeft: 14,
+            paddingLeft: 12,
             margin: 0,
             fontFamily: 'var(--font-body)',
             fontSize: 13,
