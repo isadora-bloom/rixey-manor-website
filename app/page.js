@@ -137,11 +137,7 @@ export default async function HomePage() {
         heading="This lift is life."
         title="Rixey Manor — first dance lift"
       />
-      <VideoSection
-        videoUrl={terraceVideoUrl}
-        eyebrow="The terrace"
-        heading={<>The lights that went viral.<br /><em>See why.</em></>}
-      />
+
       <VideoSection
         videoUrl={realWeddingVideoUrl}
         eyebrow="Real Rixey"
