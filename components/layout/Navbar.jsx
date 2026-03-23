@@ -122,7 +122,7 @@ export default function Navbar({ calendlyUrl = '' }) {
               className={`py-3 border-b border-[var(--border)] no-underline ${
                 link.accent
                   ? 'text-2xl text-[var(--rose)]'
-                  : 'text-3xl text-[var(--ink)]'
+                  : 'text-[clamp(22px,5vw,28px)] text-[var(--ink)]'
               }`}
               style={{ fontFamily: link.accent ? 'var(--font-ui)' : 'var(--font-display)', letterSpacing: link.accent ? '0.1em' : undefined, textTransform: link.accent ? 'uppercase' : undefined, fontSize: link.accent ? 13 : undefined }}
             >

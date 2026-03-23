@@ -267,6 +267,8 @@ const TIER_DATA = {
     image: '/assets/quiz-tier-3.webp',
     imageAlt: 'Bride descending the Rixey Manor grand staircase',
     cta: null,
+    softCta: "Think we got it wrong? Come and tell us.",
+    softCtaHref: '/pricing#book-tour',
   },
 }
 
@@ -697,6 +699,19 @@ function ResultScreen({ result, onRestart, answers, questions }) {
           {result.cta && showContact && (
             <div className="mb-10">
               <ContactForm tier={tier} path={path} answers={answers} questions={questions} />
+            </div>
+          )}
+
+          {/* Soft CTA for tier 3 */}
+          {!result.cta && result.softCta && (
+            <div className="mb-10 pt-8 border-t border-[var(--border)]">
+              <a
+                href={result.softCtaHref}
+                className="inline-block text-[13px] text-[var(--ink-light)] hover:text-[var(--ink)] transition-colors underline underline-offset-4"
+                style={{ fontFamily: 'var(--font-body)', fontStyle: 'italic' }}
+              >
+                {result.softCta}
+              </a>
             </div>
           )}
 

@@ -84,6 +84,24 @@ export default async function ExtrasPage() {
         </div>
       </section>
 
+      {/* Contextual hook before CTA */}
+      <section style={{
+        background: 'var(--cream)',
+        borderTop: '1px solid var(--border)',
+        padding: 'clamp(40px, 6vw, 64px) clamp(20px, 5vw, 60px)',
+        textAlign: 'center',
+      }}>
+        <p style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(20px, 3vw, 28px)', color: 'var(--ink)', fontStyle: 'italic', lineHeight: 1.3, maxWidth: 560, margin: '0 auto 20px' }}>
+          Seen something that sounds like you?
+        </p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--ink-light)', maxWidth: 480, margin: '0 auto 28px', lineHeight: 1.7 }}>
+          Mention it when you book your tour. Horses, food trucks, the fire pit — these are things we've done before. We can tell you exactly how they work.
+        </p>
+        <a href="/pricing#book-tour" className="btn-primary" style={{ display: 'inline-block' }}>
+          Book a Tour
+        </a>
+      </section>
+
       <FinalCTA />
     </>
   )

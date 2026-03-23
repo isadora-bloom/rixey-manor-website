@@ -210,7 +210,7 @@ export default function PricingCalculator() {
           {/* 1. Season */}
           <div>
             <SectionHead num="01" label="Wedding Season" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
               {SEASONS.map(s => (
                 <button
                   key={s.key}

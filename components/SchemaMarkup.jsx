@@ -1,3 +1,66 @@
+const reviewSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Rixey Manor Wedding Reviews',
+  itemListElement: [
+    {
+      '@type': 'Review',
+      position: 1,
+      author: { '@type': 'Person', name: 'Caitlin' },
+      reviewBody: "The venue is breathtaking both in person and in our pictures. Our guests still say it was the best wedding and venue they've seen. If you're anxious about planning and you want a flawless wedding experience, book Rixey Manor. It's the best decision you'll make.",
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      itemReviewed: { '@type': 'WeddingVenue', name: 'Rixey Manor' },
+    },
+    {
+      '@type': 'Review',
+      position: 2,
+      author: { '@type': 'Person', name: 'Sarai' },
+      reviewBody: "The venue itself is gorgeous but the team at Rixey Manor is something so special. These people make dreams come true and my husband and I, along with our families, are so grateful for them.",
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      itemReviewed: { '@type': 'WeddingVenue', name: 'Rixey Manor' },
+    },
+    {
+      '@type': 'Review',
+      position: 3,
+      author: { '@type': 'Person', name: 'Apeksha' },
+      reviewBody: "We recently had our Indian-American fusion wedding at Rixey Manor, and it was beyond perfect. From the stunning grounds to the exceptional service — and even a double rainbow — every detail was beautifully executed.",
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      itemReviewed: { '@type': 'WeddingVenue', name: 'Rixey Manor' },
+    },
+    {
+      '@type': 'Review',
+      position: 4,
+      author: { '@type': 'Person', name: 'Lauren' },
+      reviewBody: "I can't say enough good things about Isadora and the team — do yourself a favour and go look at this place. So many of our guests (and we made them all drive from New Jersey) were so impressed and complimentary.",
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      itemReviewed: { '@type': 'WeddingVenue', name: 'Rixey Manor' },
+    },
+  ],
+}
+
+const videoSchema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: 'First Dance Lift — Rixey Manor Wedding',
+    description: 'A first dance lift captured on site at Rixey Manor wedding venue in Rixeyville, Virginia.',
+    thumbnailUrl: 'https://www.rixeymanor.com/assets/hero-main.webp',
+    uploadDate: '2025-01-01',
+    publisher: { '@type': 'Organization', name: 'Rixey Manor', url: 'https://www.rixeymanor.com' },
+    url: 'https://www.tiktok.com/@rixeymanorteam/video/7565507952648424718',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: 'Bride Wedding Planning Vlog — Rixey Manor',
+    description: 'A 2027 bride vlogs about planning her wedding at Rixey Manor and the experience working with the team.',
+    thumbnailUrl: 'https://www.rixeymanor.com/assets/hero-main.webp',
+    uploadDate: '2025-01-01',
+    publisher: { '@type': 'Organization', name: 'Rixey Manor', url: 'https://www.rixeymanor.com' },
+    url: 'https://www.tiktok.com/@tinivault/video/7613243160164191519',
+  },
+]
+
 export default function SchemaMarkup() {
   const schema = {
     '@context': 'https://schema.org',
@@ -89,9 +152,22 @@ export default function SchemaMarkup() {
   }
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
+      />
+      {videoSchema.map((vs, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(vs) }}
+        />
+      ))}
+    </>
   )
 }
