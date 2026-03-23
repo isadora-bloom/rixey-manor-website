@@ -15,6 +15,7 @@ import StorySection from '@/components/home/StorySection'
 import FinalCTA from '@/components/home/FinalCTA'
 import PortalSection from '@/components/home/PortalSection'
 import VideoSection from '@/components/ui/VideoSection'
+import TikTokMoment from '@/components/home/TikTokMoment'
 const supabase = supabaseServer()
 
 export async function generateMetadata() {
@@ -124,6 +125,7 @@ export default async function HomePage() {
       />
       <TestimonialsSection testimonials={testimonials} />
       <SpacesSection spaces={spaces} spaceImages={spaceImages} />
+      <TikTokMoment />
       <VideoSection
         videoUrl={terraceVideoUrl}
         eyebrow="The terrace"
