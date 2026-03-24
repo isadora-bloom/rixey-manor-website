@@ -3,23 +3,25 @@ import { createClient } from '@supabase/supabase-js'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+const supabase = (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
+  ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+  : null
 
 export async function POST(req) {
-  const { name, email, message } = await req.json()
+  try {
+    const { name, email, message } = await req.json()
 
-  if (!name || !email || !message) {
-    return Response.json({ ok: false, error: 'Missing fields' }, { status: 400 })
-  }
+    if (!name || !email || !message) {
+      return Response.json({ ok: false, error: 'Missing fields' }, { status: 400 })
+    }
 
-  // Save to DB (best effort — table may not exist yet)
-  await supabase.from('contact_submissions').insert({
-    name, email, message,
-    created_at: new Date().toISOString(),
-  }).catch(() => {})
+    // Save to DB (best effort — table may not exist yet)
+    if (supabase) {
+      await supabase.from('contact_submissions').insert({
+        name, email, message,
+        created_at: new Date().toISOString(),
+      }).catch(() => {})
+    }
 
   if (!resend) {
     console.log('Contact form (no Resend key):', { name, email, message })
@@ -75,5 +77,9 @@ export async function POST(req) {
     }),
   ])
 
-  return Response.json({ ok: true })
+    return Response.json({ ok: true })
+  } catch (err) {
+    console.error('Contact form error:', err)
+    return Response.json({ ok: false, error: 'Server error' }, { status: 500 })
+  }
 }
