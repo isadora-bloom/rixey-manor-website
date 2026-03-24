@@ -30,6 +30,8 @@ export default function OneThingSection() {
               get married. Rixey is a different kind of answer.
             </p>
             <p className="body-copy">
+              We're in Rixeyville, Virginia — an hour from Washington DC, 30 minutes from Warrenton,
+              deep in the Culpeper County countryside with the Blue Ridge on the horizon.
               Most venues give you a room for a few hours and a list of rules.
               Rixey Manor gives you a {new Date().getFullYear() - 1801}-year-old estate: the whole building,
               the whole 30 acres, for your entire stay.

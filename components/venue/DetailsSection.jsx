@@ -51,11 +51,27 @@ export default function DetailsSection() {
                   Location.
                 </h3>
                 <p className="body-copy mb-3">
-                  9155 Pleasant Hill Lane, Rixeyville, Virginia 22737.
+                  9155 Pleasant Hill Lane, Rixeyville, Virginia 22737. Culpeper County, in the
+                  Blue Ridge foothills of Northern Virginia.
                 </p>
-                <p className="body-copy">
-                  60 miles from Washington DC, Charlottesville, Fredericksburg, and Middleburg.
-                  A straightforward drive on I-66 or Route 29 from Northern Virginia.
+                <div className="flex flex-col gap-1 mb-3">
+                  {[
+                    ['Washington DC', '~60 miles, approx. 1 hr via I-66 or Route 29'],
+                    ['Warrenton, VA', '~25 miles, approx. 30 min'],
+                    ['Culpeper, VA', '~20 miles, approx. 25 min'],
+                    ['Manassas / Gainesville', '~40 miles, approx. 45 min'],
+                    ['Fredericksburg, VA', '~45 miles, approx. 50 min'],
+                    ['Charlottesville, VA', '~60 miles, approx. 1 hr'],
+                    ['Richmond, VA', '~90 miles, approx. 1.5 hrs'],
+                  ].map(([place, distance]) => (
+                    <div key={place} className="flex justify-between items-baseline gap-4 py-1.5 border-b border-[var(--border)]">
+                      <span className="body-copy text-[14px]">{place}</span>
+                      <span className="text-[12px] text-[var(--ink-light)] whitespace-nowrap" style={{ fontFamily: 'var(--font-ui)' }}>{distance}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="body-copy text-[13px] text-[var(--ink-light)]">
+                  Nearest airports: Dulles (IAD) ~55 miles · Reagan National (DCA) ~70 miles · Richmond (RIC) ~95 miles.
                 </p>
               </div>
 

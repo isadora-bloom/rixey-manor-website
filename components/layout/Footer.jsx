@@ -20,7 +20,7 @@ export default function Footer() {
             />
           </Link>
           <p className="body-copy text-[14px] leading-relaxed max-w-xs">
-            Historic estate weddings in Virginia, since 2014.
+            Historic estate wedding venue in Culpeper County, Virginia. Est. 2014.
           </p>
         </div>
 
@@ -106,7 +106,24 @@ export default function Footer() {
           >
             Facebook
           </a>
-          <Link href="/faq" className="text-link">FAQ</Link>
+          <a
+            href="https://www.theknot.com/marketplace/rixey-manor"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link"
+            aria-label="Rixey Manor on The Knot"
+          >
+            The Knot
+          </a>
+          <a
+            href="https://www.weddingwire.com/biz/rixey-manor-rixeyville/ce916f124034d2e2.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link"
+            aria-label="Rixey Manor on WeddingWire"
+          >
+            WeddingWire
+          </a>
         </div>
       </div>
     </footer>

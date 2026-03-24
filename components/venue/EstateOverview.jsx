@@ -22,8 +22,15 @@ export default function EstateOverview() {
             <em>A home for the weekend.</em>
           </h2>
           <p className="body-copy mb-6">
-            Rixey Manor is 30 acres of historic Virginia estate: the manor house built in 1801, a private lake,
-            Blue Ridge Mountain views, and four bedrooms plus a separate cottage for your wedding party to stay in.
+            Rixey Manor is 30 acres of historic Virginia estate in Culpeper County, at the foot of the Blue Ridge:
+            the manor house built in 1801, a private lake, mountain views across the Piedmont, and four bedrooms
+            plus a separate cottage for your wedding party to stay in.
+          </p>
+          <p className="body-copy mb-6">
+            The estate sits in Rixeyville, Virginia — about an hour from Washington DC, 30 minutes from
+            Warrenton and Culpeper, and a straightforward drive from anywhere in Northern Virginia. Couples
+            come from across the DMV, from Richmond, from Charlottesville, and regularly from further afield
+            for the kind of weekend a ballroom-in-a-hotel simply cannot replicate.
           </p>
           <p className="body-copy">
             When you book Rixey, you get all of it. The whole building. The whole grounds. From Friday afternoon

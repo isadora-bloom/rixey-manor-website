@@ -114,6 +114,55 @@ export default async function FaqPage() {
         </div>
       </section>
 
+      {/* Getting here */}
+      <section className="bg-[var(--cream)] border-t border-[var(--border)] py-16 lg:py-20 px-6 lg:px-10">
+        <div className="max-w-3xl mx-auto">
+          <FadeUp>
+            <p className="eyebrow mb-8">Getting here</p>
+          </FadeUp>
+          <div className="flex flex-col divide-y divide-[var(--border)]">
+            {[
+              {
+                q: 'How far is Rixey Manor from Washington DC?',
+                a: 'About 60 miles — roughly an hour via I-66 west to Route 29 south, or Route 66 to Route 211. The drive is straightforward and scenic once you\'re past Gainesville. Most DC and Northern Virginia couples find it an easy trip for a full weekend.',
+              },
+              {
+                q: 'Where exactly is Rixey Manor?',
+                a: 'Rixey Manor is at 9155 Pleasant Hill Lane, Rixeyville, Virginia 22737 — in Culpeper County, in the Blue Ridge foothills of Northern Virginia. The nearest towns are Culpeper (~20 minutes) and Warrenton (~30 minutes). GPS directions work reliably.',
+              },
+              {
+                q: 'How far is Rixey Manor from Warrenton, Culpeper, and Fredericksburg?',
+                a: 'Warrenton is about 25 miles away (30 minutes). Culpeper is about 20 miles (25 minutes). Fredericksburg is about 45 miles (50 minutes). Most guests from Northern Virginia, the Shenandoah Valley, and the Richmond area find the drive straightforward.',
+              },
+              {
+                q: 'What is the closest airport to Rixey Manor?',
+                a: 'Dulles International (IAD) is the closest at about 55 miles — roughly an hour\'s drive. Reagan National (DCA) is about 70 miles. Richmond International (RIC) is about 95 miles for guests coming from the south.',
+              },
+              {
+                q: 'Is Rixey Manor near Charlottesville?',
+                a: 'Yes — about 60 miles, an hour\'s drive east on Route 29 north through Culpeper. Charlottesville guests regularly make the trip, and it\'s a common route for guests coming from UVA or the Shenandoah Valley.',
+              },
+              {
+                q: 'Is there lodging nearby for wedding guests who can\'t stay on the estate?',
+                a: 'Yes. Culpeper has several hotels about 20 minutes away, and Warrenton has more options about 30 minutes out. We can share a current list of nearby accommodation when you book your tour — the Culpeper options in particular work well for large wedding parties.',
+              },
+            ].map(({ q, a }) => (
+              <FadeUp key={q}>
+                <div className="py-7">
+                  <h3
+                    className="text-[17px] text-[var(--ink)] mb-3 leading-snug"
+                    style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic' }}
+                  >
+                    {q}
+                  </h3>
+                  <p className="body-copy text-[15px]">{a}</p>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Still have questions */}
       <section className="bg-[var(--cream)] py-16 lg:py-20 px-6 lg:px-10 border-t border-[var(--border)]">
         <div className="max-w-xl">
