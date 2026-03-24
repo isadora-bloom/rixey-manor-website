@@ -128,11 +128,11 @@ export default async function FaqPage() {
               },
               {
                 q: 'Where exactly is Rixey Manor?',
-                a: 'Rixey Manor is at 9155 Pleasant Hill Lane, Rixeyville, Virginia 22737 — in Culpeper County, in the Blue Ridge foothills of Northern Virginia. The nearest towns are Culpeper (~20 minutes) and Warrenton (~30 minutes). GPS directions work reliably.',
+                a: 'Rixey Manor is at 9155 Pleasant Hill Lane, Rixeyville, Virginia 22737 — in Culpeper County, in the Blue Ridge foothills of Northern Virginia. Culpeper town is about 10–15 minutes away and Warrenton is about 25–30 minutes. GPS directions work reliably.',
               },
               {
                 q: 'How far is Rixey Manor from Warrenton, Culpeper, and Fredericksburg?',
-                a: 'Warrenton is about 25 miles away (30 minutes). Culpeper is about 20 miles (25 minutes). Fredericksburg is about 45 miles (50 minutes). Most guests from Northern Virginia, the Shenandoah Valley, and the Richmond area find the drive straightforward.',
+                a: 'Culpeper is the closest town — about 10–15 minutes away. Warrenton is about 25–30 minutes. Fredericksburg is about 50 minutes. Most guests from Northern Virginia, the Shenandoah Valley, and the Richmond area find the drive straightforward.',
               },
               {
                 q: 'What is the closest airport to Rixey Manor?',
@@ -144,7 +144,7 @@ export default async function FaqPage() {
               },
               {
                 q: 'Is there lodging nearby for wedding guests who can\'t stay on the estate?',
-                a: 'Yes. Culpeper has several hotels about 20 minutes away, and Warrenton has more options about 30 minutes out. We can share a current list of nearby accommodation when you book your tour — the Culpeper options in particular work well for large wedding parties.',
+                a: 'Yes — and this is one of the things couples are often relieved to hear. Culpeper is only 10–15 minutes from the estate. The Holiday Inn Express and Hampton Inn are both right there, along with a growing number of boutique stays and Airbnbs in the area. Guests can attend a late reception and be in their room in 15 minutes. We share a full accommodation guide with every couple after they book.',
               },
             ].map(({ q, a }) => (
               <FadeUp key={q}>

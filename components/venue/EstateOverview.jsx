@@ -27,8 +27,8 @@ export default function EstateOverview() {
             plus a separate cottage for your wedding party to stay in.
           </p>
           <p className="body-copy mb-6">
-            The estate sits in Rixeyville, Virginia — about an hour from Washington DC, 30 minutes from
-            Warrenton and Culpeper, and a straightforward drive from anywhere in Northern Virginia. Couples
+            The estate sits in Rixeyville, Virginia — about an hour from Washington DC, 15 minutes from
+            Culpeper, and a straightforward drive from anywhere in Northern Virginia. Couples
             come from across the DMV, from Richmond, from Charlottesville, and regularly from further afield
             for the kind of weekend a ballroom-in-a-hotel simply cannot replicate.
           </p>

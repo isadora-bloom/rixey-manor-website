@@ -58,7 +58,7 @@ export default function DetailsSection() {
                   {[
                     ['Washington DC', '~60 miles, approx. 1 hr via I-66 or Route 29'],
                     ['Warrenton, VA', '~25 miles, approx. 30 min'],
-                    ['Culpeper, VA', '~20 miles, approx. 25 min'],
+                    ['Culpeper, VA', '~10–12 miles, approx. 15 min'],
                     ['Manassas / Gainesville', '~40 miles, approx. 45 min'],
                     ['Fredericksburg, VA', '~45 miles, approx. 50 min'],
                     ['Charlottesville, VA', '~60 miles, approx. 1 hr'],
