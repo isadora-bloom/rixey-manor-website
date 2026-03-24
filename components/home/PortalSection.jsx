@@ -37,9 +37,9 @@ export default function PortalSection() {
               in real time. No chasing emails. No starting from scratch at each meeting.
             </p>
           </div>
-          <Link href="/portal" className="text-link">
-            See what's included →
-          </Link>
+          <a href="https://rixey-app.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-link">
+            Preview the planning app →
+          </a>
         </FadeUp>
 
         <FadeUp delay={100}>
@@ -66,16 +66,27 @@ export default function PortalSection() {
                 </div>
               ))}
             </div>
-            <div className="mt-7 pt-6 border-t border-[var(--border)] flex items-center justify-between">
+            <div className="mt-7 pt-6 border-t border-[var(--border)]">
               <p
-                className="text-[12px] text-[var(--ink-light)]"
+                className="text-[12px] text-[var(--ink-light)] mb-3 leading-relaxed"
                 style={{ fontFamily: 'var(--font-ui)' }}
               >
                 Onboarding session scheduled after booking. No extra cost.
               </p>
-              <Link href="/portal" className="text-link text-[11px]">
-                Learn more →
-              </Link>
+              <p
+                className="text-[11px] text-[var(--ink-light)] opacity-70 mb-4 leading-relaxed"
+                style={{ fontFamily: 'var(--font-ui)' }}
+              >
+                Dates are held only once a deposit is placed.
+              </p>
+              <a
+                href="https://rixey-app.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-link text-[11px]"
+              >
+                Preview the app →
+              </a>
             </div>
           </div>
         </FadeUp>

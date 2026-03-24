@@ -286,6 +286,33 @@ export default async function PricingPage() {
         <PricingCalculator />
       </section>
 
+      {/* Planning app teaser */}
+      <section className="bg-[var(--cream)] border-t border-[var(--border)] py-14 lg:py-16 px-6 lg:px-10">
+        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div>
+            <p className="eyebrow mb-2">After you book</p>
+            <p
+              className="text-[var(--ink)] leading-snug mb-1"
+              style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.5vw, 22px)', fontStyle: 'italic' }}
+            >
+              Your planning portal opens the moment your deposit clears.
+            </p>
+            <p className="body-copy text-[14px] mt-2 max-w-lg">
+              Guest list, seating plan, budget tracker, timeline, vendor inbox — all in one place, set up with your coordinator at your onboarding session.{' '}
+              <span className="text-[var(--ink-light)]">Dates are not held until a deposit is placed.</span>
+            </p>
+          </div>
+          <a
+            href="https://rixey-app.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-outline-white !text-[var(--ink-mid)] !border-[var(--border)] hover:!border-[var(--sage)] hover:!bg-transparent shrink-0"
+          >
+            Preview the app →
+          </a>
+        </div>
+      </section>
+
       {/* Mid-page atmospheric strip */}
       {midStripImage && (
         <div className="relative w-full h-[40vh] lg:h-[52vh] overflow-hidden">
