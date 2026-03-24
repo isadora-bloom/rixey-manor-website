@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import FadeUp from '@/components/ui/FadeUp'
 
-function Quote({ quote, name, photo, photoAlt, large = false }) {
+function Quote({ quote, name, photo, photoAlt, date, large = false }) {
   return (
     <div className="flex flex-col gap-4">
       <blockquote
@@ -22,12 +22,22 @@ function Quote({ quote, name, photo, photoAlt, large = false }) {
             className="rounded-full w-12 h-12 object-cover"
           />
         )}
-        <p
-          className="text-[12px] tracking-[0.15em] uppercase text-[var(--ink-light)]"
-          style={{ fontFamily: 'var(--font-ui)' }}
-        >
-          — {name}
-        </p>
+        <div>
+          <p
+            className="text-[12px] tracking-[0.15em] uppercase text-[var(--ink-light)]"
+            style={{ fontFamily: 'var(--font-ui)' }}
+          >
+            — {name}
+          </p>
+          {date && (
+            <p
+              className="text-[11px] tracking-[0.1em] uppercase text-[var(--ink-light)] opacity-60 mt-0.5"
+              style={{ fontFamily: 'var(--font-ui)' }}
+            >
+              {date}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -90,6 +100,7 @@ export default function TestimonialsSection({ testimonials = [] }) {
                   name={q1.couple_names}
                   photo={q1.photo_url}
                   photoAlt={q1.photo_alt}
+                  date={q1.wedding_date}
                   large
                 />
               </FadeUp>
@@ -101,6 +112,7 @@ export default function TestimonialsSection({ testimonials = [] }) {
                   name={q2.couple_names}
                   photo={q2.photo_url}
                   photoAlt={q2.photo_alt}
+                  date={q2.wedding_date}
                 />
               </FadeUp>
             )}
@@ -115,6 +127,7 @@ export default function TestimonialsSection({ testimonials = [] }) {
                   name={q3.couple_names}
                   photo={q3.photo_url}
                   photoAlt={q3.photo_alt}
+                  date={q3.wedding_date}
                 />
               </FadeUp>
             )}
@@ -125,6 +138,7 @@ export default function TestimonialsSection({ testimonials = [] }) {
                   name={q4.couple_names}
                   photo={q4.photo_url}
                   photoAlt={q4.photo_alt}
+                  date={q4.wedding_date}
                 />
               </FadeUp>
             )}

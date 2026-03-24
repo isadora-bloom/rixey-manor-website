@@ -129,7 +129,8 @@ export default async function FaqPage() {
               We're a small team and we pick up. If you'd rather text, that works too.
             </p>
             <div className="flex flex-col sm:flex-row items-start gap-4">
-              <a href="tel:+15402124545" className="btn-primary">(540) 212-4545</a>
+              <Link href="/pricing#book-tour" className="btn-primary">Book a Tour</Link>
+              <a href="tel:+15402124545" className="btn-outline-white !text-[var(--ink-mid)] !border-[var(--border)] hover:!border-[var(--sage)] hover:!bg-transparent">(540) 212-4545</a>
               <Link href="/pricing#calculator" className="btn-outline-white !text-[var(--ink-mid)] !border-[var(--border)] hover:!border-[var(--sage)] hover:!bg-transparent">
                 Build your estimate
               </Link>

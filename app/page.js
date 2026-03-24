@@ -124,6 +124,12 @@ export default async function HomePage() {
         heading={<>30 seconds.<br /><em>See it before you visit.</em></>}
       />
       <TestimonialsSection testimonials={testimonials} />
+      <section className="bg-[var(--cream)] border-t border-[var(--border)] py-14 px-6 lg:px-10 text-center">
+        <p className="text-[var(--ink)] mb-5" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.5vw, 24px)', fontStyle: 'italic' }}>
+          Ready to be next?
+        </p>
+        <a href="/pricing#book-tour" className="btn-primary">Book a Tour</a>
+      </section>
       <TikTokMoment
         videoId="7613243160164191519"
         eyebrow="A 2027 bride"
@@ -151,6 +157,15 @@ export default async function HomePage() {
         calendlyUrl={siteContent.calendly_url}
       />
       <StorySection isadoraImage={isadoraImage} />
+      <section className="bg-[var(--warm-white)] border-t border-[var(--border)] py-14 px-6 lg:px-10 text-center">
+        <p className="text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.5vw, 24px)', fontStyle: 'italic' }}>
+          Ready to meet Isadora?
+        </p>
+        <p className="text-[var(--ink-light)] mb-6" style={{ fontFamily: 'var(--font-body)', fontSize: 15 }}>
+          Tours are free. She gives them herself.
+        </p>
+        <a href="/pricing#book-tour" className="btn-primary">Book your tour</a>
+      </section>
       <PortalSection />
       <FinalCTA calendlyUrl={siteContent.calendly_url} />
     </>
