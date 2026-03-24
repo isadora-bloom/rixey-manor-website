@@ -4,6 +4,7 @@ import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import FadeUp from '@/components/ui/FadeUp'
 import FaqAccordion from '@/components/faq/FaqAccordion'
+import ContactForm from '@/components/ui/ContactForm'
 import { getOgImage } from '@/lib/getPageSeo'
 const supabase = supabaseServer()
 
@@ -163,26 +164,43 @@ export default async function FaqPage() {
         </div>
       </section>
 
+      {/* Contact form */}
+      <section className="bg-[var(--warm-white)] border-t border-[var(--border)] py-16 lg:py-20 px-6 lg:px-10">
+        <div className="max-w-2xl">
+          <FadeUp>
+            <p className="eyebrow mb-5">Have a question before you visit?</p>
+            <h2
+              className="text-[26px] lg:text-[32px] leading-[1.15] text-[var(--ink)] mb-4"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Ask us anything.
+            </h2>
+            <p className="body-copy mb-8">
+              Not quite ready to book a tour but want to ask something first? We reply within 24 hours.
+              Or call / text us at <a href="tel:+15402124545" className="text-link">(540) 212-4545</a>.
+            </p>
+            <ContactForm />
+          </FadeUp>
+        </div>
+      </section>
+
       {/* Still have questions */}
       <section className="bg-[var(--cream)] py-16 lg:py-20 px-6 lg:px-10 border-t border-[var(--border)]">
         <div className="max-w-xl">
           <FadeUp>
-            <p className="eyebrow mb-5">Still have questions?</p>
+            <p className="eyebrow mb-5">Ready to see it?</p>
             <h2
               className="text-[26px] lg:text-[32px] leading-[1.15] text-[var(--ink)] mb-6"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              The fastest answer is a phone call.
+              The fastest answer is a tour.
             </h2>
             <p className="body-copy mb-8">
-              We're a small team and we pick up. If you'd rather text, that works too.
+              Most couples know within the first 10 minutes. Tours are free and Isadora gives them herself.
             </p>
             <div className="flex flex-col sm:flex-row items-start gap-4">
               <Link href="/pricing#book-tour" className="btn-primary">Book a Tour</Link>
               <a href="tel:+15402124545" className="btn-outline-white !text-[var(--ink-mid)] !border-[var(--border)] hover:!border-[var(--sage)] hover:!bg-transparent">(540) 212-4545</a>
-              <Link href="/pricing#calculator" className="btn-outline-white !text-[var(--ink-mid)] !border-[var(--border)] hover:!border-[var(--sage)] hover:!bg-transparent">
-                Build your estimate
-              </Link>
             </div>
           </FadeUp>
         </div>
