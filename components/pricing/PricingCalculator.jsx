@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { getUTM } from '@/lib/utm'
 
 // ── Pricing data ──────────────────────────────────────────────────────────────
 
@@ -181,6 +182,8 @@ export default function PricingCalculator() {
       p1Name, p1Email, p1Phone,
       p2Name, p2Phone,
       notes,
+      // UTM
+      ...getUTM(),
     }
 
     try {
@@ -191,6 +194,13 @@ export default function PricingCalculator() {
       })
       if (!res.ok) throw new Error('Submission failed')
       setSubmitted(true)
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'calculator_submit', {
+          season: SEASONS.find(s => s.key === season)?.label || '',
+          guests: GUEST_TIERS.find(g => g.key === guests)?.label || '',
+          estimate: result ? Math.round(result.total) : 0,
+        })
+      }
     } catch {
       setSubmitError('Something went wrong. Please email us directly at info@rixeymanor.com')
     } finally {

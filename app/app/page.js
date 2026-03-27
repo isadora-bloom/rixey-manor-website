@@ -10,13 +10,13 @@ export const dynamic = 'force-dynamic'
 export async function generateMetadata() {
   const ogImage = await getOgImage('portal')
   return {
-    title: { absolute: 'The Couple\'s Portal — Rixey Manor' },
-    description: 'A private planning portal built exclusively for Rixey Manor couples. Timeline, seating, vendors, AI assistant, and direct coordinator access — all in one place.',
-    alternates: { canonical: 'https://www.rixeymanor.com/portal' },
+    title: { absolute: 'The Couple\'s App — Rixey Manor' },
+    description: 'A private planning app built exclusively for Rixey Manor couples. Timeline, seating, vendors, AI assistant, and direct coordinator access — all in one place.',
+    alternates: { canonical: 'https://www.rixeymanor.com/app' },
     openGraph: {
-      title: 'The Couple\'s Portal — Rixey Manor',
-      description: 'A private planning portal built exclusively for Rixey Manor couples.',
-      url: 'https://www.rixeymanor.com/portal',
+      title: 'The Couple\'s App — Rixey Manor',
+      description: 'A private planning app built exclusively for Rixey Manor couples.',
+      url: 'https://www.rixeymanor.com/app',
       ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630 }] }),
     },
   }
@@ -27,7 +27,7 @@ const breadcrumbSchema = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Rixey Manor', item: 'https://www.rixeymanor.com' },
-    { '@type': 'ListItem', position: 2, name: 'The Couple\'s Portal', item: 'https://www.rixeymanor.com/portal' },
+    { '@type': 'ListItem', position: 2, name: 'The Couple\'s App', item: 'https://www.rixeymanor.com/app' },
   ],
 }
 

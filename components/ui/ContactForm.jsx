@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { getUTM } from '@/lib/utm'
 
 export default function ContactForm() {
   const [fields, setFields] = useState({ name: '', email: '', message: '' })
@@ -17,7 +18,7 @@ export default function ContactForm() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fields),
+        body: JSON.stringify({ ...fields, ...getUTM() }),
       })
       if (!res.ok) throw new Error()
       setStatus('done')

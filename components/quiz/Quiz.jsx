@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
+import { getUTM } from '@/lib/utm'
 
 // ─── QUESTIONS DATA ───────────────────────────────────────────────────────────
 
@@ -287,8 +288,11 @@ function ContactForm({ tier, path, answers, questions }) {
       const res = await fetch('/api/quiz-contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, tier, path, answers: summariseAnswers(answers, questions) }),
+        body: JSON.stringify({ ...form, tier, path, answers: summariseAnswers(answers, questions), ...getUTM() }),
       })
+      if (res.ok && typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'quiz_submit', { tier, path })
+      }
       setStatus(res.ok ? 'success' : 'error')
     } catch { setStatus('error') }
   }

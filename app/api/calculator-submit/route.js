@@ -18,6 +18,7 @@ export async function POST(req) {
     p1Name, p1Email, p1Phone,
     p2Name, p2Phone,
     notes,
+    source, medium, campaign, referrer,
   } = data
 
   // 1. Save to Supabase
@@ -35,6 +36,7 @@ export async function POST(req) {
     p2_name: p2Name || null,
     p2_phone: p2Phone || null,
     notes: notes || null,
+    source: source || null, medium: medium || null, campaign: campaign || null, referrer: referrer || null,
   })
 
   if (dbError) {

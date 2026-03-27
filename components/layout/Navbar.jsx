@@ -13,7 +13,7 @@ const navLinks = [
   { label: 'Only at Rixey', href: '/extras' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'FAQ', href: '/faq' },
-  { label: 'Portal', href: '/portal' },
+  { label: 'The App', href: '/app' },
   { label: 'Take the Quiz', href: '/quiz', accent: true },
 ]
 

@@ -3,6 +3,7 @@ import Script from 'next/script'
 import './globals.css'
 import SiteChrome from '@/components/layout/SiteChrome'
 import SchemaMarkup from '@/components/SchemaMarkup'
+import UTMCapture from '@/components/UTMCapture'
 import { supabaseServer } from '@/lib/supabaseServer'
 const supabase = supabaseServer()
 
@@ -65,9 +66,25 @@ export default async function RootLayout({ children }) {
       </head>
       <body>
         <SchemaMarkup />
+        <UTMCapture />
         <SiteChrome calendlyUrl={calendlyUrl}>
           {children}
         </SiteChrome>
+        <Script id="clarity-init" strategy="afterInteractive">
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","w0v3ezs3ab");`}
+        </Script>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-11B9S916D5"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-11B9S916D5');
+          `}
+        </Script>
         <Script
           src="https://assets.calendly.com/assets/external/widget.js"
           strategy="lazyOnload"

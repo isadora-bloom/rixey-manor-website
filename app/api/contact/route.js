@@ -1,4 +1,10 @@
+import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
 let resend = null
 try {
@@ -9,14 +15,20 @@ try {
 
 export async function POST(req) {
   try {
-    const { name, email, message } = await req.json()
+    const { name, email, message, source, medium, campaign, referrer } = await req.json()
 
     if (!name || !email || !message) {
       return Response.json({ ok: false, error: 'Missing fields' }, { status: 400 })
     }
 
+    // Always save to Supabase regardless of Resend status
+    const { error: dbError } = await supabase.from('contact_submissions').insert({
+      name, email, message,
+      source: source || null, medium: medium || null, campaign: campaign || null, referrer: referrer || null,
+    })
+    if (dbError) console.error('DB error:', dbError.message)
+
     if (!resend) {
-      console.log('Contact form (no Resend):', { name, email, message })
       return Response.json({ ok: true })
     }
 

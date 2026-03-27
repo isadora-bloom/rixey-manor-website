@@ -1,10 +1,16 @@
+import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export async function POST(req) {
   const data = await req.json()
-  const { name, partner, email, date, notes, tier, path, answers } = data
+  const { name, partner, email, date, notes, tier, path, answers, source, medium, campaign, referrer } = data
 
   if (!name || !email) {
     return Response.json({ ok: false, error: 'Missing required fields' }, { status: 400 })
@@ -13,8 +19,16 @@ export async function POST(req) {
   const tierLabels = { 1: "You're a Rixey Couple", 2: 'Could Go Either Way', 3: "Probably Not Their Place" }
   const pathLabels = { vibes: 'Vibe Check', logistics: 'Logistics Check', both: 'Both Checks' }
 
+  // Always save to Supabase regardless of Resend status
+  const { error: dbError } = await supabase.from('quiz_submissions').insert({
+    name, partner: partner || null, email,
+    wedding_date: date || null, notes: notes || null,
+    tier: tier || null, path: path || null, answers: answers || null,
+    source: source || null, medium: medium || null, campaign: campaign || null, referrer: referrer || null,
+  })
+  if (dbError) console.error('DB error:', dbError.message)
+
   if (!resend) {
-    console.log('Quiz contact (no Resend):', { name, email, tier, path })
     return Response.json({ ok: true })
   }
 
