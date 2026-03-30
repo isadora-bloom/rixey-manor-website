@@ -160,9 +160,14 @@ export default function PricingCalculator() {
     return { base, guestMod, nightsAmt, upgradeAmt, subtotal, discPct, discAmt, total, perPayment }
   }, [season, guests, nights, upgrades, disc5, disc10])
 
+  const wantsContract = nextSteps.has('contract')
+
   async function handleSubmit(e) {
     e.preventDefault()
     if (!p1Name || !p1Email) return
+    if (!season)                              { setSubmitError('Please select a wedding season.'); return }
+    if (wantsContract && !weddingDate.trim()) { setSubmitError('Please enter a wedding date to request a contract.'); return }
+    if (wantsContract && !p1Phone.trim())     { setSubmitError('Please enter a phone number to request a contract.'); return }
     setSubmitting(true)
     setSubmitError('')
 
@@ -387,16 +392,20 @@ export default function PricingCalculator() {
                 {/* Date */}
                 <div>
                   <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
-                    Do you have a specific date in mind?
+                    Do you have a specific date in mind? {wantsContract && <span className="text-[var(--rose)]">*</span>}
                   </label>
                   <input
                     type="text"
                     value={weddingDate}
                     onChange={e => setWeddingDate(e.target.value)}
                     placeholder="e.g. October 4, 2026"
+                    required={wantsContract}
                     className={inputCls}
                     style={{ fontFamily: 'var(--font-body)' }}
                   />
+                  {wantsContract && !weddingDate.trim() && (
+                    <p className="text-[12px] text-[var(--rose)] mt-1" style={{ fontFamily: 'var(--font-body)' }}>Required to request a contract</p>
+                  )}
                 </div>
 
                 {/* Partner 1 */}
@@ -416,9 +425,9 @@ export default function PricingCalculator() {
                 </div>
                 <div>
                   <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
-                    Partner One Phone <span className="text-[11px] normal-case tracking-normal text-[var(--ink-light)]">(required if requesting a contract)</span>
+                    Partner One Phone {wantsContract ? <span className="text-[var(--rose)]">*</span> : <span className="text-[11px] normal-case tracking-normal text-[var(--ink-light)]">(optional)</span>}
                   </label>
-                  <input type="tel" value={p1Phone} onChange={e => setP1Phone(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
+                  <input type="tel" required={wantsContract} value={p1Phone} onChange={e => setP1Phone(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
                 </div>
 
                 {/* Partner 2 */}
@@ -453,14 +462,11 @@ export default function PricingCalculator() {
 
                 <button
                   type="submit"
-                  disabled={submitting || !season}
+                  disabled={submitting}
                   className="btn-primary self-start disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? 'Sending…' : 'Send my estimate'}
                 </button>
-                {!season && (
-                  <p className="text-[12px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>Select a season above to enable submission.</p>
-                )}
               </form>
             )}
           </div>
