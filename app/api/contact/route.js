@@ -58,6 +58,7 @@ export async function POST(req) {
       resend.emails.send({
         from: 'Rixey Manor <hello@rixeymanor.com>',
         to: email,
+        cc: 'info@rixeymanor.com',
         subject: 'We got your message — Rixey Manor',
         html: `
           <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1C1814;">

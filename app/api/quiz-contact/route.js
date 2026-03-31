@@ -79,6 +79,7 @@ export async function POST(req) {
     resend.emails.send({
       from: 'Rixey Manor <hello@rixeymanor.com>',
       to: email,
+      cc: 'info@rixeymanor.com',
       subject: 'Your Rixey Manor quiz result',
       html: coupleHtml,
     }),
