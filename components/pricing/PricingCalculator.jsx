@@ -12,6 +12,7 @@ const SEASONS = [
   { key: 'summer',  label: 'Summer',  months: 'June, July, Aug',          price: 10000 },
   { key: 'fall',    label: 'Fall',    months: 'Sept, Oct, Nov',            price: 14000 },
   { key: 'weekday', label: 'Weekday', months: 'Tuesday or Wednesday only', price: 6000  },
+  { key: 'lastcall-2026', label: 'Last Call 2026', months: 'Labor Day, Nov 14, Dec 12 & 19', price: 10000, special: true, specialNote: 'One-day rate (12 hours). Overnights available at $1,000/night.' },
 ]
 
 const GUEST_TIERS = [
@@ -47,7 +48,7 @@ const DISCOUNTS_5 = [
 
 const DISCOUNTS_10 = [
   { key: 'military',   label: 'Military / Veteran / First Responder', note: 'Active military, veterans, and first responders. Veteran parents do not qualify.' },
-  { key: 'early-2026', label: 'Wedding Apr–Jun 2026',                  note: 'Wedding must be held April–June 2026. Limited dates remain.' },
+  { key: 'early-2026', label: 'Wedding Apr–Jun 2026',                  note: 'Wedding must be held April–June 2026. Limited dates remain. Does not apply to Last Call dates.' },
 ]
 
 const NEXT_STEPS = [
@@ -146,11 +147,15 @@ export default function PricingCalculator() {
     })
   }
 
+  const isLastCall = season === 'lastcall-2026'
+
   const result = useMemo(() => {
     if (!season) return null
     const base       = SEASONS.find(s => s.key === season).price
     const guestMod   = GUEST_TIERS.find(g => g.key === guests)?.modifier ?? 0
-    const nightsAmt  = NIGHTS.find(n => n.key === nights)?.price ?? 0
+    // Last Call 2026: overnights at $1,000/night flat
+    const nightsNum  = parseInt(nights, 10) || 0
+    const nightsAmt  = isLastCall ? nightsNum * 1000 : (NIGHTS.find(n => n.key === nights)?.price ?? 0)
     const upgradeAmt = UPGRADES.filter(u => upgrades.has(u.key)).reduce((s, u) => s + u.price, 0)
     const subtotal   = base + guestMod + nightsAmt + upgradeAmt
     const discPct    = (disc5.size * 0.05) + (disc10.size * 0.10)
@@ -158,7 +163,7 @@ export default function PricingCalculator() {
     const total      = subtotal - discAmt
     const perPayment = total / 3
     return { base, guestMod, nightsAmt, upgradeAmt, subtotal, discPct, discAmt, total, perPayment }
-  }, [season, guests, nights, upgrades, disc5, disc10])
+  }, [season, guests, nights, upgrades, disc5, disc10, isLastCall])
 
   const wantsContract = nextSteps.has('contract')
 
@@ -231,12 +236,14 @@ export default function PricingCalculator() {
                   key={s.key}
                   onClick={() => setSeason(s.key)}
                   className={`text-left p-4 border transition-all duration-150 ${
-                    season === s.key ? 'border-[var(--forest)] bg-[var(--forest)]/5' : 'border-[var(--border)] hover:border-[var(--sage)]'
+                    season === s.key ? 'border-[var(--forest)] bg-[var(--forest)]/5' : s.special ? 'border-[var(--rose)] hover:border-[var(--rose-light)]' : 'border-[var(--border)] hover:border-[var(--sage)]'
                   }`}
                 >
+                  {s.special && <span className="block text-[10px] font-medium tracking-[0.12em] uppercase text-[var(--rose)] mb-1" style={{ fontFamily: 'var(--font-ui)' }}>Limited dates</span>}
                   <span className="block text-[15px] text-[var(--ink)] mb-1" style={{ fontFamily: 'var(--font-display)' }}>{s.label}</span>
                   <span className="block text-[12px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>{s.months}</span>
                   <span className="block text-[13px] font-medium text-[var(--forest)] mt-2" style={{ fontFamily: 'var(--font-ui)' }}>{fmt(s.price)}</span>
+                  {s.specialNote && <span className="block text-[11px] text-[var(--ink-light)] mt-1" style={{ fontFamily: 'var(--font-body)' }}>{s.specialNote}</span>}
                 </button>
               ))}
             </div>
@@ -274,25 +281,30 @@ export default function PricingCalculator() {
             <SectionHead num="03" label="Overnight Stays" />
             <p className="text-[13px] text-[var(--ink-light)] mb-4" style={{ fontFamily: 'var(--font-body)' }}>
               The manor sleeps up to 14 guests comfortably across the manor house and Blacksmith Cottage.
+              {isLastCall && <span className="block text-[var(--rose)] mt-1">Last Call 2026 rate: $1,000 per night.</span>}
             </p>
             <div className="flex flex-col gap-2">
-              {NIGHTS.map(n => (
-                <button
-                  key={n.key}
-                  onClick={() => setNights(n.key)}
-                  className={`flex items-start justify-between gap-4 text-left p-4 border transition-all duration-150 ${
-                    nights === n.key ? 'border-[var(--forest)] bg-[var(--forest)]/5' : 'border-[var(--border)] hover:border-[var(--sage)]'
-                  }`}
-                >
-                  <div>
-                    <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>{n.label}</span>
-                    {n.note && <span className="block text-[12px] text-[var(--ink-light)] mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>{n.note}</span>}
-                  </div>
-                  {n.price > 0 && (
-                    <span className="text-[13px] font-medium text-[var(--forest)] whitespace-nowrap mt-0.5" style={{ fontFamily: 'var(--font-ui)' }}>+{fmt(n.price)}</span>
-                  )}
-                </button>
-              ))}
+              {NIGHTS.map(n => {
+                const nightCount = parseInt(n.key, 10) || 0
+                const displayPrice = isLastCall ? nightCount * 1000 : n.price
+                return (
+                  <button
+                    key={n.key}
+                    onClick={() => setNights(n.key)}
+                    className={`flex items-start justify-between gap-4 text-left p-4 border transition-all duration-150 ${
+                      nights === n.key ? 'border-[var(--forest)] bg-[var(--forest)]/5' : 'border-[var(--border)] hover:border-[var(--sage)]'
+                    }`}
+                  >
+                    <div>
+                      <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>{n.label}</span>
+                      {n.note && <span className="block text-[12px] text-[var(--ink-light)] mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>{n.note}</span>}
+                    </div>
+                    {displayPrice > 0 && (
+                      <span className="text-[13px] font-medium text-[var(--forest)] whitespace-nowrap mt-0.5" style={{ fontFamily: 'var(--font-ui)' }}>+{fmt(displayPrice)}</span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           </div>
 

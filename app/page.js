@@ -114,6 +114,24 @@ export default async function HomePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
       <Hero heroImage={heroImage} videoUrl={featureVideoUrl} calendlyUrl={siteContent.calendly_url} />
+
+      {/* Last Call 2026 banner */}
+      <section className="bg-[var(--cream)] border-b border-[var(--border)] py-10 px-6 lg:px-10">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-[10px] font-medium tracking-[0.25em] uppercase mb-3" style={{ fontFamily: 'var(--font-ui)', color: 'var(--rose)' }}>
+            Last Call 2026
+          </p>
+          <p className="text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(20px, 3vw, 28px)' }}>
+            Four dates left this year.
+          </p>
+          <p className="text-[var(--ink-light)] mb-5 max-w-lg mx-auto" style={{ fontFamily: 'var(--font-body)', fontSize: 15, lineHeight: 1.7 }}>
+            Labor Day weekend &middot; November 14 &middot; December 12 &middot; December 19<br />
+            One-day rate from $10,000. Full weekend from $12,000.
+          </p>
+          <a href="/pricing#calculator" className="btn-primary">See pricing</a>
+        </div>
+      </section>
+
       <OneThingSection />
       <IncludedStrip />
       <PressStrip press={press} />
