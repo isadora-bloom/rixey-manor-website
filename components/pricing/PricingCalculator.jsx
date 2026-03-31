@@ -48,7 +48,6 @@ const DISCOUNTS_5 = [
 
 const DISCOUNTS_10 = [
   { key: 'military',   label: 'Military / Veteran / First Responder', note: 'Active military, veterans, and first responders. Veteran parents do not qualify.' },
-  { key: 'early-2026', label: 'Wedding Apr–Jun 2026',                  note: 'Wedding must be held April–June 2026. Limited dates remain. Does not apply to Last Call dates.' },
 ]
 
 const NEXT_STEPS = [
