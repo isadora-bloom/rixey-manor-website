@@ -17,7 +17,7 @@ const BLOCKS = [
   },
   {
     subhead: 'The things you forget to budget for.',
-    copy: 'Classic white Chiavari chairs. Round tables, rectangular tables, cocktail tables. A drop-off appointment the day before. Your wedding rehearsal on site. The décor inventory — table numbers, arbors, card boxes, lanterns, signs and more — free to use. The borrow shed, stocked with items from past weddings. Parking. WiFi throughout the manor. Licensed in-house bartending service (required when serving alcohol). BYO alcohol — no corkage fees.',
+    copy: 'Classic white Chiavari chairs. Round tables, rectangular tables, cocktail tables. A drop-off appointment the day before. Your wedding rehearsal on site. The décor inventory — table numbers, arbors, card boxes, lanterns, signs and more — free to use. The borrow shed, stocked with items from past weddings. Parking. WiFi throughout the manor. BYO alcohol — no corkage fees. (Bartenders are staffed by our licensed in-house team — required, billed separately.)',
   },
 ]
 

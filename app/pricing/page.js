@@ -47,12 +47,12 @@ const pricingFaqSchema = {
     {
       '@type': 'Question',
       name: 'Can we bring our own alcohol?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Rixey Manor is BYOB with no corkage fees. You source and purchase your own bar. Our licensed in-house bartenders handle service and that cost is included in your venue fee.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Rixey Manor is BYOB with no corkage fees — you source and purchase your own bar. Bartending must be staffed by our licensed in-house team for licensing and insurance reasons; outside bartenders are not permitted. Bartenders are billed separately at $400 each, with a two-bartender minimum and roughly one bartender per 50 guests.' },
     },
     {
       '@type': 'Question',
       name: 'Do you require us to use your preferred vendors?',
-      acceptedAnswer: { '@type': 'Answer', text: 'No. Rixey Manor has no required vendor list. You can hire any licensed and insured caterer, photographer, florist, or other vendor you choose. Bartending is handled by our in-house team.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'No. Rixey Manor has no required vendor list. You can hire any licensed and insured caterer, photographer, florist, or other vendor you choose. The one exception is bartending, which must be staffed by our licensed in-house team — billed separately, with a two-bartender minimum.' },
     },
     {
       '@type': 'Question',
@@ -197,7 +197,8 @@ export default async function PricingPage() {
                     <p className="body-copy">
                       Rixey is BYOB. You choose the beer, the wine, the spirits. You buy them at retail,
                       no markup, no corkage fee, no required wine list. Our licensed in-house bartenders
-                      handle service professionally. Couples consistently say this saved them thousands
+                      pour it — required for licensing and insurance, billed separately at $400 each
+                      with a two-bartender minimum. Couples consistently say this saved them thousands
                       compared to per-drink venue pricing. That is genuinely the point.
                     </p>
                   </div>
