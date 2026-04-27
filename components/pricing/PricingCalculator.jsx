@@ -69,11 +69,20 @@ const INCLUDED = [
   'Kitchen and bedrooms for VIPs to get ready',
   'Newlywed Suite for the couple to get ready',
   'BYO alcohol, no corkage fees',
-  'Licensed in-house bartending service (required when serving alcohol)',
   'Choose your own vendors for everything else, no required vendor list',
   'Parking on-site',
   'Wi-Fi throughout the manor',
 ]
+
+const TAX_RATE = 0.06          // Virginia 6% sales tax on venue
+const BARTENDER_RATE = 400     // per bartender, billed separately
+const BARTENDER_MIN = 2
+
+// Rough bartender count: 1 per 50 guests, with a 2-bartender minimum
+function recommendedBartenders(guestKey) {
+  const upperBound = { 'u50': 50, '50-100': 100, '100-150': 150, '150-200': 200 }[guestKey] ?? 100
+  return Math.max(BARTENDER_MIN, Math.ceil(upperBound / 50))
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -159,9 +168,13 @@ export default function PricingCalculator() {
     const subtotal   = base + guestMod + nightsAmt + upgradeAmt
     const discPct    = (disc5.size * 0.05) + (disc10.size * 0.10)
     const discAmt    = subtotal * discPct
-    const total      = subtotal - discAmt
+    const subAfterDisc = subtotal - discAmt
+    const tax        = subAfterDisc * TAX_RATE
+    const total      = subAfterDisc + tax
     const perPayment = total / 3
-    return { base, guestMod, nightsAmt, upgradeAmt, subtotal, discPct, discAmt, total, perPayment }
+    const bartenders = recommendedBartenders(guests)
+    const bartenderCost = bartenders * BARTENDER_RATE
+    return { base, guestMod, nightsAmt, upgradeAmt, subtotal, discPct, discAmt, subAfterDisc, tax, total, perPayment, bartenders, bartenderCost }
   }, [season, guests, nights, upgrades, disc5, disc10, isLastCall])
 
   const wantsContract = nextSteps.has('contract')
@@ -184,7 +197,10 @@ export default function PricingCalculator() {
       discounts5:  DISCOUNTS_5.filter(d => disc5.has(d.key)).map(d => d.label),
       discounts10: DISCOUNTS_10.filter(d => disc10.has(d.key)).map(d => d.label),
       estimate: result ? Math.round(result.total) : 0,
+      tax: result ? Math.round(result.tax) : 0,
       perPayment: result ? Math.round(result.perPayment) : 0,
+      bartenders: result ? result.bartenders : BARTENDER_MIN,
+      bartenderCost: result ? result.bartenderCost : BARTENDER_MIN * BARTENDER_RATE,
       // Contact
       nextSteps: NEXT_STEPS.filter(s => nextSteps.has(s.key)).map(s => s.label),
       weddingDate,
@@ -318,6 +334,21 @@ export default function PricingCalculator() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Bartending — separately billed */}
+          <div className="bg-[var(--cream)] border border-[var(--border)] p-6">
+            <p className="text-[11px] font-medium tracking-[0.22em] uppercase text-[var(--rose)] mb-3" style={{ fontFamily: 'var(--font-ui)' }}>
+              Bartending — billed separately
+            </p>
+            <p className="text-[15px] text-[var(--ink-mid)] leading-relaxed mb-3" style={{ fontFamily: 'var(--font-body)' }}>
+              You bring your own alcohol; we provide the licensed bartenders. <strong>A two-bartender minimum applies</strong>, and we typically staff one bartender per 50 guests. Each bartender is <strong>${BARTENDER_RATE}</strong>, billed separately from the venue and not included in the estimate above.
+            </p>
+            {result && (
+              <p className="text-[13px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>
+                For {GUEST_TIERS.find(g => g.key === guests)?.label.toLowerCase()} guests, plan on {result.bartenders} bartenders — about {fmt(result.bartenderCost)} on top of the venue total.
+              </p>
+            )}
           </div>
 
           {/* 5. Upgrades */}
@@ -504,11 +535,20 @@ export default function PricingCalculator() {
                   {result.nightsAmt > 0 && <LineItem label="Overnight stays" value={'+' + fmt(result.nightsAmt)} />}
                   {result.upgradeAmt > 0 && <LineItem label="Upgrades" value={'+' + fmt(result.upgradeAmt)} />}
                   {result.discAmt > 0 && <LineItem label={`Discounts (${Math.round(result.discPct * 100)}%)`} value={'−' + fmt(result.discAmt)} highlight />}
+                  <LineItem label="Sales tax (6%)" value={'+' + fmt(result.tax)} />
                 </div>
                 <div className="mb-6 pb-6 border-b border-[var(--border)]">
                   <p className="text-[13px] text-[var(--ink-light)] mb-1" style={{ fontFamily: 'var(--font-body)' }}>Paid in 3 instalments</p>
                   <p className="text-[24px] text-[var(--ink)]" style={{ fontFamily: 'var(--font-display)' }}>{fmt(result.perPayment)} each</p>
-                  <p className="text-[11px] text-[var(--ink-light)] mt-1 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>Retainer on booking · halfway through planning · 3 months before.</p>
+                  <p className="text-[11px] text-[var(--ink-light)] mt-1 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>Retainer to reserve the date · halfway through planning · 3 months before the wedding.</p>
+                </div>
+                <div className="mb-6 pb-6 border-b border-[var(--border)]">
+                  <p className="text-[11px] font-medium tracking-[0.22em] uppercase text-[var(--rose)] mb-1.5" style={{ fontFamily: 'var(--font-ui)' }}>
+                    Plus bartending
+                  </p>
+                  <p className="text-[13px] text-[var(--ink-mid)] leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+                    {result.bartenders} bartenders × ${BARTENDER_RATE} = <strong>{fmt(result.bartenderCost)}</strong>, billed separately. Two-bartender minimum, ~1 per 50 guests.
+                  </p>
                 </div>
                 <p className="text-[12px] text-[var(--ink-light)] mb-0" style={{ fontFamily: 'var(--font-body)' }}>
                   Final pricing confirmed at your tour. Fill in your details below to save this estimate.

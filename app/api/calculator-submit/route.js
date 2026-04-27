@@ -13,7 +13,8 @@ export async function POST(req) {
 
   const {
     season, guests, nights, upgrades, discounts5, discounts10,
-    estimate, perPayment,
+    estimate, tax, perPayment,
+    bartenders, bartenderCost,
     nextSteps, weddingDate,
     p1Name, p1Email, p1Phone,
     p2Name, p2Phone,
@@ -54,8 +55,11 @@ export async function POST(req) {
       discounts5?.length ? `5% discounts: ${discounts5.join(', ')}` : null,
       discounts10?.length ? `10% discounts: ${discounts10.join(', ')}` : null,
       ``,
-      `Estimated total: $${estimate?.toLocaleString()}`,
+      `Estimated total (incl. 6% tax): $${estimate?.toLocaleString()}`,
+      tax ? `  Sales tax (6%): $${tax.toLocaleString()}` : null,
       `Per payment (×3): $${perPayment?.toLocaleString()}`,
+      ``,
+      `Plus bartending (billed separately): ${bartenders ?? 2} bartenders × $400 = $${(bartenderCost ?? 800).toLocaleString()}`,
     ].filter(Boolean).join('\n')
 
     const coupleHtml = `
@@ -81,9 +85,19 @@ export async function POST(req) {
 
         <div style="background: #F7F3EE; padding: 24px; margin-bottom: 24px;">
           <p style="font-size: 36px; color: #2E7D54; margin: 0 0 4px; font-weight: normal;">$${estimate?.toLocaleString()}</p>
-          <p style="font-size: 13px; color: #7A6E68; margin: 0 0 16px;">Estimated total</p>
+          <p style="font-size: 13px; color: #7A6E68; margin: 0 0 16px;">Estimated total (includes 6% Virginia sales tax${tax ? ` of $${tax.toLocaleString()}` : ''})</p>
           <p style="font-size: 18px; color: #1C1814; margin: 0 0 4px;">$${perPayment?.toLocaleString()} × 3 payments</p>
-          <p style="font-size: 12px; color: #7A6E68; margin: 0;">Retainer on booking · halfway through planning · 3 months before the wedding.</p>
+          <p style="font-size: 12px; color: #7A6E68; margin: 0;">Retainer to reserve the date · halfway through planning · 3 months before the wedding.</p>
+        </div>
+
+        <div style="border: 1px solid #E0D8D0; padding: 20px; margin-bottom: 24px;">
+          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #B8908A; margin: 0 0 8px;">Plus bartending — billed separately</p>
+          <p style="font-size: 14px; color: #3D3530; margin: 0 0 6px; line-height: 1.5;">
+            You bring your own alcohol; we provide the licensed bartenders. <strong>Two-bartender minimum</strong>, typically one per 50 guests, at <strong>$400 each</strong>.
+          </p>
+          <p style="font-size: 13px; color: #7A6E68; margin: 0;">
+            For ${guests} guests, plan on <strong>${bartenders ?? 2} bartenders — about $${(bartenderCost ?? 800).toLocaleString()}</strong> on top of the venue total.
+          </p>
         </div>
 
         ${weddingDate ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Date in mind:</strong> ${weddingDate}</p>` : ''}
