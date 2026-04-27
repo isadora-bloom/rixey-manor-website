@@ -339,10 +339,10 @@ export default function PricingCalculator() {
           {/* Bartending — separately billed */}
           <div className="bg-[var(--cream)] border border-[var(--border)] p-6">
             <p className="text-[11px] font-medium tracking-[0.22em] uppercase text-[var(--rose)] mb-3" style={{ fontFamily: 'var(--font-ui)' }}>
-              Bartending — billed separately
+              Bartending — required, billed separately
             </p>
             <p className="text-[15px] text-[var(--ink-mid)] leading-relaxed mb-3" style={{ fontFamily: 'var(--font-body)' }}>
-              You bring your own alcohol; we provide the licensed bartenders. <strong>A two-bartender minimum applies</strong>, and we typically staff one bartender per 50 guests. Each bartender is <strong>${BARTENDER_RATE}</strong>, billed separately from the venue and not included in the estimate above.
+              You bring your own alcohol, but bartending must be staffed by our in-house team — outside bartenders aren't permitted, for licensing and insurance reasons. <strong>A two-bartender minimum applies</strong>, and we typically staff one bartender per 50 guests. Each bartender is <strong>${BARTENDER_RATE}</strong>, billed separately from the venue and not included in the estimate above.
             </p>
             {result && (
               <p className="text-[13px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>
@@ -544,10 +544,10 @@ export default function PricingCalculator() {
                 </div>
                 <div className="mb-6 pb-6 border-b border-[var(--border)]">
                   <p className="text-[11px] font-medium tracking-[0.22em] uppercase text-[var(--rose)] mb-1.5" style={{ fontFamily: 'var(--font-ui)' }}>
-                    Plus bartending
+                    Plus bartending (required)
                   </p>
                   <p className="text-[13px] text-[var(--ink-mid)] leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
-                    {result.bartenders} bartenders × ${BARTENDER_RATE} = <strong>{fmt(result.bartenderCost)}</strong>, billed separately. Two-bartender minimum, ~1 per 50 guests.
+                    {result.bartenders} bartenders × ${BARTENDER_RATE} = <strong>{fmt(result.bartenderCost)}</strong>, billed separately. Our bartenders only — two-bartender minimum, ~1 per 50 guests.
                   </p>
                 </div>
                 <p className="text-[12px] text-[var(--ink-light)] mb-0" style={{ fontFamily: 'var(--font-body)' }}>

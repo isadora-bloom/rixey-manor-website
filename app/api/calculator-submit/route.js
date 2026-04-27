@@ -59,7 +59,7 @@ export async function POST(req) {
       tax ? `  Sales tax (6%): $${tax.toLocaleString()}` : null,
       `Per payment (×3): $${perPayment?.toLocaleString()}`,
       ``,
-      `Plus bartending (billed separately): ${bartenders ?? 2} bartenders × $400 = $${(bartenderCost ?? 800).toLocaleString()}`,
+      `Plus bartending — required, billed separately: ${bartenders ?? 2} bartenders × $400 = $${(bartenderCost ?? 800).toLocaleString()} (in-house bartenders only, no outside bartenders)`,
     ].filter(Boolean).join('\n')
 
     const coupleHtml = `
@@ -91,9 +91,9 @@ export async function POST(req) {
         </div>
 
         <div style="border: 1px solid #E0D8D0; padding: 20px; margin-bottom: 24px;">
-          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #B8908A; margin: 0 0 8px;">Plus bartending — billed separately</p>
+          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #B8908A; margin: 0 0 8px;">Plus bartending — required, billed separately</p>
           <p style="font-size: 14px; color: #3D3530; margin: 0 0 6px; line-height: 1.5;">
-            You bring your own alcohol; we provide the licensed bartenders. <strong>Two-bartender minimum</strong>, typically one per 50 guests, at <strong>$400 each</strong>.
+            You bring your own alcohol, but bartending must be staffed by our in-house team — outside bartenders aren't permitted, for licensing and insurance reasons. <strong>Two-bartender minimum</strong>, typically one per 50 guests, at <strong>$400 each</strong>.
           </p>
           <p style="font-size: 13px; color: #7A6E68; margin: 0;">
             For ${guests} guests, plan on <strong>${bartenders ?? 2} bartenders — about $${(bartenderCost ?? 800).toLocaleString()}</strong> on top of the venue total.
