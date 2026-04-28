@@ -72,6 +72,7 @@ async function getHomeData() {
       ballroom:  siteImages['home-spaces-ballroom'],
       terrace:   siteImages['home-spaces-terrace'],
       bar:       siteImages['home-spaces-bar'],
+      suite:     siteImages['home-spaces-suite'] || siteImages['venue-room-newlywed'],
     },
     quizBgImage: siteImages['home-quiz-bg'],
     isadoraImage: siteImages['home-team-isadora'],

@@ -40,6 +40,13 @@ const BAR = {
   highlight: 'No corkage fees. No mandatory packages. Just a beautiful bar, stocked your way.',
 }
 
+const SUITE = {
+  eyebrow: 'The Newlywed Suite',
+  name: 'A California King, a copper bathtub, and a 360-degree mirror.',
+  description: 'Held for the couple on every wedding day. A handmade copper bathtub deep enough to actually sit in. A custom 360-degree mirror — the only one of its kind we know of in a wedding venue, and the reason getting-ready photos here look the way they do. A Juliet balcony over the lawn. Doors that lock so you can finally breathe before the ceremony.',
+  highlight: 'You won\'t be rushing home after the reception.',
+}
+
 export default function SpacesSection({ spaces = [], spaceImages = {} }) {
   const displaySpaces = spaces.length > 0
     ? spaces.filter(s => ['ceremony', 'terrace', 'ballroom'].includes(s.slug)).slice(0, 3)
@@ -137,6 +144,36 @@ export default function SpacesSection({ spaces = [], spaceImages = {} }) {
                 {BAR.highlight}
               </p>
             </div>
+          </div>
+        </FadeUp>
+
+        {/* Newlywed Suite — featured (image-right reverse layout for visual rhythm) */}
+        <FadeUp delay={250}>
+          <div className="mt-16 pt-14 border-t border-[var(--border)] grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+            <div className={!spaceImages?.suite ? 'lg:col-span-2 max-w-2xl' : 'lg:order-2'}>
+              <p className="eyebrow mb-2">{SUITE.eyebrow}</p>
+              <h3
+                className="text-[22px] lg:text-[28px] text-[var(--ink)] mb-5"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                {SUITE.name}
+              </h3>
+              <p className="body-copy mb-4">{SUITE.description}</p>
+              <p className="text-[14px] italic text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>
+                {SUITE.highlight}
+              </p>
+            </div>
+            {spaceImages?.suite ? (
+              <div className="relative w-full aspect-[4/3] overflow-hidden lg:order-1">
+                <Image
+                  src={spaceImages.suite.url}
+                  alt={spaceImages.suite.alt_text || 'The Newlywed Suite at Rixey Manor'}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+            ) : null}
           </div>
         </FadeUp>
 

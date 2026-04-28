@@ -75,8 +75,14 @@ const INCLUDED = [
 ]
 
 const TAX_RATE = 0.06          // Virginia 6% sales tax on venue
-const BARTENDER_RATE = 400     // per bartender, billed separately
+const BARTENDER_RATE_2026 = 350
+const BARTENDER_RATE_2027  = 400
 const BARTENDER_MIN = 2
+
+// 2026 dates use the legacy bartender rate; 2027 onward uses the new rate.
+function bartenderRateFor(seasonKey) {
+  return seasonKey === 'lastcall-2026' ? BARTENDER_RATE_2026 : BARTENDER_RATE_2027
+}
 
 // Rough bartender count: 1 per 50 guests, with a 2-bartender minimum
 function recommendedBartenders(guestKey) {
@@ -173,8 +179,9 @@ export default function PricingCalculator() {
     const total      = subAfterDisc + tax
     const perPayment = total / 3
     const bartenders = recommendedBartenders(guests)
-    const bartenderCost = bartenders * BARTENDER_RATE
-    return { base, guestMod, nightsAmt, upgradeAmt, subtotal, discPct, discAmt, subAfterDisc, tax, total, perPayment, bartenders, bartenderCost }
+    const bartenderRate = bartenderRateFor(season)
+    const bartenderCost = bartenders * bartenderRate
+    return { base, guestMod, nightsAmt, upgradeAmt, subtotal, discPct, discAmt, subAfterDisc, tax, total, perPayment, bartenders, bartenderRate, bartenderCost }
   }, [season, guests, nights, upgrades, disc5, disc10, isLastCall])
 
   const wantsContract = nextSteps.has('contract')
@@ -200,7 +207,8 @@ export default function PricingCalculator() {
       tax: result ? Math.round(result.tax) : 0,
       perPayment: result ? Math.round(result.perPayment) : 0,
       bartenders: result ? result.bartenders : BARTENDER_MIN,
-      bartenderCost: result ? result.bartenderCost : BARTENDER_MIN * BARTENDER_RATE,
+      bartenderRate: result ? result.bartenderRate : BARTENDER_RATE_2027,
+      bartenderCost: result ? result.bartenderCost : BARTENDER_MIN * BARTENDER_RATE_2027,
       // Contact
       nextSteps: NEXT_STEPS.filter(s => nextSteps.has(s.key)).map(s => s.label),
       weddingDate,
@@ -342,11 +350,11 @@ export default function PricingCalculator() {
               Bartending — required, billed separately
             </p>
             <p className="text-[15px] text-[var(--ink-mid)] leading-relaxed mb-3" style={{ fontFamily: 'var(--font-body)' }}>
-              You bring your own alcohol, but bartending must be staffed by our in-house team — outside bartenders aren't permitted, for licensing and insurance reasons. <strong>A two-bartender minimum applies</strong>, and we typically staff one bartender per 50 guests. Each bartender is <strong>${BARTENDER_RATE}</strong>, billed separately from the venue and not included in the estimate above.
+              You bring your own alcohol, but bartending must be staffed by our in-house team — outside bartenders aren't permitted, for licensing and insurance reasons. <strong>A two-bartender minimum applies</strong>, and we typically staff one bartender per 50 guests. Each bartender is <strong>${BARTENDER_RATE_2027}</strong> for 2027 dates onward, or <strong>${BARTENDER_RATE_2026}</strong> for remaining 2026 dates — billed separately from the venue and not included in the estimate above.
             </p>
             {result && (
               <p className="text-[13px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>
-                For {GUEST_TIERS.find(g => g.key === guests)?.label.toLowerCase()} guests, plan on {result.bartenders} bartenders — about {fmt(result.bartenderCost)} on top of the venue total.
+                For {GUEST_TIERS.find(g => g.key === guests)?.label.toLowerCase()} guests at the {isLastCall ? '2026' : '2027+'} rate, plan on {result.bartenders} bartenders — about {fmt(result.bartenderCost)} on top of the venue total.
               </p>
             )}
           </div>
@@ -547,7 +555,7 @@ export default function PricingCalculator() {
                     Plus bartending (required)
                   </p>
                   <p className="text-[13px] text-[var(--ink-mid)] leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
-                    {result.bartenders} bartenders × ${BARTENDER_RATE} = <strong>{fmt(result.bartenderCost)}</strong>, billed separately. Our bartenders only — two-bartender minimum, ~1 per 50 guests.
+                    {result.bartenders} bartenders × ${result.bartenderRate} = <strong>{fmt(result.bartenderCost)}</strong>, billed separately. Our bartenders only — two-bartender minimum, ~1 per 50 guests.
                   </p>
                 </div>
                 <p className="text-[12px] text-[var(--ink-light)] mb-0" style={{ fontFamily: 'var(--font-body)' }}>

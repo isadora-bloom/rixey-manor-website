@@ -47,7 +47,7 @@ const pricingFaqSchema = {
     {
       '@type': 'Question',
       name: 'Can we bring our own alcohol?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Rixey Manor is BYOB with no corkage fees — you source and purchase your own bar. Bartending must be staffed by our licensed in-house team for licensing and insurance reasons; outside bartenders are not permitted. Bartenders are billed separately at $400 each, with a two-bartender minimum and roughly one bartender per 50 guests.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Rixey Manor is BYOB with no corkage fees — you source and purchase your own bar. Bartending must be staffed by our licensed in-house team for licensing and insurance reasons; outside bartenders are not permitted. Bartenders are billed separately at $400 each for 2027 weddings onward (or $350 for remaining 2026 dates), with a two-bartender minimum and roughly one bartender per 50 guests.' },
     },
     {
       '@type': 'Question',
@@ -198,8 +198,9 @@ export default async function PricingPage() {
                       Rixey is BYOB. You choose the beer, the wine, the spirits. You buy them at retail,
                       no markup, no corkage fee, no required wine list. Our licensed in-house bartenders
                       pour it — required for licensing and insurance, billed separately at $400 each
-                      with a two-bartender minimum. Couples consistently say this saved them thousands
-                      compared to per-drink venue pricing. That is genuinely the point.
+                      for 2027 dates onward (or $350 for remaining 2026 dates), with a two-bartender minimum.
+                      Couples consistently say this saved them thousands compared to per-drink venue pricing.
+                      That is genuinely the point.
                     </p>
                   </div>
                 </FadeUp>
