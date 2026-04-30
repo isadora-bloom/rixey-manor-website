@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import FadeUp from '@/components/ui/FadeUp'
 import CalendlyPopupButton from '@/components/ui/CalendlyPopupButton'
+import AdaptiveCopy from '@/components/AdaptiveCopy'
 
 export default function FinalCTA({ calendlyUrl = '' }) {
   return (
@@ -19,20 +20,37 @@ export default function FinalCTA({ calendlyUrl = '' }) {
 
       <div className="relative z-10 max-w-2xl mx-auto text-center">
         <FadeUp>
-          <p className="eyebrow mb-6">Your wedding at Rixey Manor</p>
+          <AdaptiveCopy
+            as="p"
+            className="eyebrow mb-6"
+            defaultContent="Your wedding at Rixey Manor"
+            byRole={{
+              couple:        "Your wedding at Rixey Manor",
+              parent:        "Their wedding at Rixey Manor",
+              friend_family: "Their wedding at Rixey Manor",
+              planner:       "Your couple's wedding at Rixey Manor",
+              browsing:      "Weddings at Rixey Manor",
+            }}
+          />
           <h2
             className="text-[42px] lg:text-[56px] leading-[1.05] text-[var(--ink)] mb-8"
             style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic' }}
           >
             Come and see it<br />for yourself.
           </h2>
-          <p
+          <AdaptiveCopy
+            as="p"
             className="text-[17px] lg:text-[18px] leading-[1.75] text-[var(--ink-light)] mb-12 max-w-lg mx-auto"
             style={{ fontFamily: 'var(--font-body)' }}
-          >
-            We want to learn about your wedding as much as tell you about the
-            venue. That takes about an hour.
-          </p>
+            defaultContent="We want to learn about your wedding as much as tell you about the venue. That takes about an hour."
+            byRole={{
+              couple:        "We want to learn about your wedding as much as tell you about the venue. That takes about an hour.",
+              parent:        "We want to learn about your child's wedding as much as tell you about the venue. That takes about an hour.",
+              friend_family: "We want to learn about their wedding as much as tell you about the venue. That takes about an hour.",
+              planner:       "We want to learn about your couple's wedding as much as tell you about the venue. That takes about an hour.",
+              browsing:      "We want to learn about you as much as tell you about the venue. That takes about an hour.",
+            }}
+          />
 
           <div className="flex flex-col items-center gap-6">
             <CalendlyPopupButton url={calendlyUrl} className="btn-primary">
