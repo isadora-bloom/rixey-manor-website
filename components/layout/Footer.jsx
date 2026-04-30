@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import EditDetailsLink from './EditDetailsLink'
 
 export default function Footer() {
   return (
@@ -81,12 +82,15 @@ export default function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-[var(--border)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <p
-          className="text-[12px] text-[var(--ink-light)]"
-          style={{ fontFamily: 'var(--font-ui)' }}
-        >
-          © {new Date().getFullYear()} Rixey Manor. Est. 1801.
-        </p>
+        <div className="flex items-center gap-4">
+          <p
+            className="text-[12px] text-[var(--ink-light)]"
+            style={{ fontFamily: 'var(--font-ui)' }}
+          >
+            © {new Date().getFullYear()} Rixey Manor. Est. 1801.
+          </p>
+          <EditDetailsLink />
+        </div>
         <div className="flex gap-6 items-center">
           <a
             href="https://www.instagram.com/rixeymanor"

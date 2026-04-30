@@ -33,6 +33,7 @@ create table if not exists site_visitors (
   partner_name          text,
   email                 text,
   phone                 text,
+  role                  text,           -- 'couple' | 'parent' | 'friend_family' | 'planner' | 'browsing'
   identified_at         timestamptz,
 
   -- Diagnostic
@@ -71,6 +72,9 @@ create policy "service role only — site_visits"
   on site_visits using (false) with check (false);
 
 -- ── visitor_id on submission tables ──────────────────────────────────────────
+
+-- Role column for already-existing site_visitors tables (idempotent re-run safe)
+alter table site_visitors add column if not exists role text;
 
 alter table calculator_submissions add column if not exists visitor_id uuid;
 alter table contact_submissions    add column if not exists visitor_id uuid;

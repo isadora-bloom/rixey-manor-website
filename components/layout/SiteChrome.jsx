@@ -6,7 +6,6 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import StickyBookBar from '@/components/ui/StickyBookBar'
 import Tracker from '@/components/Tracker'
-import NameCapture from '@/components/NameCapture'
 
 export default function SiteChrome({ children, calendlyUrl }) {
   const pathname = usePathname()
@@ -19,7 +18,6 @@ export default function SiteChrome({ children, calendlyUrl }) {
       <Suspense fallback={null}>
         <Tracker />
       </Suspense>
-      {!hideChrome && <NameCapture />}
       {!hideChrome && <Navbar calendlyUrl={calendlyUrl} />}
       <main>{children}</main>
       {!hideChrome && <Footer />}

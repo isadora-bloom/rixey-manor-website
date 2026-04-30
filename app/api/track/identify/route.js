@@ -11,7 +11,7 @@ const supabase = createClient(
 // if a richer value comes in later (e.g. they gave name in bar, then email in form).
 export async function POST(req) {
   try {
-    const { visitor_id, first_name, partner_name, email, phone } = await req.json()
+    const { visitor_id, first_name, partner_name, email, phone, role } = await req.json()
     if (!visitor_id) {
       return Response.json({ ok: false, error: 'visitor_id required' }, { status: 400 })
     }
@@ -19,7 +19,7 @@ export async function POST(req) {
     // Make sure the visitor row exists first
     const { data: existing } = await supabase
       .from('site_visitors')
-      .select('visitor_id, first_name, partner_name, email, phone, identified_at')
+      .select('visitor_id, first_name, partner_name, email, phone, role, identified_at')
       .eq('visitor_id', visitor_id)
       .maybeSingle()
 
@@ -28,6 +28,8 @@ export async function POST(req) {
     if (partner_name && partner_name.trim()) update.partner_name = partner_name.trim()
     if (email && email.trim())               update.email        = email.trim().toLowerCase()
     if (phone && phone.trim())               update.phone        = phone.trim()
+    // Role is allowed to change on later visits — don't gate on existing
+    if (role && role.trim())                 update.role         = role.trim()
     if ((update.first_name || update.email) && !existing?.identified_at) {
       update.identified_at = new Date().toISOString()
     }

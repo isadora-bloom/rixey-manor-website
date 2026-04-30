@@ -4,6 +4,7 @@ import { getOgImage } from '@/lib/getPageSeo'
 
 export const dynamic = 'force-dynamic'
 import Hero from '@/components/home/Hero'
+import AdaptivePrompt from '@/components/home/AdaptivePrompt'
 import OneThingSection from '@/components/home/OneThingSection'
 import IncludedStrip from '@/components/home/IncludedStrip'
 import PressStrip from '@/components/home/PressStrip'
@@ -115,6 +116,8 @@ export default async function HomePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
       <Hero heroImage={heroImage} videoUrl={featureVideoUrl} calendlyUrl={siteContent.calendly_url} />
+
+      <AdaptivePrompt />
 
       {/* Last Call 2026 banner */}
       <section className="bg-[var(--cream)] border-b border-[var(--border)] py-10 px-6 lg:px-10">

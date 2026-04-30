@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { getUTM } from '@/lib/utm'
-import { getVisitorName } from '@/lib/visitor'
+import { getVisitorContext } from '@/lib/visitor'
 
 // ── Pricing data ──────────────────────────────────────────────────────────────
 
@@ -154,11 +154,15 @@ export default function PricingCalculator() {
   const [submitted, setSubmitted]   = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  // Pre-fill name fields if the visitor told us already (via name-capture bar)
+  // Pre-fill name fields when we know the visitor is one of the couple.
+  // For parent/planner/friend roles the visitor isn't getting married, so we
+  // leave the calculator blank — they should enter the couple's names directly.
   useEffect(() => {
-    const { firstName, partnerName } = getVisitorName() || {}
-    if (firstName && !p1Name) setP1Name(firstName)
-    if (partnerName && !p2Name) setP2Name(partnerName)
+    const { firstName, partnerName, role } = getVisitorContext() || {}
+    if (role === 'couple' || !role) {
+      if (firstName && !p1Name) setP1Name(firstName)
+      if (partnerName && !p2Name) setP2Name(partnerName)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
