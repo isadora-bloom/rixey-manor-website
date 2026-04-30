@@ -1,44 +1,15 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import CalendlyPopupButton from '@/components/ui/CalendlyPopupButton'
-import AdaptiveText from '@/components/AdaptiveText'
-
-// Role-aware hero subhead. Returns null to fall back to the default whenever
-// we don't have enough context to say something honest.
-function personalizedSubhead(ctx, age) {
-  if (!ctx?.firstName || !ctx?.role) return null
-  const { firstName, partnerName, role } = ctx
-  const couple =
-    firstName && partnerName ? `${firstName} & ${partnerName}` : firstName
-  const tail = `${age} years old, 30 acres, 60 miles from Washington DC.`
-  switch (role) {
-    case 'couple':
-      return `${couple}, this is the estate. ${tail}`
-    case 'parent':
-      return partnerName
-        ? `${firstName}, this is where ${partnerName}'s wedding could happen. ${tail}`
-        : `${firstName}, this is the estate. ${tail}`
-    case 'friend_family':
-      return partnerName
-        ? `${firstName}, this is where ${partnerName} could get married. ${tail}`
-        : `${firstName}, this is the estate. ${tail}`
-    case 'planner':
-      return `${firstName}, here's the estate. ${age} years old, 30 acres, full exclusive use, no event-stacking.`
-    case 'browsing':
-      return `${firstName}, take your time. ${tail}`
-    default:
-      return null
-  }
-}
+import HeroSubhead from './HeroSubhead'
 
 export default function Hero({ heroImage, videoUrl, calendlyUrl = '' }) {
   const age = new Date().getFullYear() - 1801
-  const defaultSubhead = `A ${age}-year-old estate wedding venue in Rixeyville, Virginia. 60 miles from Washington DC.`
 
   return (
     <section className="relative overflow-hidden">
 
-      {/* ── Mobile layout: image on top, text below ── */}
+      {/* Mobile layout: image on top, text below */}
       <div className="lg:hidden">
 
         {/* Image — full width, below navbar */}
@@ -66,12 +37,10 @@ export default function Hero({ heroImage, videoUrl, calendlyUrl = '' }) {
             <em>Just your people.</em><br />
             <em>Entirely yours.</em>
           </h1>
-          <AdaptiveText
-            as="p"
+          <HeroSubhead
+            age={age}
             className="text-[16px] leading-[1.7] text-[var(--ink-mid)] mb-8 max-w-sm"
             style={{ fontFamily: 'var(--font-body)' }}
-            defaultContent={defaultSubhead}
-            personalized={ctx => personalizedSubhead(ctx, age)}
           />
           <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3">
             <CalendlyPopupButton url={calendlyUrl} className="btn-primary justify-center">
@@ -101,7 +70,7 @@ export default function Hero({ heroImage, videoUrl, calendlyUrl = '' }) {
         </div>
       </div>
 
-      {/* ── Desktop layout: split panels ── */}
+      {/* Desktop layout: split panels */}
       <div className="hidden lg:flex min-h-[100dvh]">
 
         {/* Left panel — text */}
@@ -117,12 +86,10 @@ export default function Hero({ heroImage, videoUrl, calendlyUrl = '' }) {
               <em>Just your people.</em><br />
               <em>Entirely yours.</em>
             </h1>
-            <AdaptiveText
-              as="p"
+            <HeroSubhead
+              age={age}
               className="text-[17px] leading-[1.7] text-[var(--ink-mid)] mb-10 max-w-sm"
               style={{ fontFamily: 'var(--font-body)' }}
-              defaultContent={defaultSubhead}
-              personalized={ctx => personalizedSubhead(ctx, age)}
             />
             <div className="flex items-center gap-4">
               <CalendlyPopupButton url={calendlyUrl} className="btn-primary">
