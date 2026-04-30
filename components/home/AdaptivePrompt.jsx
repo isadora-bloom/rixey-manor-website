@@ -266,11 +266,9 @@ export default function AdaptivePrompt() {
               className="text-[26px] lg:text-[32px] leading-snug text-[var(--ink)]"
               style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic' }}
             >
-              {role === 'parent'
-                ? `Lovely to meet you, ${first}.`
-                : role === 'planner'
-                ? `Lovely to meet you, ${first}.`
-                : `So ${greetingName}, welcome to a wedding built on you.`}
+              {role === 'couple'
+                ? `So ${greetingName}, welcome to a wedding built on you.`
+                : `Lovely to meet you, ${first}.`}
             </p>
           </div>
         )}

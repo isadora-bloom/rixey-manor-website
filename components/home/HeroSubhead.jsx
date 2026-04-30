@@ -11,22 +11,31 @@ import { getVisitorContext } from '@/lib/visitor'
 function personalizedSubhead(ctx, age) {
   if (!ctx?.firstName || !ctx?.role) return null
   const { firstName, partnerName, role } = ctx
-  const couple =
-    firstName && partnerName ? `${firstName} & ${partnerName}` : firstName
   const tail = `${age} years old, 30 acres, 60 miles from Washington DC.`
+  // Planner gets a different tail — "exclusive use" is the language they care about
+  const plannerTail = `${age} years old, 30 acres, full exclusive use, no event-stacking.`
+
   switch (role) {
-    case 'couple':
-      return `${couple}, this is the estate. ${tail}`
+    case 'couple': {
+      // The visitor IS getting married — direct invitation
+      const couple =
+        firstName && partnerName ? `${firstName} & ${partnerName}` : firstName
+      return `${couple}, this could be your estate for your wedding weekend. ${tail}`
+    }
     case 'parent':
+      // The wedding is their child's, not theirs — shift to third person
       return partnerName
-        ? `${firstName}, this is where ${partnerName}'s wedding could happen. ${tail}`
-        : `${firstName}, this is the estate. ${tail}`
+        ? `${firstName}, this could be where ${partnerName} gets married. ${tail}`
+        : `${firstName}, this could be where the wedding happens. ${tail}`
     case 'friend_family':
       return partnerName
-        ? `${firstName}, this is where ${partnerName} could get married. ${tail}`
-        : `${firstName}, this is the estate. ${tail}`
+        ? `${firstName}, this could be where ${partnerName} gets married. ${tail}`
+        : `${firstName}, this could be where they get married. ${tail}`
     case 'planner':
-      return `${firstName}, here's the estate. ${age} years old, 30 acres, full exclusive use, no event-stacking.`
+      // Planner is also third-party — talking about the couple they represent
+      return partnerName
+        ? `${firstName}, this could be where ${partnerName} gets married. ${plannerTail}`
+        : `${firstName}, this could be the venue for the wedding you're planning. ${plannerTail}`
     case 'browsing':
       return `${firstName}, take your time. ${tail}`
     default:
