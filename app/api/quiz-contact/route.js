@@ -10,7 +10,7 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 
 export async function POST(req) {
   const data = await req.json()
-  const { name, partner, email, date, notes, tier, path, answers, source, medium, campaign, referrer } = data
+  const { name, partner, email, date, notes, tier, path, answers, source, medium, campaign, referrer, visitor_id } = data
 
   if (!name || !email) {
     return Response.json({ ok: false, error: 'Missing required fields' }, { status: 400 })
@@ -25,6 +25,7 @@ export async function POST(req) {
     wedding_date: date || null, notes: notes || null,
     tier: tier || null, path: path || null, answers: answers || null,
     source: source || null, medium: medium || null, campaign: campaign || null, referrer: referrer || null,
+    visitor_id: visitor_id || null,
   })
   if (dbError) console.error('DB error:', dbError.message)
 

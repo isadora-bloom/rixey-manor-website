@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { getUTM } from '@/lib/utm'
+import { getVisitorName } from '@/lib/visitor'
 
 // ─── QUESTIONS DATA ───────────────────────────────────────────────────────────
 
@@ -278,6 +279,17 @@ const TIER_DATA = {
 function ContactForm({ tier, path, answers, questions }) {
   const [form, setForm] = useState({ name: '', partner: '', email: '', date: '', notes: '' })
   const [status, setStatus] = useState('idle')
+
+  useEffect(() => {
+    const { firstName, partnerName } = getVisitorName() || {}
+    if (firstName || partnerName) {
+      setForm(f => ({
+        ...f,
+        name: f.name || firstName || '',
+        partner: f.partner || partnerName || '',
+      }))
+    }
+  }, [])
 
   function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
 

@@ -3,7 +3,6 @@ import Script from 'next/script'
 import './globals.css'
 import SiteChrome from '@/components/layout/SiteChrome'
 import SchemaMarkup from '@/components/SchemaMarkup'
-import UTMCapture from '@/components/UTMCapture'
 import { supabaseServer } from '@/lib/supabaseServer'
 const supabase = supabaseServer()
 
@@ -66,7 +65,6 @@ export default async function RootLayout({ children }) {
       </head>
       <body>
         <SchemaMarkup />
-        <UTMCapture />
         <SiteChrome calendlyUrl={calendlyUrl}>
           {children}
         </SiteChrome>

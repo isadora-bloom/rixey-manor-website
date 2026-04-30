@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { getUTM } from '@/lib/utm'
+import { getVisitorName } from '@/lib/visitor'
 
 // ── Pricing data ──────────────────────────────────────────────────────────────
 
@@ -152,6 +153,14 @@ export default function PricingCalculator() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted]   = useState(false)
   const [submitError, setSubmitError] = useState('')
+
+  // Pre-fill name fields if the visitor told us already (via name-capture bar)
+  useEffect(() => {
+    const { firstName, partnerName } = getVisitorName() || {}
+    if (firstName && !p1Name) setP1Name(firstName)
+    if (partnerName && !p2Name) setP2Name(partnerName)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function toggleSet(setter, key) {
     setter(prev => {

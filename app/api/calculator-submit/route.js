@@ -20,6 +20,7 @@ export async function POST(req) {
     p2Name, p2Phone,
     notes,
     source, medium, campaign, referrer,
+    visitor_id,
   } = data
 
   // 1. Save to Supabase
@@ -38,11 +39,49 @@ export async function POST(req) {
     p2_phone: p2Phone || null,
     notes: notes || null,
     source: source || null, medium: medium || null, campaign: campaign || null, referrer: referrer || null,
+    visitor_id: visitor_id || null,
   })
 
   if (dbError) {
     console.error('DB error:', dbError.message)
     // Don't fail the whole request — try to send email anyway
+  }
+
+  // 1b. Backfill identity onto the visitor row so this person is now identified
+  // for any prior anonymous pageviews. Best-effort; never blocks the response.
+  if (visitor_id && p1Email) {
+    try {
+      const { data: existing } = await supabase
+        .from('site_visitors')
+        .select('visitor_id, first_name, partner_name, email, phone, identified_at')
+        .eq('visitor_id', visitor_id)
+        .maybeSingle()
+
+      const update = {}
+      if (p1Name && !existing?.first_name)   update.first_name   = p1Name
+      if (p2Name && !existing?.partner_name) update.partner_name = p2Name
+      if (p1Email && !existing?.email)       update.email        = p1Email.toLowerCase()
+      if (p1Phone && !existing?.phone)       update.phone        = p1Phone
+      if (!existing?.identified_at && (update.first_name || update.email)) {
+        update.identified_at = new Date().toISOString()
+      }
+      if (existing && Object.keys(update).length) {
+        await supabase.from('site_visitors').update(update).eq('visitor_id', visitor_id)
+      } else if (!existing) {
+        await supabase.from('site_visitors').insert({
+          visitor_id,
+          first_seen_at: new Date().toISOString(),
+          last_seen_at: new Date().toISOString(),
+          first_name: p1Name || null,
+          partner_name: p2Name || null,
+          email: p1Email.toLowerCase(),
+          phone: p1Phone || null,
+          identified_at: new Date().toISOString(),
+        })
+      }
+    } catch (e) {
+      console.error('[calculator-submit] visitor backfill error:', e?.message || e)
+    }
   }
 
   // 2. Send emails if Resend is configured

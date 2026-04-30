@@ -15,7 +15,7 @@ try {
 
 export async function POST(req) {
   try {
-    const { name, email, message, source, medium, campaign, referrer } = await req.json()
+    const { name, email, message, source, medium, campaign, referrer, visitor_id } = await req.json()
 
     if (!name || !email || !message) {
       return Response.json({ ok: false, error: 'Missing fields' }, { status: 400 })
@@ -25,6 +25,7 @@ export async function POST(req) {
     const { error: dbError } = await supabase.from('contact_submissions').insert({
       name, email, message,
       source: source || null, medium: medium || null, campaign: campaign || null, referrer: referrer || null,
+      visitor_id: visitor_id || null,
     })
     if (dbError) console.error('DB error:', dbError.message)
 

@@ -1,11 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getUTM } from '@/lib/utm'
+import { getVisitorName } from '@/lib/visitor'
 
 export default function ContactForm() {
   const [fields, setFields] = useState({ name: '', email: '', message: '' })
   const [status, setStatus] = useState('idle') // idle | submitting | done | error
+
+  useEffect(() => {
+    const { firstName } = getVisitorName() || {}
+    if (firstName) setFields(f => f.name ? f : { ...f, name: firstName })
+  }, [])
 
   function set(key) {
     return e => setFields(f => ({ ...f, [key]: e.target.value }))
