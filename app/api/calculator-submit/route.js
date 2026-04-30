@@ -47,6 +47,8 @@ export async function POST(req) {
 
   // 2. Send emails if Resend is configured
   if (resend) {
+    const wantsContract = nextSteps?.some(s => /contract/i.test(s))
+
     const summaryLines = [
       `Season: ${season}`,
       `Guests: ${guests}`,
@@ -59,7 +61,7 @@ export async function POST(req) {
       tax ? `  Sales tax (6%): $${tax.toLocaleString()}` : null,
       `Per payment (×3): $${perPayment?.toLocaleString()}`,
       ``,
-      `Plus bartending — required, billed separately: ${bartenders ?? 2} bartenders × $${bartenderRate ?? 400} = $${(bartenderCost ?? 800).toLocaleString()} (in-house bartenders only, no outside bartenders)`,
+      `Plus bartending — required, billed separately. Two-bartender minimum, ~1 per 50 guests (around ${bartenders ?? 2} for this guest count). In-house bartenders only — final staffing and pricing confirmed directly.`,
     ].filter(Boolean).join('\n')
 
     const coupleHtml = `
@@ -93,15 +95,16 @@ export async function POST(req) {
         <div style="border: 1px solid #E0D8D0; padding: 20px; margin-bottom: 24px;">
           <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #B8908A; margin: 0 0 8px;">Plus bartending — required, billed separately</p>
           <p style="font-size: 14px; color: #3D3530; margin: 0 0 6px; line-height: 1.5;">
-            You bring your own alcohol, but bartending must be staffed by our in-house team — outside bartenders aren't permitted, for licensing and insurance reasons. <strong>Two-bartender minimum</strong>, typically one per 50 guests, at <strong>$${bartenderRate ?? 400} each</strong>.
+            You bring your own alcohol, but bartending must be staffed by our in-house team — outside bartenders aren't permitted, for licensing and insurance reasons. <strong>Two-bartender minimum</strong>, typically one per 50 guests.
           </p>
           <p style="font-size: 13px; color: #7A6E68; margin: 0;">
-            For ${guests} guests, plan on <strong>${bartenders ?? 2} bartenders — about $${(bartenderCost ?? 800).toLocaleString()}</strong> on top of the venue total.
+            For ${guests} guests, plan on around <strong>${bartenders ?? 2} bartenders</strong>. We'll confirm staffing and pricing with you directly.
           </p>
         </div>
 
         ${weddingDate ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Date in mind:</strong> ${weddingDate}</p>` : ''}
         ${nextSteps?.length ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Next steps requested:</strong> ${nextSteps.join(', ')}</p>` : ''}
+        ${p1Phone ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Phone on file:</strong> ${p1Phone}</p>` : ''}
         ${notes ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Notes:</strong> ${notes}</p>` : ''}
 
         <hr style="border: none; border-top: 1px solid #E0D8D0; margin: 24px 0;" />
@@ -112,23 +115,36 @@ export async function POST(req) {
       </div>
     `
 
+    const utmBits = [
+      source && `source: ${source}`,
+      medium && `medium: ${medium}`,
+      campaign && `campaign: ${campaign}`,
+      referrer && `referrer: ${referrer}`,
+    ].filter(Boolean).join(' · ')
+
     const venueHtml = `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1C1814;">
-        <h2 style="font-size: 24px; font-weight: normal; margin-bottom: 4px;">New calculator submission</h2>
+        <h2 style="font-size: 24px; font-weight: normal; margin-bottom: 4px;">New calculator submission${wantsContract ? ' — contract requested' : ''}</h2>
         <p style="color: #7A6E68; font-size: 14px; margin-bottom: 24px;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
         <p style="font-size: 16px; margin-bottom: 4px;"><strong>${p1Name}</strong>${p2Name ? ` & ${p2Name}` : ''}</p>
         <p style="font-size: 14px; color: #3D3530; margin-bottom: 2px;">${p1Email}</p>
-        ${p1Phone ? `<p style="font-size: 14px; color: #3D3530; margin-bottom: 2px;">${p1Phone}</p>` : ''}
-        ${p2Phone ? `<p style="font-size: 14px; color: #3D3530; margin-bottom: 16px;">${p2Phone}</p>` : '<br/>'}
+        ${p1Phone ? `<p style="font-size: 14px; color: #3D3530; margin-bottom: 2px;">P1 phone: ${p1Phone}</p>` : ''}
+        ${p2Phone ? `<p style="font-size: 14px; color: #3D3530; margin-bottom: 16px;">P2 phone: ${p2Phone}</p>` : '<br/>'}
 
-        <pre style="font-size: 14px; background: #F7F3EE; padding: 16px; white-space: pre-wrap;">${summaryLines}</pre>
+        ${weddingDate ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>Date in mind:</strong> ${weddingDate}</p>` : ''}
+        ${nextSteps?.length ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>Next steps:</strong> ${nextSteps.join(', ')}</p>` : ''}
 
-        ${weddingDate ? `<p style="font-size: 14px;"><strong>Date in mind:</strong> ${weddingDate}</p>` : ''}
-        ${nextSteps?.length ? `<p style="font-size: 14px;"><strong>Next steps:</strong> ${nextSteps.join(', ')}</p>` : ''}
+        <pre style="font-size: 14px; background: #F7F3EE; padding: 16px; white-space: pre-wrap; margin-top: 16px;">${summaryLines}</pre>
+
         ${notes ? `<p style="font-size: 14px;"><strong>Notes:</strong> ${notes}</p>` : ''}
+        ${utmBits ? `<p style="font-size: 12px; color: #7A6E68; margin-top: 16px;"><strong>Attribution:</strong> ${utmBits}</p>` : ''}
       </div>
     `
+
+    const venueSubject = wantsContract
+      ? `Contract requested: ${p1Name}${p2Name ? ` & ${p2Name}` : ''}${weddingDate ? ` — ${weddingDate}` : ''} — $${estimate?.toLocaleString()}`
+      : `New estimate: ${p1Name}${p2Name ? ` & ${p2Name}` : ''} — $${estimate?.toLocaleString()}`
 
     await Promise.allSettled([
       // Email to couple
@@ -143,7 +159,7 @@ export async function POST(req) {
       resend.emails.send({
         from: 'Rixey Manor Calculator <hello@rixeymanor.com>',
         to: 'info@rixeymanor.com',
-        subject: `New estimate: ${p1Name}${p2Name ? ` & ${p2Name}` : ''} — $${estimate?.toLocaleString()}`,
+        subject: venueSubject,
         html: venueHtml,
       }),
     ])
