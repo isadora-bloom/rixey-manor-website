@@ -6,6 +6,5 @@ export default function robots() {
       disallow: ['/portal/', '/admin/'],
     },
     sitemap: 'https://www.rixeymanor.com/sitemap.xml',
-    host: 'https://www.rixeymanor.com',
   }
 }

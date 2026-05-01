@@ -48,18 +48,52 @@ async function getFaqs() {
   return data || []
 }
 
+// High-value GEO Q&A surfaced in the "Getting here" section. Kept here (not
+// in the DB) because they're location/logistics constants. Included in the
+// FAQPage schema so AI engines can quote them when answering "wedding venues
+// near DC" type questions.
+const LOGISTICS_FAQS = [
+  {
+    question: 'How far is Rixey Manor from Washington DC?',
+    answer: "About 60 miles, roughly an hour via I-66 west to Route 29 south, or Route 66 to Route 211. The drive is straightforward and scenic once you're past Gainesville. Most DC and Northern Virginia couples find it an easy trip for a full weekend.",
+  },
+  {
+    question: 'Where exactly is Rixey Manor?',
+    answer: 'Rixey Manor is at 9155 Pleasant Hill Lane, Rixeyville, Virginia 22737, in Culpeper County, in the Blue Ridge foothills of Northern Virginia. Culpeper town is about 10 to 15 minutes away and Warrenton is about 25 to 30 minutes. GPS directions work reliably.',
+  },
+  {
+    question: 'How far is Rixey Manor from Warrenton, Culpeper, and Fredericksburg?',
+    answer: 'Culpeper is the closest town, about 10 to 15 minutes away. Warrenton is about 25 to 30 minutes. Fredericksburg is about 50 minutes. Most guests from Northern Virginia, the Shenandoah Valley, and the Richmond area find the drive straightforward.',
+  },
+  {
+    question: 'What is the closest airport to Rixey Manor?',
+    answer: "Dulles International (IAD) is the closest at about 55 miles, roughly an hour's drive. Reagan National (DCA) is about 70 miles. Richmond International (RIC) is about 95 miles for guests coming from the south.",
+  },
+  {
+    question: 'Is Rixey Manor near Charlottesville?',
+    answer: "Yes, about 60 miles, an hour's drive east on Route 29 north through Culpeper. Charlottesville guests regularly make the trip, and it's a common route for guests coming from UVA or the Shenandoah Valley.",
+  },
+  {
+    question: "Is there lodging nearby for wedding guests who can't stay on the estate?",
+    answer: 'Yes, and this is one of the things couples are often relieved to hear. Culpeper is only 10 to 15 minutes from the estate. The Holiday Inn Express and Hampton Inn are both right there, along with a growing number of boutique stays and Airbnbs in the area. Guests can attend a late reception and be in their room in 15 minutes. We share a full accommodation guide with every couple after they book.',
+  },
+]
+
 function buildFaqSchema(faqs) {
+  const dbEntries = (faqs || []).map(f => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  }))
+  const logisticsEntries = LOGISTICS_FAQS.map(f => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  }))
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: faqs.map(f => ({
-      '@type': 'Question',
-      name: f.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: f.answer,
-      },
-    })),
+    mainEntity: [...dbEntries, ...logisticsEntries],
   }
 }
 
@@ -122,41 +156,16 @@ export default async function FaqPage() {
             <p className="eyebrow mb-8">Getting here</p>
           </FadeUp>
           <div className="flex flex-col divide-y divide-[var(--border)]">
-            {[
-              {
-                q: 'How far is Rixey Manor from Washington DC?',
-                a: 'About 60 miles — roughly an hour via I-66 west to Route 29 south, or Route 66 to Route 211. The drive is straightforward and scenic once you\'re past Gainesville. Most DC and Northern Virginia couples find it an easy trip for a full weekend.',
-              },
-              {
-                q: 'Where exactly is Rixey Manor?',
-                a: 'Rixey Manor is at 9155 Pleasant Hill Lane, Rixeyville, Virginia 22737 — in Culpeper County, in the Blue Ridge foothills of Northern Virginia. Culpeper town is about 10–15 minutes away and Warrenton is about 25–30 minutes. GPS directions work reliably.',
-              },
-              {
-                q: 'How far is Rixey Manor from Warrenton, Culpeper, and Fredericksburg?',
-                a: 'Culpeper is the closest town — about 10–15 minutes away. Warrenton is about 25–30 minutes. Fredericksburg is about 50 minutes. Most guests from Northern Virginia, the Shenandoah Valley, and the Richmond area find the drive straightforward.',
-              },
-              {
-                q: 'What is the closest airport to Rixey Manor?',
-                a: 'Dulles International (IAD) is the closest at about 55 miles — roughly an hour\'s drive. Reagan National (DCA) is about 70 miles. Richmond International (RIC) is about 95 miles for guests coming from the south.',
-              },
-              {
-                q: 'Is Rixey Manor near Charlottesville?',
-                a: 'Yes — about 60 miles, an hour\'s drive east on Route 29 north through Culpeper. Charlottesville guests regularly make the trip, and it\'s a common route for guests coming from UVA or the Shenandoah Valley.',
-              },
-              {
-                q: 'Is there lodging nearby for wedding guests who can\'t stay on the estate?',
-                a: 'Yes — and this is one of the things couples are often relieved to hear. Culpeper is only 10–15 minutes from the estate. The Holiday Inn Express and Hampton Inn are both right there, along with a growing number of boutique stays and Airbnbs in the area. Guests can attend a late reception and be in their room in 15 minutes. We share a full accommodation guide with every couple after they book.',
-              },
-            ].map(({ q, a }) => (
-              <FadeUp key={q}>
+            {LOGISTICS_FAQS.map(({ question, answer }) => (
+              <FadeUp key={question}>
                 <div className="py-7">
                   <h3
                     className="text-[17px] text-[var(--ink)] mb-3 leading-snug"
                     style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic' }}
                   >
-                    {q}
+                    {question}
                   </h3>
-                  <p className="body-copy text-[15px]">{a}</p>
+                  <p className="body-copy text-[15px]">{answer}</p>
                 </div>
               </FadeUp>
             ))}

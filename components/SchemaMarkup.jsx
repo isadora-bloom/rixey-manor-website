@@ -85,6 +85,8 @@ export default function SchemaMarkup() {
     },
     image: [
       'https://www.rixeymanor.com/assets/hero-main.webp',
+      'https://www.rixeymanor.com/assets/space-ballroom.webp',
+      'https://www.rixeymanor.com/assets/venue-grounds.webp',
     ],
     sameAs: [
       'https://www.instagram.com/rixeymanor',
@@ -111,12 +113,18 @@ export default function SchemaMarkup() {
     },
     amenityFeature: [
       { '@type': 'LocationFeatureSpecification', name: 'Exclusive use', value: true },
-      { '@type': 'LocationFeatureSpecification', name: 'Overnight lodging', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'One wedding per weekend', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'Overnight lodging (sleeps up to 14)', value: true },
       { '@type': 'LocationFeatureSpecification', name: 'Pet friendly', value: true },
-      { '@type': 'LocationFeatureSpecification', name: 'BYOB permitted', value: true },
-      { '@type': 'LocationFeatureSpecification', name: 'ADA accessible (main floor)', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'BYOB permitted, no corkage fee', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'ADA accessible (main floor, ballroom, terrace)', value: true },
       { '@type': 'LocationFeatureSpecification', name: 'Military discount', value: true },
-      { '@type': 'LocationFeatureSpecification', name: 'No required vendors', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'No required vendor list', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'Built in 1801', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'Newlywed Suite with copper bathtub', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'Twenty crystal chandeliers in the ballroom', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'Lake and Blue Ridge Mountain views', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'On-site coordinator included', value: true },
     ],
     foundingDate: '2014',
     yearBuilt: '1801',
@@ -151,6 +159,20 @@ export default function SchemaMarkup() {
     ],
   }
 
+  // Standalone Person schema for Isadora — helps with "who owns Rixey Manor"
+  // type queries and adds a hub for awards / press mentions.
+  const personSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Isadora Martin-Dye',
+    jobTitle: 'Owner and Founder',
+    description: 'Isadora Martin-Dye bought the derelict 1801 Rixey Manor estate after finding it on Zillow, restored it by hand, and has run it as a Virginia wedding venue since 2014.',
+    url: 'https://www.rixeymanor.com/venue#team',
+    worksFor: { '@type': 'Organization', name: 'Rixey Manor', url: 'https://www.rixeymanor.com' },
+    nationality: { '@type': 'Country', name: 'United Kingdom' },
+    homeLocation: { '@type': 'Place', name: 'Rixeyville, Virginia, USA' },
+  }
+
   return (
     <>
       <script
@@ -160,6 +182,10 @@ export default function SchemaMarkup() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
       />
       {videoSchema.map((vs, i) => (
         <script

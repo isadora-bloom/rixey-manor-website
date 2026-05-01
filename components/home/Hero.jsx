@@ -78,14 +78,18 @@ export default function Hero({ heroImage, videoUrl, calendlyUrl = '' }) {
 
           <div className="relative">
             <p className="eyebrow mb-6">Est. 1801 &nbsp;·&nbsp; Rixeyville, Virginia</p>
-            <h1
+            {/* Visual heading only — the semantic H1 is rendered in the mobile
+                layout above (which appears first in source order). Keeping this
+                as a <p> avoids two H1s in the DOM. */}
+            <p
               className="text-[68px] leading-[1.05] text-[var(--ink)] mb-6"
               style={{ fontFamily: 'var(--font-display)' }}
+              aria-hidden="true"
             >
               The whole place.<br />
               <em>Just your people.</em><br />
               <em>Entirely yours.</em>
-            </h1>
+            </p>
             <HeroSubhead
               age={age}
               className="text-[17px] leading-[1.7] text-[var(--ink-mid)] mb-10 max-w-sm"

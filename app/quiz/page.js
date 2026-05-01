@@ -25,6 +25,12 @@ export async function generateMetadata({ searchParams }) {
       url: 'https://www.rixeymanor.com/quiz?r=1',
       images: [{ url: '/assets/quiz-tier-1.webp', width: 1200, height: 1600 }],
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: "You already knew, didn't you.",
+      description: "Come and see it. We think you'll walk in and stop talking mid-sentence.",
+      images: ['/assets/quiz-tier-1.webp'],
+    },
   }
 
   if (r === '2') return {
@@ -36,6 +42,12 @@ export async function generateMetadata({ searchParams }) {
       description: "Rixey isn't for every couple — but we've got a hunch about you.",
       url: 'https://www.rixeymanor.com/quiz?r=2',
       images: [{ url: '/assets/quiz-tier-2.webp', width: 1200, height: 1600 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Worth a conversation. Possibly a very good one.',
+      description: "Rixey isn't for every couple — but we've got a hunch about you.",
+      images: ['/assets/quiz-tier-2.webp'],
     },
   }
 
@@ -49,6 +61,12 @@ export async function generateMetadata({ searchParams }) {
       url: 'https://www.rixeymanor.com/quiz?r=3',
       images: [{ url: '/assets/quiz-tier-3.webp', width: 1200, height: 1600 }],
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: "Rixey's not your venue. That's actually useful information.",
+      description: 'Some people want something closer, something bigger, something with the catering already sorted.',
+      images: ['/assets/quiz-tier-3.webp'],
+    },
   }
 
   return {
@@ -60,6 +78,12 @@ export async function generateMetadata({ searchParams }) {
       description: "Take the quiz and find out. We'll be honest with you — even if the answer is no.",
       url: 'https://www.rixeymanor.com/quiz',
       images: [{ url: '/assets/quiz-tier-1.webp', width: 1200, height: 1600 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Is Rixey the right fit for you?',
+      description: "Take the quiz and find out. We'll be honest with you — even if the answer is no.",
+      images: ['/assets/quiz-tier-1.webp'],
     },
   }
 }

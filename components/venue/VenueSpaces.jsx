@@ -112,7 +112,7 @@ export default function VenueSpaces({ spaceImages = {} }) {
     <section id="spaces">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-4 bg-[var(--warm-white)]">
         <FadeUp>
-          <p className="eyebrow mb-4">The Spaces</p>
+          <h2 className="eyebrow mb-4">The Spaces</h2>
           <p className="body-copy max-w-2xl">
             Every part of the estate is yours for the weekend. Here's what you're working with.
           </p>

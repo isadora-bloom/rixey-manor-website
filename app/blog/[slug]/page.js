@@ -38,7 +38,8 @@ export default async function BlogPostPage({ params }) {
   const html = renderMarkdown(post.content)
   const label = CATEGORY_LABELS[post.category] || post.category
   const date = formatDate(post.post_date)
-  const readTime = Math.max(1, Math.ceil((post.content || '').split(/\s+/).length / 200))
+  const wordCount = (post.content || '').split(/\s+/).filter(Boolean).length
+  const readTime = Math.max(1, Math.ceil(wordCount / 200))
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -46,7 +47,9 @@ export default async function BlogPostPage({ params }) {
     headline: post.title,
     description: post.excerpt || '',
     datePublished: post.post_date,
-    dateModified: post.post_date,
+    dateModified: post.updated_at || post.post_date,
+    wordCount,
+    articleSection: label,
     image: post.cover_image || 'https://www.rixeymanor.com/assets/rixey-manor-logo.png',
     author: {
       '@type': 'Person',
