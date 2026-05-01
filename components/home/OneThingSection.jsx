@@ -25,6 +25,11 @@ export default function OneThingSection() {
 
           <div className="flex flex-col gap-6">
             <p className="body-copy">
+              Rixey Manor is a {new Date().getFullYear() - 1801}-year-old estate in Rixeyville, Virginia,
+              60 miles from Washington DC. We host one wedding per weekend on 30 private acres,
+              with overnight lodging for 14 and no required vendor list.
+            </p>
+            <p className="body-copy">
               Most couples come to us after realising the venue search is harder
               than it looked. Too many rules. Too many restrictions. Too many venues
               that feel like a vendor transaction rather than a place to actually
