@@ -24,10 +24,10 @@ const GUEST_TIERS = [
 ]
 
 const NIGHTS = [
-  { key: '0', label: 'No overnight stay', note: '',                                                                 price: 0    },
-  { key: '1', label: 'One night',         note: 'Check in 11am day of wedding, check out 10am the morning after.', price: 1750 },
-  { key: '2', label: 'Two nights',        note: 'Check in 3pm the day before, check out 10am day after wedding.',  price: 3250 },
-  { key: '3', label: 'Three nights',      note: 'Arrive Friday, stay through Sunday morning.',                     price: 4500 },
+  { key: '0', label: 'No overnight stay', note: '',                                                                                       price: 0    },
+  { key: '1', label: 'One night',         note: 'The night before or the night after your wedding.',                                     price: 1750 },
+  { key: '2', label: 'Two nights',        note: 'The night before and the night after your wedding.',                                    price: 3250 },
+  { key: '3', label: 'Three nights',      note: 'Both nights around the wedding plus one extra, often used for a mehndi, bachelor, or bachelorette party.', price: 4500 },
 ]
 
 const UPGRADES = [
