@@ -1,6 +1,8 @@
 import FadeUp from '@/components/ui/FadeUp'
 import BlogIndex from '@/components/blog/BlogIndex'
+import SurfacedFromElsewhere from '@/components/blog/SurfacedFromElsewhere'
 import { getAllPosts } from '@/lib/posts'
+import { getCmsSurfaced } from '@/lib/cms'
 import { getOgImage } from '@/lib/getPageSeo'
 
 export const revalidate = 3600
@@ -30,7 +32,7 @@ const breadcrumbSchema = {
 }
 
 export default async function BlogPage() {
-  const posts = await getAllPosts()
+  const [posts, surfaced] = await Promise.all([getAllPosts(), getCmsSurfaced()])
 
   return (
     <>
@@ -59,6 +61,14 @@ export default async function BlogPage() {
           <BlogIndex posts={posts} />
         </div>
       </section>
+
+      {surfaced.length > 0 && (
+        <section className="bg-[var(--cream)] py-16 lg:py-20 px-6 lg:px-10 border-t border-[var(--border)]">
+          <div className="max-w-7xl mx-auto">
+            <SurfacedFromElsewhere posts={surfaced} />
+          </div>
+        </section>
+      )}
     </>
   )
 }
