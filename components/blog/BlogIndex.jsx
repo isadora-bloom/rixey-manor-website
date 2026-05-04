@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { CATEGORY_LABELS } from '@/lib/posts'
+import { CATEGORY_LABELS } from '@/lib/blog-meta'
 
 const ALL = 'all'
 
