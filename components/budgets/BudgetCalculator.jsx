@@ -325,9 +325,73 @@ export default function BudgetCalculator({
             )
           })}
 
+          {/* Inline total */}
+          <div className="border-t border-[var(--border)] pt-10">
+            <SectionHead num={String(categories.length + 1).padStart(2, '0')} label="Your estimated total" />
+            <div className="bg-[var(--cream)] border border-[var(--border)] p-8">
+              {(stickyLow != null || stickyHigh != null) ? (
+                <>
+                  <p className="text-[11px] font-medium tracking-[0.22em] uppercase mb-2" style={{ fontFamily: 'var(--font-ui)', color: 'var(--rose)' }}>
+                    {showFallback ? 'Most weddings here' : 'Your wedding so far'}
+                  </p>
+                  <p className="text-[44px] lg:text-[56px] leading-none text-[var(--forest)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
+                    {formatRange(stickyLow, stickyHigh)}
+                  </p>
+                  {!showFallback && (
+                    <p className="text-[13px] text-[var(--ink-light)] mb-5" style={{ fontFamily: 'var(--font-body)' }}>
+                      Across the {result.lines.length} line{result.lines.length === 1 ? '' : 's'} you've picked. Pick the rest to refine the number.
+                    </p>
+                  )}
+                  {showFallback && fallbackTotalNote && (
+                    <p className="text-[13px] text-[var(--ink-light)] mb-5" style={{ fontFamily: 'var(--font-body)' }}>
+                      {fallbackTotalNote}
+                    </p>
+                  )}
+
+                  {result.lines.length > 0 && (
+                    <div className="flex flex-col gap-1.5 pt-5 mt-1 border-t border-[var(--border)]">
+                      {result.lines.map(line => (
+                        <div key={line.category_slug} className="flex justify-between items-baseline gap-2">
+                          <span className="text-[13px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>
+                            {line.category_name}
+                            <span className="text-[var(--ink-light)] ml-2">— {line.option_label}</span>
+                          </span>
+                          {(line.range_low != null || line.range_high != null) && (
+                            <span className="text-[13px] text-[var(--forest)] whitespace-nowrap" style={{ fontFamily: 'var(--font-ui)' }}>
+                              {formatRange(line.range_low, line.range_high)}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-6 pt-5 border-t border-[var(--border)]">
+                    <p className="text-[13px] text-[var(--ink-mid)] leading-relaxed mb-3" style={{ fontFamily: 'var(--font-body)' }}>
+                      <strong>This is everything except the venue.</strong> Add the venue cost from the pricing calculator for your full wedding total.
+                    </p>
+                    <Link href="/pricing#calculator" className="text-link" style={{ fontFamily: 'var(--font-body)', fontSize: 13 }}>
+                      See venue cost →
+                    </Link>
+                  </div>
+
+                  {fallbackTotalCaveat && (
+                    <p className="text-[12px] italic text-[var(--ink-light)] mt-5 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+                      {fallbackTotalCaveat}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-[15px] text-[var(--ink-light)] leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+                  Pick options above to build your estimate. The total updates as you go.
+                </p>
+              )}
+            </div>
+          </div>
+
           {/* Contact form */}
           <div className="border-t-2 border-[var(--forest)] pt-10">
-            <SectionHead num={String(categories.length + 1).padStart(2, '0')} label="Send yourself a copy" />
+            <SectionHead num={String(categories.length + 2).padStart(2, '0')} label="Send yourself a copy" />
 
             {submitted ? (
               <div className="bg-[var(--cream)] border border-[var(--border)] p-8">
