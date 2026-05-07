@@ -88,7 +88,7 @@ export default async function WhatItCostsPage() {
           color: 'var(--ink-light)',
           marginBottom: 20,
         }}>
-          What it costs
+          How we price weddings
         </p>
         <h1 style={{
           fontFamily: 'var(--font-display)',
@@ -97,19 +97,19 @@ export default async function WhatItCostsPage() {
           lineHeight: 1.12,
           marginBottom: 24,
         }}>
-          Build the wedding<br /><em>you actually want.</em>
+          The whole wedding,<br /><em>plainly priced.</em>
         </h1>
         <p style={{
           fontFamily: 'var(--font-body)',
           fontSize: 'clamp(15px, 2vw, 18px)',
           color: 'var(--ink-light)',
-          maxWidth: 640,
+          maxWidth: 660,
           margin: '0 auto',
           lineHeight: 1.75,
         }}>
-          Most venues stop at the venue cost. This goes further. Pick the catering, the photography,
-          the music, and the rest. The total updates as you go. Tap the info icons for one or two
-          vendors who fit each choice.
+          We don't bundle. We don't mark up. The ranges below come from real Rixey weddings,
+          and the vendors are people we trust. Most couples never see this layer of a venue's
+          numbers. We think you should. Build the wedding below, line by line.
         </p>
       </section>
 
@@ -171,7 +171,7 @@ export default async function WhatItCostsPage() {
             Ready to make this real?
           </h2>
           <p className="body-copy" style={{ marginBottom: 28 }}>
-            Tours are free. Isadora gives them herself. Bring your priorities, bring your questions, bring the budget conversation.
+            Tours are free. Isadora gives them herself. Bring the questions you'd ask a venue you actually trust.
           </p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link href="/pricing#book-tour" className="btn-primary">
