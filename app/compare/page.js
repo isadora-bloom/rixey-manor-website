@@ -18,17 +18,17 @@ export async function generateMetadata() {
 }
 
 const ROWS = [
-  { topic: 'Choose your own caterer',                rixey: 'Yes',                          allinc: 'Usually no, in-house only' },
-  { topic: 'Bring your own alcohol',                 rixey: 'Yes, no corkage fee',           allinc: 'No, venue bar package' },
-  { topic: 'Choose your own florist, DJ, photographer', rixey: 'Yes',                       allinc: 'Usually from a preferred list' },
-  { topic: 'Coordinator',                            rixey: 'Included, on your side',       allinc: 'Included, often steered toward in-house options' },
-  { topic: 'Whole property to yourselves',           rixey: 'Yes',                          allinc: 'Sometimes' },
-  { topic: 'Lodging on site',                        rixey: 'Yes, for up to 14',            allinc: 'Sometimes' },
-  { topic: 'Friday rehearsal + Saturday + Sunday brunch', rixey: 'Standard',                allinc: 'Sometimes' },
-  { topic: 'Pet-friendly',                           rixey: 'Yes',                          allinc: 'Rare' },
-  { topic: 'One number, one invoice',                rixey: 'No, several vendors',          allinc: 'Yes' },
-  { topic: 'Decisions you make',                     rixey: 'Many',                         allinc: 'Few' },
-  { topic: 'Vendor markup baked in',                 rixey: 'None',                         allinc: 'Often, sometimes meaningfully' },
+  { topic: 'How the wedding gets built',             rixey: 'Curated around you, top to bottom',  allinc: 'You fit inside their template' },
+  { topic: 'Coordinator on your side',               rixey: 'Yes, helping you decide',             allinc: 'Yes, also selling you in-house upgrades' },
+  { topic: 'Vendor recommendations',                 rixey: 'Matched to your taste, no commission', allinc: 'From their preferred list, often commissioned' },
+  { topic: 'Choose your own caterer',                rixey: 'Yes',                                 allinc: 'Usually no, in-house only' },
+  { topic: 'Bring your own alcohol',                 rixey: 'Yes, no corkage fee',                 allinc: 'No, venue bar package' },
+  { topic: 'Choose your own florist, DJ, photographer', rixey: 'Yes, with our help',              allinc: 'Usually from their list' },
+  { topic: 'Whole property to yourselves',           rixey: 'Yes',                                 allinc: 'Sometimes' },
+  { topic: 'Lodging on site',                        rixey: 'Yes, for up to 14',                   allinc: 'Sometimes' },
+  { topic: 'Friday + Saturday + Sunday',             rixey: 'Standard',                            allinc: 'Sometimes' },
+  { topic: 'Pet-friendly',                           rixey: 'Yes',                                 allinc: 'Rare' },
+  { topic: 'Vendor markup baked in',                 rixey: 'None',                                allinc: 'Often, sometimes meaningfully' },
 ]
 
 export default async function ComparePage() {
@@ -74,12 +74,12 @@ export default async function ComparePage() {
           fontFamily: 'var(--font-body)',
           fontSize: 'clamp(15px, 2vw, 18px)',
           color: 'var(--ink-light)',
-          maxWidth: 620,
+          maxWidth: 640,
           margin: '0 auto',
           lineHeight: 1.75,
         }}>
-          There are two kinds of wedding venue, and they want different things from you.
-          Here is the honest version of what each is for, so you can choose with your eyes open.
+          There are two kinds of wedding venue. One bundles you into a template.
+          The other builds around you. Here is the honest version of what each is for.
         </p>
       </section>
 
@@ -101,20 +101,20 @@ export default async function ComparePage() {
             One contract, one team, one invoice.
           </h2>
           <p className="body-copy" style={{ marginBottom: 18 }}>
-            The pitch is simple. The venue picks the caterer, the florist, the DJ, the bar.
-            You pick from inside their menu and turn up. For a real kind of couple, this is
-            the right product. If your time genuinely matters more to you than your money, if
-            you trust a venue's house style to also be yours, and if you'd rather do less of
-            the planning, all-inclusive can take a lot off your plate.
+            The pitch is simple. The venue brings the caterer, the florist, the DJ, the bar.
+            You pick from inside their menu and turn up. Less of the planning lands on you,
+            and one team handles the day.
           </p>
           <p className="body-copy" style={{ marginBottom: 18 }}>
-            What it costs is built into the package. Most all-inclusive venues mark up the
-            vendors they bundle, sometimes meaningfully. You don't see the markup, because
-            you don't see the vendor invoices. The convenience is real. The trade is also real.
+            The trade is the template. The wedding fits the house style, not the other way
+            around. The vendors come from a preferred list, usually with a commission to
+            the venue baked into your invoice. The coordinator who supports you is also
+            the person selling you in-house upgrades. You don't always see that part,
+            because you don't see the vendor invoices.
           </p>
           <p className="body-copy">
-            If that read sounds right to you, an all-inclusive venue is probably your kind
-            of place. We mean that.
+            If your priority is fewer choices and you trust the house style to feel like
+            yours, all-inclusive can be the right answer.
           </p>
         </div>
       </section>
@@ -137,25 +137,32 @@ export default async function ComparePage() {
             <em>The other thing.</em>
           </h2>
           <p className="body-copy" style={{ marginBottom: 18 }}>
-            Rixey is an 1801 manor on 30 acres in Culpeper County. We give you the whole
-            estate, a coordinator who works for you, and a borrow shed that a decade of
-            weddings has filled. We do not bring the caterer, the florist, the DJ, or the
-            alcohol. You do. We do not have a preferred-vendor list, because we do not take
-            referral commissions and we do not want to.
+            Rixey is the other thing. The estate is yours. The wedding gets built around
+            you, not slotted into a template. Your coordinator's job is to help you decide,
+            with as much hand-holding as you want and as little as you don't. Because we
+            don't sell in-house upgrades, the advice you get is the advice she'd actually give.
           </p>
           <p className="body-copy" style={{ marginBottom: 18 }}>
-            That means more decisions on your side. It also means a wedding that, by the
-            time you reach it, is genuinely yours. The food is the food your family will
-            remember. The bar is the bar your people will actually drink. The flowers are
-            the flowers you chose.
+            We don't bring the caterer, the florist, the DJ, or the bar — but you don't pick alone.
+            For every category, your coordinator brings two or three recommendations matched
+            to your taste, your guests, your budget, and the day you actually want. We don't
+            keep a preferred-vendor list because we don't take referral commissions and we
+            don't want to. Every name we pass you, we'd recommend even if we got nothing for it.
+            We almost always get nothing for it.
+          </p>
+          <p className="body-copy" style={{ marginBottom: 18 }}>
+            By the time you reach the day, the wedding is genuinely yours. The food is the
+            food your family will remember. The bar is the bar your people will actually drink.
+            The flowers are the flowers you chose. And the person walking you through it has
+            been doing this here for ten years.
           </p>
           <p className="body-copy" style={{ marginBottom: 18 }}>
             The full weekend is yours. Friday for the rehearsal dinner. Saturday for the
             wedding. Sunday for brunch. Up to 14 people sleep in the manor and the cottage.
-            No other events. No strangers in the next room. No one hurrying you out at midnight.
+            No other events. No strangers. No one hurrying you out.
           </p>
           <p className="body-copy">
-            If that read sounds right to you, Rixey is probably your kind of place.
+            If that read sounds right, Rixey is probably your kind of place.
           </p>
         </div>
       </section>
@@ -213,8 +220,9 @@ export default async function ComparePage() {
             ))}
           </div>
 
-          {/* Mobile stacked */}
-          <div className="md:hidden" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Mobile stacked. display rules live entirely in Tailwind classes
+              so they don't get overridden by inline styles. */}
+          <div className="flex flex-col gap-4 md:hidden">
             {ROWS.map(row => (
               <div key={row.topic} style={{ background: 'var(--warm-white)', border: '1px solid var(--border)', padding: 18 }}>
                 <p style={{
@@ -227,7 +235,7 @@ export default async function ComparePage() {
                 }}>
                   {row.topic}
                 </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="flex flex-col gap-3">
                   <div>
                     <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--rose)', letterSpacing: '0.18em', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Rixey</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--ink)' }}>{row.rixey}</span>
@@ -262,14 +270,14 @@ export default async function ComparePage() {
           </h2>
           <p className="body-copy" style={{ marginBottom: 18 }}>
             The bundle hides the markup, but the markup is there. A 100-guest wedding at
-            Rixey, with you choosing your caterer, your florist, your DJ, and your bar at
-            retail, typically lands in the same range as a comparable all-inclusive venue.
-            Sometimes meaningfully less. The difference is rarely the dollar total at the
-            bottom of the page.
+            Rixey, with vendors picked at retail and no commissions in the middle, often
+            lands in the same range as a comparable all-inclusive venue. Sometimes
+            meaningfully less.
           </p>
           <p className="body-copy">
-            The difference is whether you want to make the choices, and whether you want
-            to know what you are paying for, line by line.
+            The difference is rarely the dollar total at the bottom of the page. The
+            difference is whether you can see what you're paying for, line by line — and
+            whether the wedding looks like you, or like the venue.
           </p>
         </div>
       </section>
@@ -293,11 +301,12 @@ export default async function ComparePage() {
             So which one are you?
           </h2>
           <p className="body-copy" style={{ marginBottom: 14 }}>
-            If the all-inclusive description was the relief, that is your sign. You would
-            be unhappy at Rixey, and we'd rather you knew that now than after a deposit.
+            If the all-inclusive description sounded right, that's good information. We'd
+            rather you knew now.
           </p>
           <p className="body-copy" style={{ marginBottom: 32 }}>
-            If the Rixey description was the relief, take the quiz, or skip it and book the tour.
+            If the Rixey description sounded right — a wedding built around you, with someone
+            who knows what she's doing in your corner — take the quiz, or skip it and book the tour.
           </p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link href="/quiz" className="btn-rose">
