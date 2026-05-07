@@ -166,6 +166,49 @@ export default function PricingCalculator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Auto-save current calculator state to localStorage so /what-it-costs can
+  // pick up the venue numbers without making the couple fill the calculator
+  // twice. Only saves once a season is picked (calculator can compute a result).
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!season) return
+
+    const seasonObj   = SEASONS.find(s => s.key === season)
+    const guestsObj   = GUEST_TIERS.find(g => g.key === guests)
+    const nightsObj   = NIGHTS.find(n => n.key === nights)
+    const upgradesArr = UPGRADES.filter(u => upgrades.has(u.key)).map(u => ({ key: u.key, label: u.label, price: u.price }))
+    const disc5Arr    = DISCOUNTS_5.filter(d => disc5.has(d.key)).map(d => ({ key: d.key, label: d.label, percent: 5 }))
+    const disc10Arr   = DISCOUNTS_10.filter(d => disc10.has(d.key)).map(d => ({ key: d.key, label: d.label, percent: 10 }))
+
+    const snapshot = {
+      saved_at: new Date().toISOString(),
+      season:   seasonObj  ? { key: seasonObj.key, label: seasonObj.label, base: seasonObj.price }                  : null,
+      guests:   guestsObj  ? { key: guestsObj.key, label: guestsObj.label, modifier: guestsObj.modifier }            : null,
+      nights:   nightsObj  ? { key: nightsObj.key, label: nightsObj.label, amount: result?.nightsAmt ?? 0 }          : null,
+      upgrades: upgradesArr,
+      discounts: [...disc5Arr, ...disc10Arr],
+      totals: result ? {
+        subtotal: result.subtotal,
+        discount_amount: result.discAmt,
+        sub_after_discount: result.subAfterDisc,
+        tax: result.tax,
+        total: result.total,
+        per_payment: result.perPayment,
+      } : null,
+      bartenders: result ? {
+        count: result.bartenders,
+        rate: result.bartenderRate,
+        cost: result.bartenderCost,
+      } : null,
+    }
+
+    try {
+      localStorage.setItem('rixey_venue_snapshot_v1', JSON.stringify(snapshot))
+    } catch {
+      // Quota exceeded or disabled — not worth surfacing to the couple
+    }
+  }, [season, guests, nights, upgrades, disc5, disc10, result])
+
   function toggleSet(setter, key) {
     setter(prev => {
       const next = new Set(prev)

@@ -18,8 +18,11 @@ export async function POST(req) {
 
   const {
     selections, // { category_slug: { category_name, option_label, range_low, range_high } }
-    totalLow,
+    budgetLow,
+    budgetHigh,
+    totalLow,    // grand total including venue + bartender if present
     totalHigh,
+    venueSnapshot, // optional: full snapshot from /pricing localStorage
     nextSteps,
     weddingDate,
     p1Name, p1Email, p1Phone,
@@ -34,6 +37,7 @@ export async function POST(req) {
     selections: selections || {},
     total_low: totalLow ?? null,
     total_high: totalHigh ?? null,
+    venue_snapshot: venueSnapshot || null,
     next_steps: nextSteps?.join(', ') || null,
     wedding_date: weddingDate || null,
     p1_name: p1Name,
@@ -98,8 +102,19 @@ export async function POST(req) {
       .join('\n')
 
     const totalRange = (totalLow != null && totalHigh != null)
-      ? `${fmt(totalLow)}–${fmt(totalHigh)}`
+      ? (totalLow === totalHigh ? fmt(totalLow) : `${fmt(totalLow)}–${fmt(totalHigh)}`)
       : ''
+    const budgetRange = (budgetLow != null && budgetHigh != null)
+      ? `${fmt(budgetLow)}–${fmt(budgetHigh)}`
+      : ''
+
+    // Venue snapshot lines (when present)
+    const v = venueSnapshot || null
+    const venueHasData = v?.totals?.total != null
+    const venueRows = venueHasData ? [
+      ['Venue (' + [v.season?.label, v.guests?.label, v.nights?.label].filter(Boolean).join(' · ') + ')', fmt(v.totals.total)],
+      v.bartenders?.cost ? ['Bartender service (paid direct, no markup)', fmt(v.bartenders.cost)] : null,
+    ].filter(Boolean) : []
 
     const coupleHtml = `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1C1814;">
@@ -107,6 +122,12 @@ export async function POST(req) {
         <p style="color: #7A6E68; font-size: 15px; margin-bottom: 24px;">Here's the wedding you put together. We'll be in touch soon.</p>
 
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+          ${venueRows.map(([label, value]) => `
+            <tr>
+              <td style="padding: 8px 0; border-bottom: 1px solid #E0D8D0; color: #7A6E68; font-size: 13px; width: 40%;">${label}</td>
+              <td style="padding: 8px 0; border-bottom: 1px solid #E0D8D0; font-size: 14px;">${value}</td>
+            </tr>
+          `).join('')}
           ${Object.entries(selections || {}).map(([slug, sel]) => {
             const range = sel.range_low != null && sel.range_high != null
               ? `${fmt(sel.range_low)}–${fmt(sel.range_high)}`
@@ -122,9 +143,9 @@ export async function POST(req) {
 
         ${totalRange ? `
         <div style="background: #F7F3EE; padding: 24px; margin-bottom: 24px;">
-          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #7A6E68; margin: 0 0 6px;">Estimated total</p>
+          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #7A6E68; margin: 0 0 6px;">${venueHasData ? 'Your wedding total' : 'Estimated total'}</p>
           <p style="font-size: 32px; color: #2E7D54; margin: 0; font-weight: normal;">${totalRange}</p>
-          <p style="font-size: 12px; color: #7A6E68; margin: 8px 0 0;">Framework, not quote. Your coordinator will build a real budget with you once you book.</p>
+          <p style="font-size: 12px; color: #7A6E68; margin: 8px 0 0;">${venueHasData ? 'Venue + bartender (fixed) plus everything else (range).' : 'Everything except the venue. Add the venue calculator to see your full total.'} Framework, not quote.</p>
         </div>
         ` : ''}
 
@@ -147,9 +168,19 @@ export async function POST(req) {
       referrer && `referrer: ${referrer}`,
     ].filter(Boolean).join(' · ')
 
+    // Venue summary block for venue email
+    const venueSummary = venueHasData ? [
+      `Venue: ${v.season?.label || ''} · ${v.guests?.label || ''} · ${v.nights?.label || ''}`,
+      v.upgrades?.length ? `  Upgrades: ${v.upgrades.map(u => u.label).join(', ')}` : null,
+      v.discounts?.length ? `  Discounts: ${v.discounts.map(d => d.label).join(', ')}` : null,
+      `  Venue total: ${fmt(v.totals.total)}`,
+      v.bartenders?.cost ? `  Bartenders: ${v.bartenders.count} × ${fmt(v.bartenders.rate)} = ${fmt(v.bartenders.cost)} (paid direct)` : null,
+      v.saved_at ? `  Snapshot saved: ${new Date(v.saved_at).toISOString().slice(0, 10)}` : null,
+    ].filter(Boolean).join('\n') : '⚠ No venue calculator data — couple submitted budget without filling /pricing yet.'
+
     const venueHtml = `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1C1814;">
-        <h2 style="font-size: 24px; font-weight: normal; margin-bottom: 4px;">New budget submission</h2>
+        <h2 style="font-size: 24px; font-weight: normal; margin-bottom: 4px;">New budget submission${venueHasData ? '' : ' (no venue data)'}</h2>
         <p style="color: #7A6E68; font-size: 14px; margin-bottom: 24px;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
         <p style="font-size: 16px; margin-bottom: 4px;"><strong>${p1Name}</strong>${p2Name ? ` &amp; ${p2Name}` : ''}</p>
@@ -159,7 +190,10 @@ export async function POST(req) {
 
         ${weddingDate ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>Date in mind:</strong> ${weddingDate}</p>` : ''}
         ${nextSteps?.length ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>Next steps:</strong> ${nextSteps.join(', ')}</p>` : ''}
-        ${totalRange ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>Estimated total:</strong> ${totalRange}</p>` : ''}
+        ${totalRange ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>${venueHasData ? 'Wedding total' : 'Budget portion'}:</strong> ${totalRange}</p>` : ''}
+        ${venueHasData && budgetRange ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>Budget portion:</strong> ${budgetRange}</p>` : ''}
+
+        <pre style="font-size: 13px; background: #F7F3EE; padding: 16px; white-space: pre-wrap; margin-top: 16px; ${venueHasData ? '' : 'border-left: 3px solid #B8908A;'}">${venueSummary}</pre>
 
         <pre style="font-size: 14px; background: #F7F3EE; padding: 16px; white-space: pre-wrap; margin-top: 16px;">${selectionRows}</pre>
 
@@ -179,7 +213,7 @@ export async function POST(req) {
       resend.emails.send({
         from: 'Rixey Manor Budget <hello@rixeymanor.com>',
         to: 'info@rixeymanor.com',
-        subject: `New budget: ${p1Name}${p2Name ? ` & ${p2Name}` : ''}${totalRange ? ` — ${totalRange}` : ''}`,
+        subject: `New budget${venueHasData ? '' : ' (no venue)'}: ${p1Name}${p2Name ? ` & ${p2Name}` : ''}${totalRange ? ` — ${totalRange}` : ''}`,
         html: venueHtml,
       }),
     ])

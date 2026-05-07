@@ -69,6 +69,11 @@ export default function BudgetCalculator({
   const [selections, setSelections] = useState({})
   const [openVendorOpt, setOpenVendorOpt] = useState(null)
 
+  // Venue snapshot pulled from localStorage. Set by /pricing whenever the
+  // couple touches the venue calculator, so /what-it-costs can carry venue
+  // numbers forward without making them fill the calculator twice.
+  const [venueSnapshot, setVenueSnapshot] = useState(null)
+
   // Contact form state
   const [nextSteps, setNextSteps] = useState(new Set())
   const [weddingDate, setWeddingDate] = useState('')
@@ -90,6 +95,34 @@ export default function BudgetCalculator({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Load any venue snapshot the couple already created on /pricing.
+  // Re-read on focus too — if they tab back from /pricing after editing,
+  // the running estimate should reflect the new number.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    function readSnapshot() {
+      try {
+        const raw = localStorage.getItem('rixey_venue_snapshot_v1')
+        if (!raw) { setVenueSnapshot(null); return }
+        const parsed = JSON.parse(raw)
+        if (!parsed?.totals?.total) { setVenueSnapshot(null); return }
+        setVenueSnapshot(parsed)
+      } catch {
+        setVenueSnapshot(null)
+      }
+    }
+    readSnapshot()
+    window.addEventListener('focus', readSnapshot)
+    return () => window.removeEventListener('focus', readSnapshot)
+  }, [])
+
+  // Convenience: how stale is the snapshot?
+  const venueAgeDays = useMemo(() => {
+    if (!venueSnapshot?.saved_at) return null
+    const ms = Date.now() - new Date(venueSnapshot.saved_at).getTime()
+    return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)))
+  }, [venueSnapshot])
 
   function pickOption(catSlug, optionId) {
     setSelections(prev => ({ ...prev, [catSlug]: optionId }))
@@ -121,9 +154,11 @@ export default function BudgetCalculator({
     })
   }
 
-  // Running estimate from picked options
+  // Running estimate from picked options + venue snapshot.
+  // Venue and bartender are SINGLE numbers (not ranges) and add to both ends
+  // of the budget range to produce the grand total.
   const result = useMemo(() => {
-    let low = 0, high = 0
+    let budgetLow = 0, budgetHigh = 0
     let chosenCount = 0
     let chosenWithRangeCount = 0
     const lines = []
@@ -134,8 +169,8 @@ export default function BudgetCalculator({
       chosenCount++
       const opt = (optionsByCategory[cat.slug] || []).find(o => o.id === optId)
       if (!opt) continue
-      if (opt.range_low != null) low += opt.range_low
-      if (opt.range_high != null) high += opt.range_high
+      if (opt.range_low != null) budgetLow += opt.range_low
+      if (opt.range_high != null) budgetHigh += opt.range_high
       if (opt.range_low != null || opt.range_high != null) chosenWithRangeCount++
       lines.push({
         category_slug: cat.slug,
@@ -147,14 +182,38 @@ export default function BudgetCalculator({
       })
     }
 
+    const venueTotal     = venueSnapshot?.totals?.total ?? null
+    const bartenderTotal = venueSnapshot?.bartenders?.cost ?? null
+    const venueAdd       = (venueTotal ?? 0) + (bartenderTotal ?? 0)
+
+    const hasVenue       = venueTotal != null
+    const hasBudget      = chosenWithRangeCount > 0
+
+    let grandLow  = null, grandHigh = null
+    if (hasVenue && hasBudget) {
+      grandLow  = venueAdd + budgetLow
+      grandHigh = venueAdd + budgetHigh
+    } else if (hasVenue && !hasBudget) {
+      grandLow = grandHigh = venueAdd
+    } else if (!hasVenue && hasBudget) {
+      grandLow  = budgetLow
+      grandHigh = budgetHigh
+    }
+
     return {
       lines,
-      low: chosenWithRangeCount > 0 ? low : null,
-      high: chosenWithRangeCount > 0 ? high : null,
+      budgetLow:  hasBudget ? budgetLow  : null,
+      budgetHigh: hasBudget ? budgetHigh : null,
+      venueTotal,
+      bartenderTotal,
+      grandLow,
+      grandHigh,
       chosenCount,
       chosenWithRangeCount,
+      hasVenue,
+      hasBudget,
     }
-  }, [selections, categories, optionsByCategory])
+  }, [selections, categories, optionsByCategory, venueSnapshot])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -174,8 +233,14 @@ export default function BudgetCalculator({
 
     const payload = {
       selections: selectionsPayload,
-      totalLow: result.low,
-      totalHigh: result.high,
+      // Budget portion only (food, photo, etc.)
+      budgetLow:  result.budgetLow,
+      budgetHigh: result.budgetHigh,
+      // Combined grand total including venue + bartender (when known)
+      totalLow:  result.grandLow,
+      totalHigh: result.grandHigh,
+      // The full venue calculator state from /pricing, if the couple touched it
+      venueSnapshot,
       nextSteps: NEXT_STEPS.filter(s => nextSteps.has(s.key)).map(s => s.label),
       weddingDate,
       p1Name, p1Email, p1Phone,
@@ -193,7 +258,7 @@ export default function BudgetCalculator({
       if (!res.ok) throw new Error('Submission failed')
       setSubmitted(true)
       if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'budget_submit', { total_low: result.low, total_high: result.high })
+        window.gtag('event', 'budget_submit', { total_low: result.grandLow, total_high: result.grandHigh, has_venue: result.hasVenue })
       }
     } catch {
       setSubmitError('Something went wrong. Please email us directly at info@rixeymanor.com')
@@ -204,10 +269,11 @@ export default function BudgetCalculator({
 
   const inputCls = 'w-full border border-[var(--border)] bg-white px-4 py-3 text-[15px] text-[var(--ink)] placeholder:text-[var(--ink-light)] focus:outline-none focus:border-[var(--forest)] transition-colors'
 
-  // Show fallback range when nothing chosen yet
-  const showFallback = result.chosenWithRangeCount === 0 && (fallbackTotalLow != null || fallbackTotalHigh != null)
-  const stickyLow  = result.low  != null ? result.low  : fallbackTotalLow
-  const stickyHigh = result.high != null ? result.high : fallbackTotalHigh
+  // Show fallback range only when nothing has been chosen AND there's no
+  // venue snapshot yet (in either case, the page has nothing real to show).
+  const showFallback = !result.hasBudget && !result.hasVenue && (fallbackTotalLow != null || fallbackTotalHigh != null)
+  const stickyLow  = result.grandLow  != null ? result.grandLow  : fallbackTotalLow
+  const stickyHigh = result.grandHigh != null ? result.grandHigh : fallbackTotalHigh
 
   return (
     <div id="budget-calculator" className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-24">
@@ -339,7 +405,9 @@ export default function BudgetCalculator({
                   </p>
                   {!showFallback && (
                     <p className="text-[13px] text-[var(--ink-light)] mb-5" style={{ fontFamily: 'var(--font-body)' }}>
-                      Across the {result.lines.length} line{result.lines.length === 1 ? '' : 's'} you've picked. Pick the rest to refine the number.
+                      {result.hasVenue && result.hasBudget && `Venue + bartender + ${result.lines.length} budget line${result.lines.length === 1 ? '' : 's'}.`}
+                      {result.hasVenue && !result.hasBudget && `Venue + bartender. Pick options above to grow it.`}
+                      {!result.hasVenue && result.hasBudget && `Across ${result.lines.length} line${result.lines.length === 1 ? '' : 's'}. Add the venue below for your full wedding total.`}
                     </p>
                   )}
                   {showFallback && fallbackTotalNote && (
@@ -348,8 +416,32 @@ export default function BudgetCalculator({
                     </p>
                   )}
 
-                  {result.lines.length > 0 && (
+                  {(result.hasVenue || result.lines.length > 0) && (
                     <div className="flex flex-col gap-1.5 pt-5 mt-1 border-t border-[var(--border)]">
+                      {result.hasVenue && (
+                        <>
+                          <div className="flex justify-between items-baseline gap-2">
+                            <span className="text-[13px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>
+                              Venue
+                              <span className="text-[var(--ink-light)] ml-2">— {[venueSnapshot?.season?.label, venueSnapshot?.guests?.label, venueSnapshot?.nights?.label].filter(Boolean).join(' · ')}</span>
+                            </span>
+                            <span className="text-[13px] text-[var(--forest)] whitespace-nowrap" style={{ fontFamily: 'var(--font-ui)' }}>
+                              {fmt(result.venueTotal)}
+                            </span>
+                          </div>
+                          {result.bartenderTotal > 0 && (
+                            <div className="flex justify-between items-baseline gap-2">
+                              <span className="text-[13px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>
+                                Bartender service
+                                <span className="text-[var(--ink-light)] ml-2">— paid direct, no markup</span>
+                              </span>
+                              <span className="text-[13px] text-[var(--forest)] whitespace-nowrap" style={{ fontFamily: 'var(--font-ui)' }}>
+                                {fmt(result.bartenderTotal)}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      )}
                       {result.lines.map(line => (
                         <div key={line.category_slug} className="flex justify-between items-baseline gap-2">
                           <span className="text-[13px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>
@@ -367,12 +459,25 @@ export default function BudgetCalculator({
                   )}
 
                   <div className="mt-6 pt-5 border-t border-[var(--border)]">
-                    <p className="text-[13px] text-[var(--ink-mid)] leading-relaxed mb-3" style={{ fontFamily: 'var(--font-body)' }}>
-                      <strong>This is everything except the venue.</strong> Add the venue cost from the pricing calculator for your full wedding total.
-                    </p>
-                    <Link href="/pricing#calculator" className="text-link" style={{ fontFamily: 'var(--font-body)', fontSize: 13 }}>
-                      See venue cost →
-                    </Link>
+                    {result.hasVenue ? (
+                      <p className="text-[12px] text-[var(--ink-light)] leading-relaxed mb-0" style={{ fontFamily: 'var(--font-body)' }}>
+                        Venue numbers from your pricing calculator
+                        {venueAgeDays != null && venueAgeDays >= 1 && ` (saved ${venueAgeDays} day${venueAgeDays === 1 ? '' : 's'} ago)`}
+                        .{' '}
+                        <Link href="/pricing#calculator" className="text-link" style={{ fontFamily: 'var(--font-body)' }}>
+                          Refresh →
+                        </Link>
+                      </p>
+                    ) : (
+                      <>
+                        <p className="text-[13px] text-[var(--ink-mid)] leading-relaxed mb-3" style={{ fontFamily: 'var(--font-body)' }}>
+                          <strong>You haven't priced the venue yet.</strong> Add it for your full wedding total.
+                        </p>
+                        <Link href="/pricing#calculator" className="text-link" style={{ fontFamily: 'var(--font-body)', fontSize: 13 }}>
+                          Use the venue calculator →
+                        </Link>
+                      </>
+                    )}
                   </div>
 
                   {fallbackTotalCaveat && (
@@ -503,8 +608,32 @@ export default function BudgetCalculator({
               )}
             </div>
 
-            {result.lines.length > 0 && (
+            {(result.hasVenue || result.lines.length > 0) && (
               <div className="flex flex-col gap-2 mb-6 pb-6 border-b border-[var(--border)]">
+                {result.hasVenue && (
+                  <>
+                    <div className="flex justify-between items-baseline gap-2">
+                      <span className="text-[12px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>Venue</span>
+                      <span className="text-[12px] text-[var(--ink-mid)] text-right" style={{ fontFamily: 'var(--font-body)' }}>
+                        {fmt(result.venueTotal)}
+                        <span className="block text-[10px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-ui)' }}>
+                          from your pricing calculator
+                        </span>
+                      </span>
+                    </div>
+                    {result.bartenderTotal > 0 && (
+                      <div className="flex justify-between items-baseline gap-2">
+                        <span className="text-[12px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>Bartender service</span>
+                        <span className="text-[12px] text-[var(--ink-mid)] text-right" style={{ fontFamily: 'var(--font-body)' }}>
+                          {fmt(result.bartenderTotal)}
+                          <span className="block text-[10px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-ui)' }}>
+                            paid direct, no markup
+                          </span>
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
                 {result.lines.map(line => (
                   <div key={line.category_slug} className="flex justify-between items-baseline gap-2">
                     <span className="text-[12px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>
@@ -535,9 +664,16 @@ export default function BudgetCalculator({
             )}
           </div>
 
-          <p className="text-[12px] text-[var(--ink-light)] mt-3 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
-            Venue cost handled separately on the <Link href="/pricing" className="text-link">pricing calculator</Link>.
-          </p>
+          {result.hasVenue ? (
+            <p className="text-[12px] text-[var(--ink-light)] mt-3 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+              Venue from <Link href="/pricing#calculator" className="text-link">pricing calculator</Link>
+              {venueAgeDays != null && venueAgeDays >= 1 && `, ${venueAgeDays} day${venueAgeDays === 1 ? '' : 's'} ago`}.
+            </p>
+          ) : (
+            <p className="text-[12px] text-[var(--ink-light)] mt-3 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+              Add the venue cost on the <Link href="/pricing#calculator" className="text-link">pricing calculator</Link> for your full total.
+            </p>
+          )}
         </div>
 
       </div>
