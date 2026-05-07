@@ -54,6 +54,7 @@ async function getHomeData() {
       'feature_video_url',
       'video_terrace',
       'video_real_wedding',
+      'what_it_costs_enabled',
     ]),
     getSiteImages(['hero-homepage', 'home-spaces-ceremony', 'home-spaces-ballroom', 'home-spaces-terrace', 'home-spaces-bar', 'home-team-isadora', 'home-quiz-bg']),
   ])
@@ -120,7 +121,7 @@ export default async function HomePage() {
       <AdaptivePrompt />
 
       <OneThingSection />
-      <IncludedStrip />
+      <IncludedStrip whatItCostsEnabled={siteContent.what_it_costs_enabled === 'true'} />
       <PressStrip press={press} />
       <VideoSection
         videoUrl={featureVideoUrl}

@@ -30,6 +30,7 @@ const TABLES = {
 }
 
 const TOTAL_KEYS = [
+  'what_it_costs_enabled',
   'what_it_costs_total_low',
   'what_it_costs_total_high',
   'what_it_costs_total_note',

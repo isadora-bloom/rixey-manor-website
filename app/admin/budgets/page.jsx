@@ -411,6 +411,73 @@ function CategoriesEditor({
   )
 }
 
+// ─── Page visibility (kill switch) ───────────────────────────────────────────
+function VisibilityEditor({ password, total, setTotal }) {
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
+  const enabled = total.what_it_costs_enabled === 'true'
+
+  async function toggle() {
+    const next = enabled ? 'false' : 'true'
+    setTotal(prev => ({ ...prev, what_it_costs_enabled: next }))
+    setSaving(true); setError('')
+    try {
+      await api('PATCH', { _resource: 'total', updates: { what_it_costs_enabled: next } }, password)
+    } catch (e) {
+      setError(e.message)
+      setTotal(prev => ({ ...prev, what_it_costs_enabled: enabled ? 'true' : 'false' }))
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+      <button
+        onClick={toggle}
+        disabled={saving}
+        role="switch"
+        aria-checked={enabled}
+        style={{
+          position: 'relative',
+          width: 56,
+          height: 30,
+          borderRadius: 15,
+          border: 'none',
+          cursor: saving ? 'wait' : 'pointer',
+          background: enabled ? 'var(--forest)' : 'var(--border)',
+          padding: 0,
+          flexShrink: 0,
+          transition: 'background 0.15s',
+        }}
+      >
+        <span style={{
+          position: 'absolute',
+          top: 3,
+          left: enabled ? 29 : 3,
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          background: 'white',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          transition: 'left 0.15s',
+        }} />
+      </button>
+      <div style={{ flex: 1, minWidth: 220 }}>
+        <p style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)', margin: 0 }}>
+          {enabled ? 'Live on the website' : 'Hidden from the website'}
+        </p>
+        <p style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'var(--ink-light)', margin: '2px 0 0' }}>
+          {enabled
+            ? '/what-it-costs is visible to visitors. The homepage link shows.'
+            : '/what-it-costs renders a "coming soon" page (noindex). The homepage link is hidden.'}
+        </p>
+      </div>
+      {error && <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'var(--rose)' }}>{error}</span>}
+    </div>
+  )
+}
+
 // ─── Page-level total ────────────────────────────────────────────────────────
 function TotalEditor({ password, total, setTotal }) {
   const [saving, setSaving] = useState(false)
@@ -519,7 +586,11 @@ export default function BudgetsAdminPage() {
 
       {!loading && !loadError && (
         <>
-          <Section title="Page total" hint="Optional fallback range and caveat shown on /what-it-costs.">
+          <Section title="Page visibility" hint="Show or hide /what-it-costs on the public site.">
+            <VisibilityEditor password={password} total={total} setTotal={setTotal} />
+          </Section>
+
+          <Section title="Page total" hint="Optional fallback range and caveat shown on /what-it-costs." defaultOpen={false}>
             <TotalEditor password={password} total={total} setTotal={setTotal} />
           </Section>
 

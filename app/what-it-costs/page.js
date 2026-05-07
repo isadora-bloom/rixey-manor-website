@@ -5,7 +5,25 @@ import BudgetCalculator from '@/components/budgets/BudgetCalculator'
 
 export const dynamic = 'force-dynamic'
 
+async function isEnabled() {
+  const { data } = await supabaseServer()
+    .from('site_content')
+    .select('value')
+    .eq('key', 'what_it_costs_enabled')
+    .maybeSingle()
+  return data?.value === 'true'
+}
+
 export async function generateMetadata() {
+  const enabled = await isEnabled()
+  if (!enabled) {
+    return {
+      title: 'Coming Soon',
+      description: 'A new page is on its way.',
+      alternates: { canonical: 'https://www.rixeymanor.com/what-it-costs' },
+      robots: { index: false, follow: false },
+    }
+  }
   return {
     title: 'What a Wedding at Rixey Actually Costs',
     description: 'Build the wedding you actually want, line by line. Pick the catering style, the photography level, the music, and see the running estimate. Vendor recommendations match each choice.',
@@ -61,6 +79,48 @@ async function getBudgetData() {
 }
 
 export default async function WhatItCostsPage() {
+  const enabled = await isEnabled()
+
+  if (!enabled) {
+    return (
+      <section style={{
+        minHeight: '60vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'clamp(60px, 10vw, 120px) clamp(20px, 5vw, 60px)',
+        background: 'var(--warm-white)',
+      }}>
+        <div style={{ maxWidth: 520, textAlign: 'center' }}>
+          <p style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 11,
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            color: 'var(--ink-light)',
+            marginBottom: 16,
+          }}>
+            Coming soon
+          </p>
+          <h1 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'clamp(28px, 4vw, 44px)',
+            color: 'var(--ink)',
+            lineHeight: 1.18,
+            marginBottom: 20,
+          }}>
+            We're building this one carefully.
+          </h1>
+          <p className="body-copy" style={{ marginBottom: 28 }}>
+            A new page on what a full wedding at Rixey actually costs, line by line. Back soon.
+            In the meantime, the venue calculator is live.
+          </p>
+          <Link href="/pricing#calculator" className="btn-primary">See venue pricing</Link>
+        </div>
+      </section>
+    )
+  }
+
   const { categories, optionsByCategory, vendorsByOption, content } = await getBudgetData()
 
   const fallbackTotalLow  = content.what_it_costs_total_low ? parseInt(content.what_it_costs_total_low, 10) : null

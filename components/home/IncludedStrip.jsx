@@ -10,7 +10,7 @@ const ITEMS = [
   { label: 'No hidden fees',       sub: 'No service charge. No surprises.',     value: 'No cake-cutting fee. No insurance requirement.' },
 ]
 
-export default function IncludedStrip() {
+export default function IncludedStrip({ whatItCostsEnabled = false }) {
   return (
     <section className="section-cream border-t border-b border-[var(--border)] py-14 px-6 lg:px-10">
       <FadeUp>
@@ -59,12 +59,14 @@ export default function IncludedStrip() {
               The honest version →
             </Link>
           </p>
-          <p className="text-center mt-3" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-light)' }}>
-            Want to see what a full wedding here actually costs?{' '}
-            <Link href="/what-it-costs" className="text-link" style={{ fontFamily: 'var(--font-body)' }}>
-              Line by line →
-            </Link>
-          </p>
+          {whatItCostsEnabled && (
+            <p className="text-center mt-3" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-light)' }}>
+              Want to see what a full wedding here actually costs?{' '}
+              <Link href="/what-it-costs" className="text-link" style={{ fontFamily: 'var(--font-body)' }}>
+                Line by line →
+              </Link>
+            </p>
+          )}
         </FadeUp>
       </FadeUp>
     </section>
