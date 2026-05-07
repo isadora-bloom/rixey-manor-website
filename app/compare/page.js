@@ -140,7 +140,7 @@ export default async function ComparePage() {
             Rixey is the other thing. The estate is yours. The wedding gets built around
             you, not slotted into a template. Your coordinator's job is to help you decide,
             with as much hand-holding as you want and as little as you don't. Because we
-            don't sell in-house upgrades, the advice you get is the advice she'd actually give.
+            don't sell in-house upgrades, the advice you get is the advice they'd actually give.
           </p>
           <p className="body-copy" style={{ marginBottom: 18 }}>
             We don't bring the caterer, the florist, the DJ, or the bar — but you don't pick alone.
@@ -306,7 +306,7 @@ export default async function ComparePage() {
           </p>
           <p className="body-copy" style={{ marginBottom: 32 }}>
             If the Rixey description sounded right — a wedding built around you, with someone
-            who knows what she's doing in your corner — take the quiz, or skip it and book the tour.
+            who knows what they're doing in your corner — take the quiz, or skip it and book the tour.
           </p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link href="/quiz" className="btn-rose">
