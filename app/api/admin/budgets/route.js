@@ -8,30 +8,23 @@ function auth(req) {
   return req.headers.get('x-admin-password') === process.env.ADMIN_PASSWORD
 }
 
-// ── Table whitelist + per-table allowed fields ───────────────────────────────
 const TABLES = {
   categories: {
     table: 'budget_categories',
-    allowed: ['slug', 'name', 'description', 'range_low', 'range_high', 'range_note', 'trade_off_note', 'sort_order', 'active', 'last_reviewed'],
+    allowed: ['slug', 'name', 'description', 'required', 'sort_order', 'active'],
     required: ['slug', 'name'],
     orderBy: 'sort_order',
   },
-  priorities: {
-    table: 'budget_priorities',
-    allowed: ['slug', 'label', 'description', 'sort_order', 'active'],
-    required: ['slug', 'label'],
+  options: {
+    table: 'budget_options',
+    allowed: ['category_slug', 'slug', 'label', 'description', 'range_low', 'range_high', 'range_note', 'sort_order', 'active'],
+    required: ['category_slug', 'slug', 'label'],
     orderBy: 'sort_order',
-  },
-  priorityCategories: {
-    table: 'budget_priority_categories',
-    allowed: ['priority_slug', 'category_slug', 'emphasis', 'note', 'sort_order'],
-    required: ['priority_slug', 'category_slug'],
-    orderBy: 'priority_slug',
   },
   vendors: {
     table: 'budget_vendors',
-    allowed: ['category_slug', 'name', 'descriptor', 'sort_order', 'active', 'consent_on'],
-    required: ['category_slug', 'name'],
+    allowed: ['option_id', 'name', 'descriptor', 'sort_order', 'active', 'consent_on'],
+    required: ['option_id', 'name'],
     orderBy: 'sort_order',
   },
 }
@@ -44,7 +37,6 @@ const TOTAL_KEYS = [
   'what_it_costs_last_reviewed',
 ]
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
 function pickAllowed(spec, fields) {
   const out = {}
   for (const k of spec.allowed) {
@@ -53,7 +45,6 @@ function pickAllowed(spec, fields) {
   return out
 }
 
-// ── Handlers ─────────────────────────────────────────────────────────────────
 export async function GET(req) {
   if (!auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -61,24 +52,21 @@ export async function GET(req) {
   const resource = searchParams.get('resource')
 
   if (resource === 'all') {
-    // Return everything in one shot for the admin page initial load
     const sbi = sb()
-    const [cats, pris, prMap, vendors, totalRows] = await Promise.all([
+    const [cats, opts, vendors, totalRows] = await Promise.all([
       sbi.from('budget_categories').select('*').order('sort_order'),
-      sbi.from('budget_priorities').select('*').order('sort_order'),
-      sbi.from('budget_priority_categories').select('*').order('priority_slug'),
+      sbi.from('budget_options').select('*').order('sort_order'),
       sbi.from('budget_vendors').select('*').order('sort_order'),
       sbi.from('site_content').select('key, value').in('key', TOTAL_KEYS),
     ])
 
-    const errors = [cats, pris, prMap, vendors, totalRows].find(r => r.error)
+    const errors = [cats, opts, vendors, totalRows].find(r => r.error)
     if (errors) return NextResponse.json({ error: errors.error.message }, { status: 500 })
 
     const total = (totalRows.data || []).reduce((acc, r) => { acc[r.key] = r.value; return acc }, {})
     return NextResponse.json({
       categories: cats.data || [],
-      priorities: pris.data || [],
-      priorityCategories: prMap.data || [],
+      options: opts.data || [],
       vendors: vendors.data || [],
       total,
     })
@@ -112,7 +100,7 @@ export async function POST(req) {
   if (!spec) return NextResponse.json({ error: 'unknown resource' }, { status: 400 })
 
   for (const k of spec.required) {
-    if (!body[k]) return NextResponse.json({ error: `${k} required` }, { status: 400 })
+    if (body[k] == null || body[k] === '') return NextResponse.json({ error: `${k} required` }, { status: 400 })
   }
 
   const insertRow = pickAllowed(spec, body)
@@ -130,7 +118,6 @@ export async function PATCH(req) {
   const resource = body._resource
 
   if (resource === 'total') {
-    // body shape: { _resource: 'total', updates: { key1: value1, ... } }
     const updates = body.updates || {}
     const ops = []
     for (const [key, value] of Object.entries(updates)) {

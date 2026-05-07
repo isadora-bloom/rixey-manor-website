@@ -1,18 +1,18 @@
 import { supabaseServer } from '@/lib/supabaseServer'
 import Link from 'next/link'
 import FinalCTA from '@/components/home/FinalCTA'
-import BudgetExplorer from '@/components/budgets/BudgetExplorer'
+import BudgetCalculator from '@/components/budgets/BudgetCalculator'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return {
     title: 'What a Wedding at Rixey Actually Costs',
-    description: 'An honest read on what a full wedding at Rixey costs, line by line. Pick what matters most to you and see where the money goes.',
+    description: 'Build the wedding you actually want, line by line. Pick the catering style, the photography level, the music, and see the running estimate. Vendor recommendations match each choice.',
     alternates: { canonical: 'https://www.rixeymanor.com/what-it-costs' },
     openGraph: {
       title: 'What a Wedding at Rixey Actually Costs',
-      description: 'An honest read on what a full wedding here costs. Line by line. Trade-offs included.',
+      description: 'Build your wedding line by line. Honest ranges. Vendor recommendations matched to each choice.',
       url: 'https://www.rixeymanor.com/what-it-costs',
     },
   }
@@ -21,10 +21,9 @@ export async function generateMetadata() {
 async function getBudgetData() {
   const sb = supabaseServer()
 
-  const [catRes, priRes, mapRes, venRes, contentRes] = await Promise.all([
+  const [catRes, optRes, venRes, contentRes] = await Promise.all([
     sb.from('budget_categories').select('*').eq('active', true).order('sort_order'),
-    sb.from('budget_priorities').select('*').eq('active', true).order('sort_order'),
-    sb.from('budget_priority_categories').select('*'),
+    sb.from('budget_options').select('*').eq('active', true).order('sort_order'),
     sb.from('budget_vendors').select('*').eq('active', true).not('consent_on', 'is', null).order('sort_order'),
     sb.from('site_content').select('key, value').in('key', [
       'what_it_costs_total_low',
@@ -41,30 +40,34 @@ async function getBudgetData() {
     return acc
   }, {})
 
-  // Group vendors by category for client-side reveal
-  const vendorsByCategory = {}
+  const optionsByCategory = {}
+  for (const o of optRes.data || []) {
+    if (!optionsByCategory[o.category_slug]) optionsByCategory[o.category_slug] = []
+    optionsByCategory[o.category_slug].push(o)
+  }
+
+  const vendorsByOption = {}
   for (const v of venRes.data || []) {
-    if (!vendorsByCategory[v.category_slug]) vendorsByCategory[v.category_slug] = []
-    vendorsByCategory[v.category_slug].push({ id: v.id, name: v.name, descriptor: v.descriptor })
+    if (!vendorsByOption[v.option_id]) vendorsByOption[v.option_id] = []
+    vendorsByOption[v.option_id].push({ id: v.id, name: v.name, descriptor: v.descriptor })
   }
 
   return {
     categories: catRes.data || [],
-    priorities: priRes.data || [],
-    priorityMap: mapRes.data || [],
-    vendorsByCategory,
+    optionsByCategory,
+    vendorsByOption,
     content,
   }
 }
 
 export default async function WhatItCostsPage() {
-  const { categories, priorities, priorityMap, vendorsByCategory, content } = await getBudgetData()
+  const { categories, optionsByCategory, vendorsByOption, content } = await getBudgetData()
 
-  const totalLow  = content.what_it_costs_total_low ? parseInt(content.what_it_costs_total_low, 10) : null
-  const totalHigh = content.what_it_costs_total_high ? parseInt(content.what_it_costs_total_high, 10) : null
-  const totalNote    = content.what_it_costs_total_note || ''
-  const totalCaveat  = content.what_it_costs_total_caveat || ''
-  const lastReviewed = content.what_it_costs_last_reviewed || ''
+  const fallbackTotalLow  = content.what_it_costs_total_low ? parseInt(content.what_it_costs_total_low, 10) : null
+  const fallbackTotalHigh = content.what_it_costs_total_high ? parseInt(content.what_it_costs_total_high, 10) : null
+  const fallbackTotalNote   = content.what_it_costs_total_note || ''
+  const fallbackTotalCaveat = content.what_it_costs_total_caveat || ''
+  const lastReviewed        = content.what_it_costs_last_reviewed || ''
 
   const isEmpty = categories.length === 0
 
@@ -94,7 +97,7 @@ export default async function WhatItCostsPage() {
           lineHeight: 1.12,
           marginBottom: 24,
         }}>
-          The whole wedding,<br /><em>line by line.</em>
+          Build the wedding<br /><em>you actually want.</em>
         </h1>
         <p style={{
           fontFamily: 'var(--font-body)',
@@ -104,9 +107,9 @@ export default async function WhatItCostsPage() {
           margin: '0 auto',
           lineHeight: 1.75,
         }}>
-          Most venues end at the venue cost. This goes further.
-          Pick what matters most to you, and see where the money goes,
-          where couples typically push, and where they trim back.
+          Most venues stop at the venue cost. This goes further. Pick the catering, the photography,
+          the music, and the rest. The total updates as you go. Tap the info icons for one or two
+          vendors who fit each choice.
         </p>
       </section>
 
@@ -125,45 +128,35 @@ export default async function WhatItCostsPage() {
           </div>
         </section>
       ) : (
-        <BudgetExplorer
+        <BudgetCalculator
           categories={categories}
-          priorities={priorities}
-          priorityMap={priorityMap}
-          vendorsByCategory={vendorsByCategory}
-          totalLow={totalLow}
-          totalHigh={totalHigh}
-          totalNote={totalNote}
-          totalCaveat={totalCaveat}
+          optionsByCategory={optionsByCategory}
+          vendorsByOption={vendorsByOption}
+          fallbackTotalLow={fallbackTotalLow}
+          fallbackTotalHigh={fallbackTotalHigh}
+          fallbackTotalNote={fallbackTotalNote}
+          fallbackTotalCaveat={fallbackTotalCaveat}
         />
       )}
 
-      {/* Footer disclaimer */}
-      <section style={{
-        padding: 'clamp(40px, 5vw, 64px) clamp(20px, 5vw, 60px)',
-        background: 'var(--warm-white)',
-        borderTop: '1px solid var(--border)',
-        borderBottom: '1px solid var(--border)',
-      }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <p className="body-copy" style={{ marginBottom: 14 }}>
-            These ranges are framework, not quote. Vendor pricing changes,
-            your specific choices change the math, and your coordinator will
-            build a real budget with you once you book. If you want something
-            unusual (mariachi band, kosher catering, drone, mehndi setup, a
-            horse), we have favorites for almost everything. Ask on your tour.
+      {lastReviewed && (
+        <section style={{
+          padding: '24px clamp(20px, 5vw, 60px)',
+          background: 'var(--warm-white)',
+          borderTop: '1px solid var(--border)',
+          textAlign: 'center',
+        }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--ink-light)', margin: 0 }}>
+            Last reviewed {lastReviewed}.
           </p>
-          {lastReviewed && (
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-light)', marginTop: 18 }}>
-              Last reviewed {lastReviewed}.
-            </p>
-          )}
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* CTA */}
+      {/* Closing CTA */}
       <section style={{
         padding: 'clamp(60px, 7vw, 96px) clamp(20px, 5vw, 60px)',
         background: 'var(--cream)',
+        borderTop: '1px solid var(--border)',
         textAlign: 'center',
       }}>
         <div style={{ maxWidth: 560, margin: '0 auto' }}>
@@ -178,8 +171,7 @@ export default async function WhatItCostsPage() {
             Ready to make this real?
           </h2>
           <p className="body-copy" style={{ marginBottom: 28 }}>
-            Tours are free. Isadora gives them herself. Bring your priorities,
-            bring your questions, bring the budget conversation.
+            Tours are free. Isadora gives them herself. Bring your priorities, bring your questions, bring the budget conversation.
           </p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link href="/pricing#book-tour" className="btn-primary">
