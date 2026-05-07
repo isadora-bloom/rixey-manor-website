@@ -147,8 +147,8 @@ export default async function ComparePage() {
             For every category, your coordinator brings two or three recommendations matched
             to your taste, your guests, your budget, and the day you actually want. We don't
             keep a preferred-vendor list because we don't take referral commissions and we
-            don't want to. Every name we pass you, we'd recommend even if we got nothing for it.
-            We almost always get nothing for it.
+            don't want to. The names we pass you are the names we'd recommend to a friend
+            getting married. We do, regularly.
           </p>
           <p className="body-copy" style={{ marginBottom: 18 }}>
             By the time you reach the day, the wedding is genuinely yours. The food is the
