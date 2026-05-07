@@ -363,7 +363,7 @@ export default function PricingCalculator() {
               Bartending — required, billed separately
             </p>
             <p className="text-[15px] text-[var(--ink-mid)] leading-relaxed mb-3" style={{ fontFamily: 'var(--font-body)' }}>
-              You bring your own alcohol, but bartending must be staffed by our in-house team — outside bartenders aren't permitted, for licensing and insurance reasons. <strong>A two-bartender minimum applies</strong>, and we typically staff one bartender per 50 guests. Bartending is billed separately from the venue and not included in the estimate above.
+              You bring your own alcohol. Bartending is staffed by our in-house team, because Virginia ABC requires the property to be served by licensed staff under our liquor liability. The bartenders are paid directly at their rate. <strong>Rixey does not take a markup.</strong> A two-bartender minimum applies, and we typically staff one per 50 guests. Bartending is billed separately and not included in the estimate above.
             </p>
             {result && (
               <p className="text-[13px] text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-body)' }}>
@@ -568,7 +568,7 @@ export default function PricingCalculator() {
                     Plus bartending (required)
                   </p>
                   <p className="text-[13px] text-[var(--ink-mid)] leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
-                    Our bartenders only, billed separately. Two-bartender minimum, around one per 50 guests — we'll confirm staffing with you directly.
+                    Our bartenders, billed separately. Paid directly at their rate, no Rixey markup. Two-bartender minimum, around one per 50 guests. We'll confirm staffing with you on your tour.
                   </p>
                 </div>
                 <p className="text-[12px] text-[var(--ink-light)] mb-0" style={{ fontFamily: 'var(--font-body)' }}>

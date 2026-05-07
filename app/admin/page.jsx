@@ -28,6 +28,11 @@ const SECTIONS = [
     title: 'Availability',
     desc: 'Add and remove booked date ranges that appear on the public availability calendar.',
   },
+  {
+    href: '/admin/budgets',
+    title: 'Budgets',
+    desc: 'Data behind /what-it-costs. Categories, ranges, vendors (with consent tracking), priority chips, and the page-level total.',
+  },
 ]
 
 export default function AdminDashboard() {

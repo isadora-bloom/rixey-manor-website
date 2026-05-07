@@ -2,12 +2,12 @@ import Link from 'next/link'
 import FadeUp from '@/components/ui/FadeUp'
 
 const ITEMS = [
-  { label: 'BYO alcohol',          sub: 'No corkage fee. Buy at retail.' },
-  { label: 'Bring any caterer',    sub: 'No required vendor list.' },
-  { label: 'Décor to borrow',      sub: 'Arbors, lanterns, signs & more.' },
-  { label: 'Coordinator included', sub: 'Not an add-on. From day one.' },
-  { label: 'Overnight stays',      sub: 'Up to 14 guests, both nights.' },
-  { label: 'No hidden fees',       sub: 'No service charge. No surprises.' },
+  { label: 'BYO alcohol',          sub: 'No corkage fee. Buy at retail.',       value: 'Couples save thousands on the bar.' },
+  { label: 'Bring any caterer',    sub: 'No required vendor list.',             value: 'No outside-catering fee.' },
+  { label: 'Décor to borrow',      sub: 'Arbors, lanterns, signs & more.',      value: 'A decade of weddings, free to use.' },
+  { label: 'Coordinator included', sub: 'Not an add-on. From day one.',         value: 'What others quote separately.' },
+  { label: 'Overnight stays',      sub: 'Up to 14 guests, both nights.',        value: 'Lodging at no extra charge.' },
+  { label: 'No hidden fees',       sub: 'No service charge. No surprises.',     value: 'No cake-cutting fee. No insurance requirement.' },
 ]
 
 export default function IncludedStrip() {
@@ -35,6 +35,14 @@ export default function IncludedStrip() {
               >
                 {item.sub}
               </span>
+              {item.value && (
+                <span
+                  className="text-[11px] italic leading-[1.5] text-[var(--rose)] mt-0.5"
+                  style={{ fontFamily: 'var(--font-body)' }}
+                >
+                  {item.value}
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -43,6 +51,18 @@ export default function IncludedStrip() {
             And then there are the things no venue checklist covers.{' '}
             <Link href="/extras" className="text-link" style={{ fontFamily: 'var(--font-body)' }}>
               Only at Rixey →
+            </Link>
+          </p>
+          <p className="text-center mt-3" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-light)' }}>
+            Wondering how this compares to an all-inclusive venue?{' '}
+            <Link href="/compare" className="text-link" style={{ fontFamily: 'var(--font-body)' }}>
+              The honest version →
+            </Link>
+          </p>
+          <p className="text-center mt-3" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-light)' }}>
+            Want to see what a full wedding here actually costs?{' '}
+            <Link href="/what-it-costs" className="text-link" style={{ fontFamily: 'var(--font-body)' }}>
+              Line by line →
             </Link>
           </p>
         </FadeUp>
