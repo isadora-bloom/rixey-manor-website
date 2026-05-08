@@ -3,18 +3,161 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ChevronDown } from 'lucide-react'
 import CalendlyPopupButton from '@/components/ui/CalendlyPopupButton'
 
 const navLinks = [
-  { label: 'The Venue', href: '/venue' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Availability', href: '/availability' },
+  {
+    label: 'The Venue',
+    href: '/venue',
+    sub: [
+      { label: 'The Spaces',      href: '/venue#spaces' },
+      { label: 'Accommodations',  href: '/venue#accommodations' },
+      { label: 'Our Story',       href: '/venue#story' },
+      { label: 'The Team',        href: '/venue#team' },
+      { label: "What's Included", href: '/venue#included' },
+      { label: 'Details',         href: '/venue#details' },
+    ],
+  },
+  {
+    label: 'Pricing',
+    href: '/pricing',
+    sub: [
+      { label: "What's Included", href: '/pricing#included' },
+      { label: 'Calculator',      href: '/pricing#calculator' },
+      { label: 'Other Costs',     href: '/pricing#other-costs' },
+      { label: 'Elopements',      href: '/pricing#elopements' },
+      { label: 'Book a Tour',     href: '/pricing#book-tour' },
+    ],
+  },
+  {
+    label: 'Availability',
+    href: '/availability',
+    sub: [
+      { label: 'Spring',      href: '/availability#season-spring' },
+      { label: 'Summer',      href: '/availability#season-summer' },
+      { label: 'Fall',        href: '/availability#season-fall' },
+      { label: 'Winter',      href: '/availability#season-winter' },
+      { label: 'Check Dates', href: '/availability#calendar' },
+    ],
+  },
   { label: 'Only at Rixey', href: '/extras' },
-  { label: 'Gallery', href: '/gallery' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'The App', href: '/app' },
+  { label: 'Gallery',       href: '/gallery' },
+  { label: 'FAQ',           href: '/faq' },
+  { label: 'The App',       href: '/app' },
 ]
+
+function DesktopNavItem({ link }) {
+  const [open, setOpen] = useState(false)
+  const hasSub = !!link.sub?.length
+
+  if (!hasSub) {
+    return (
+      <Link
+        href={link.href}
+        className="text-[12px] font-medium tracking-[0.12em] uppercase text-[var(--ink-mid)] hover:text-[var(--ink)] transition-colors duration-200 no-underline"
+        style={{ fontFamily: 'var(--font-ui)' }}
+      >
+        {link.label}
+      </Link>
+    )
+  }
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <Link
+        href={link.href}
+        className="flex items-center gap-1 text-[12px] font-medium tracking-[0.12em] uppercase text-[var(--ink-mid)] hover:text-[var(--ink)] transition-colors duration-200 no-underline"
+        style={{ fontFamily: 'var(--font-ui)' }}
+      >
+        {link.label}
+        <ChevronDown size={12} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </Link>
+
+      {/* Hover bridge to keep menu open while moving cursor down */}
+      <div
+        className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 ${open ? 'visible' : 'invisible'}`}
+      >
+        <div
+          className={`min-w-[220px] bg-[var(--warm-white)] border border-[var(--border)] shadow-[0_8px_24px_rgba(28,24,20,0.08)] py-2 transition-opacity duration-150 ${
+            open ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          {link.sub.map(sub => (
+            <Link
+              key={sub.href}
+              href={sub.href}
+              className="block px-5 py-2.5 text-[13px] text-[var(--ink-mid)] hover:text-[var(--forest)] hover:bg-[var(--cream)] transition-colors no-underline"
+              style={{ fontFamily: 'var(--font-body)' }}
+            >
+              {sub.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MobileNavItem({ link, onNavigate }) {
+  const [expanded, setExpanded] = useState(false)
+  const hasSub = !!link.sub?.length
+
+  if (!hasSub) {
+    return (
+      <Link
+        href={link.href}
+        onClick={onNavigate}
+        className="block py-3 border-b border-[var(--border)] no-underline text-[clamp(22px,5vw,28px)] text-[var(--ink)]"
+        style={{ fontFamily: 'var(--font-display)' }}
+      >
+        {link.label}
+      </Link>
+    )
+  }
+
+  return (
+    <div className="border-b border-[var(--border)]">
+      <div className="flex items-center justify-between py-3">
+        <Link
+          href={link.href}
+          onClick={onNavigate}
+          className="no-underline text-[clamp(22px,5vw,28px)] text-[var(--ink)] flex-1"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          {link.label}
+        </Link>
+        <button
+          onClick={() => setExpanded(v => !v)}
+          aria-expanded={expanded}
+          aria-label={`${expanded ? 'Hide' : 'Show'} ${link.label} sections`}
+          className="p-2 -mr-2 text-[var(--ink-light)]"
+        >
+          <ChevronDown size={20} className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
+      {expanded && (
+        <div className="pb-3 pl-2 flex flex-col gap-1">
+          {link.sub.map(sub => (
+            <Link
+              key={sub.href}
+              href={sub.href}
+              onClick={onNavigate}
+              className="block py-2 text-[15px] text-[var(--ink-mid)] no-underline"
+              style={{ fontFamily: 'var(--font-body)' }}
+            >
+              {sub.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Navbar({ calendlyUrl = '' }) {
   const [scrolled, setScrolled] = useState(false)
@@ -56,20 +199,9 @@ export default function Navbar({ calendlyUrl = '' }) {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-10">
+          <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-[12px] font-medium tracking-[0.12em] uppercase transition-colors duration-200 no-underline ${
-                  link.accent
-                    ? 'text-[var(--rose)] hover:text-[var(--ink)]'
-                    : 'text-[var(--ink-mid)] hover:text-[var(--ink)]'
-                }`}
-                style={{ fontFamily: 'var(--font-ui)' }}
-              >
-                {link.label}
-              </Link>
+              <DesktopNavItem key={link.href} link={link} />
             ))}
             <CalendlyPopupButton url={calendlyUrl} className="btn-primary">
               Book a Tour
@@ -112,21 +244,9 @@ export default function Navbar({ calendlyUrl = '' }) {
           </button>
         </div>
 
-        <nav className="flex flex-col gap-1 p-8 mt-4">
+        <nav className="flex flex-col gap-1 p-8 mt-4 overflow-y-auto">
           {navLinks.map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className={`py-3 border-b border-[var(--border)] no-underline ${
-                link.accent
-                  ? 'text-2xl text-[var(--rose)]'
-                  : 'text-[clamp(22px,5vw,28px)] text-[var(--ink)]'
-              }`}
-              style={{ fontFamily: link.accent ? 'var(--font-ui)' : 'var(--font-display)', letterSpacing: link.accent ? '0.1em' : undefined, textTransform: link.accent ? 'uppercase' : undefined, fontSize: link.accent ? 13 : undefined }}
-            >
-              {link.label}
-            </Link>
+            <MobileNavItem key={link.href} link={link} onNavigate={() => setOpen(false)} />
           ))}
           <div className="mt-8">
             <CalendlyPopupButton

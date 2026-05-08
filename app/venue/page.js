@@ -2,7 +2,7 @@ import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import { getOgImage } from '@/lib/getPageSeo'
 import VenueHero from '@/components/venue/VenueHero'
-import AnchorNav from '@/components/venue/AnchorNav'
+import AnchorNav from '@/components/layout/AnchorNav'
 import EstateOverview from '@/components/venue/EstateOverview'
 import VenueSpaces from '@/components/venue/VenueSpaces'
 import Accommodations from '@/components/venue/Accommodations'
@@ -39,6 +39,15 @@ const breadcrumbSchema = {
     { '@type': 'ListItem', position: 2, name: 'The Venue', item: 'https://www.rixeymanor.com/venue' },
   ],
 }
+
+const VENUE_ANCHORS = [
+  { label: 'The Spaces',      href: '#spaces' },
+  { label: 'Accommodations',  href: '#accommodations' },
+  { label: 'Our Story',       href: '#story' },
+  { label: 'The Team',        href: '#team' },
+  { label: "What's Included", href: '#included' },
+  { label: 'Details',         href: '#details' },
+]
 
 async function getVenueData() {
   const [
@@ -99,7 +108,7 @@ export default async function VenuePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <VenueHero heroImage={heroImage} />
-      <AnchorNav />
+      <AnchorNav items={VENUE_ANCHORS} />
       <EstateOverview />
       <VideoSection
         videoUrl={venueTourUrl || featureVideoUrl}

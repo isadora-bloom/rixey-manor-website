@@ -4,6 +4,7 @@ import { getSiteImages } from '@/lib/getSiteImages'
 import { getOgImage } from '@/lib/getPageSeo'
 import FadeUp from '@/components/ui/FadeUp'
 import AvailabilityCalendar from '@/components/availability/AvailabilityCalendar'
+import AnchorNav from '@/components/layout/AnchorNav'
 import FinalCTA from '@/components/home/FinalCTA'
 const supabase = supabaseServer()
 
@@ -32,6 +33,14 @@ const breadcrumbSchema = {
     { '@type': 'ListItem', position: 2, name: 'Availability', item: 'https://www.rixeymanor.com/availability' },
   ],
 }
+
+const AVAILABILITY_ANCHORS = [
+  { label: 'Spring',      href: '#season-spring' },
+  { label: 'Summer',      href: '#season-summer' },
+  { label: 'Fall',        href: '#season-fall' },
+  { label: 'Winter',      href: '#season-winter' },
+  { label: 'Check Dates', href: '#calendar' },
+]
 
 async function getPageData() {
   const [{ data: bookedDates }, { data: content }, seasonImages] = await Promise.all([
@@ -135,6 +144,8 @@ export default async function AvailabilityPage() {
         </div>
       </section>
 
+      <AnchorNav items={AVAILABILITY_ANCHORS} />
+
       {/* Season divider */}
       <section className="bg-[var(--cream)] py-16 lg:py-20 px-6 lg:px-10 border-t border-[var(--border)]">
         <div className="max-w-3xl mx-auto text-center">
@@ -202,7 +213,7 @@ export default async function AvailabilityPage() {
       })}
 
       {/* Calendar */}
-      <section className="bg-[var(--warm-white)] py-16 lg:py-24 px-6 lg:px-10 border-t border-[var(--border)]">
+      <section id="calendar" className="bg-[var(--warm-white)] py-16 lg:py-24 px-6 lg:px-10 border-t border-[var(--border)]">
         <div className="max-w-6xl mx-auto">
           <AvailabilityCalendar bookedDates={bookedDates} calendlyUrl={calendlyUrl} />
         </div>

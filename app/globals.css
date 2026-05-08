@@ -34,6 +34,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keep anchored sections clear of the fixed Navbar (h-20) plus the sticky
+     AnchorNav (h-12) when present. Slightly extra for breathing room. */
+  scroll-padding-top: 8rem;
 }
 
 body {

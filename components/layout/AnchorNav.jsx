@@ -2,30 +2,19 @@
 
 import { useState } from 'react'
 
-const ANCHORS = [
-  { label: 'The Spaces', href: '#spaces' },
-  { label: 'Accommodations', href: '#accommodations' },
-  { label: 'Our Story', href: '#story' },
-  { label: 'The Team', href: '#team' },
-  { label: "What's Included", href: '#included' },
-  { label: 'Details', href: '#details' },
-]
-
-export default function AnchorNav() {
+export default function AnchorNav({ items = [] }) {
   const [open, setOpen] = useState(false)
+
+  if (!items.length) return null
 
   return (
     <nav className="sticky top-16 z-40 bg-[var(--warm-white)] border-b border-[var(--border)]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 relative">
 
         {/* Desktop — inline links */}
-        <div className="hidden lg:flex items-center gap-8 h-12">
-          {ANCHORS.map(a => (
-            <a
-              key={a.href}
-              href={a.href}
-              className="text-link"
-            >
+        <div className="hidden lg:flex items-center gap-8 h-12 overflow-x-auto">
+          {items.map(a => (
+            <a key={a.href} href={a.href} className="text-link whitespace-nowrap">
               {a.label}
             </a>
           ))}
@@ -37,6 +26,7 @@ export default function AnchorNav() {
             onClick={() => setOpen(v => !v)}
             className="flex items-center gap-2 text-[11px] font-medium tracking-[0.2em] uppercase text-[var(--ink-mid)]"
             style={{ fontFamily: 'var(--font-ui)' }}
+            aria-expanded={open}
           >
             Jump to
             <span className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>▾</span>
@@ -44,7 +34,7 @@ export default function AnchorNav() {
 
           {open && (
             <div className="absolute top-full left-0 right-0 bg-[var(--warm-white)] border-b border-[var(--border)] shadow-sm z-50">
-              {ANCHORS.map(a => (
+              {items.map(a => (
                 <a
                   key={a.href}
                   href={a.href}

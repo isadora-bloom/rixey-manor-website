@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import FadeUp from '@/components/ui/FadeUp'
 import PricingCalculator from '@/components/pricing/PricingCalculator'
+import AnchorNav from '@/components/layout/AnchorNav'
 import FinalCTA from '@/components/home/FinalCTA'
 import CalendlyInline from '@/components/ui/CalendlyInline'
 import { supabaseServer } from '@/lib/supabaseServer'
@@ -34,6 +35,14 @@ const breadcrumbSchema = {
     { '@type': 'ListItem', position: 2, name: 'Pricing', item: 'https://www.rixeymanor.com/pricing' },
   ],
 }
+
+const PRICING_ANCHORS = [
+  { label: "What's Included", href: '#included' },
+  { label: 'Calculator',      href: '#calculator' },
+  { label: 'Other Costs',     href: '#other-costs' },
+  { label: 'Elopements',      href: '#elopements' },
+  { label: 'Book a Tour',     href: '#book-tour' },
+]
 
 const pricingFaqSchema = {
   '@context': 'https://schema.org',
@@ -127,6 +136,8 @@ export default async function PricingPage() {
       </section>
 
 
+      <AnchorNav items={PRICING_ANCHORS} />
+
       {/* Manor image — grounds context before the numbers */}
       {heroImage && (
         <div className="relative w-full h-[40vh] lg:h-[55vh] overflow-hidden">
@@ -142,7 +153,7 @@ export default async function PricingPage() {
       )}
 
       {/* What's included — value before the number */}
-      <section className="bg-[var(--warm-white)] py-20 lg:py-28 px-6 lg:px-10 border-b border-[var(--border)]">
+      <section id="included" className="bg-[var(--warm-white)] py-20 lg:py-28 px-6 lg:px-10 border-b border-[var(--border)]">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-[1fr_360px] gap-16 lg:gap-20 items-start">
 
@@ -165,7 +176,8 @@ export default async function PricingPage() {
                     </h3>
                     <p className="body-copy">
                       Every booking is full exclusive use of the property. The ballroom, the rooftop, the
-                      ceremony site, the terrace, the manor library, the kitchen, all 30 acres. No other
+                      ceremony site, the terrace, the manor library, the kitchen,{' '}
+                      <Link href="/venue#spaces" className="text-link">all 30 acres</Link>. No other
                       weddings. No other couples. No strangers in the corridor wondering who you are.
                     </p>
                     <p className="body-copy mt-3">
@@ -215,6 +227,8 @@ export default async function PricingPage() {
                       whose work you've followed for two years. The only exception is bartending, which our
                       licensed in-house team handles. Everything else is yours to choose. We have a vetted
                       recommendation list if you want a starting point. It's a list, not a mandate.
+                      The full vendor and policy notes live in the{' '}
+                      <Link href="/faq" className="text-link">FAQ</Link>.
                     </p>
                   </div>
                 </FadeUp>
@@ -228,7 +242,8 @@ export default async function PricingPage() {
                       Over a decade of weddings at Rixey has left behind a real collection: arbors, signs,
                       table numbers, easels, lanterns, card boxes, candleholders, frames. All of it is
                       available to use at no charge. Most couples who find this out end up cutting a
-                      meaningful chunk from their rentals budget.
+                      meaningful chunk from their rentals budget. More of the{' '}
+                      <Link href="/extras" className="text-link">things you can only do here</Link>.
                     </p>
                   </div>
                 </FadeUp>
@@ -276,7 +291,7 @@ export default async function PricingPage() {
       </section>
 
       {/* Calculator */}
-      <section className="bg-[var(--warm-white)]">
+      <section id="calculator" className="bg-[var(--warm-white)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-4">
           <FadeUp>
             <p className="eyebrow mb-4">Build your estimate</p>
@@ -330,7 +345,7 @@ export default async function PricingPage() {
       )}
 
       {/* What Else to Budget For */}
-      <section className="bg-[var(--cream)] py-20 lg:py-28 px-6 lg:px-10 border-t border-[var(--border)]">
+      <section id="other-costs" className="bg-[var(--cream)] py-20 lg:py-28 px-6 lg:px-10 border-t border-[var(--border)]">
         <div className="max-w-3xl mx-auto">
           <FadeUp>
             <p className="eyebrow mb-6">The full picture</p>
@@ -396,7 +411,7 @@ export default async function PricingPage() {
       </section>
 
       {/* Elopements */}
-      <section className="bg-[var(--cream)] py-20 lg:py-28 px-6 lg:px-10">
+      <section id="elopements" className="bg-[var(--cream)] py-20 lg:py-28 px-6 lg:px-10">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
 
           <FadeUp>
