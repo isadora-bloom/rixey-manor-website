@@ -367,41 +367,55 @@ export default async function PricingPage() {
             {[
               {
                 label: 'Catering',
+                range: '$60–$250 per person',
                 copy: 'The biggest variable, and the one that most affects your total. It depends heavily on service style, menu, and guest count. Food trucks and family-style options tend to run lower than plated full-service. You choose your own caterer. We can connect you with people who know this kitchen.',
               },
               {
                 label: 'Bar',
-                copy: 'Since Rixey is BYOB, you buy at retail. What you spend depends on what you serve and how long the reception runs. Beer and wine only is meaningfully less than a full open bar. Our in-house bartenders handle service and that cost is included in your venue fee.',
+                range: '$10–$20 per person',
+                copy: 'Since Rixey is BYOB, you buy alcohol at retail. What you spend depends on what you serve and how long the reception runs. Beer and wine only is meaningfully less than a full open bar. Our in-house bartenders handle service and are billed separately from venue fee.',
               },
               {
                 label: 'Photography',
-                copy: 'Full-day wedding photography varies widely based on experience, coverage hours, and whether you add videography. If you want a photographer who already knows how the light moves on this property, our recommendation list is a good starting point.',
+                range: '$3,500–$8,500',
+                copy: 'Full-day wedding photography varies widely based on experience and coverage hours. If you book videography too, plan for roughly the same range again. If you want a photographer who already knows how the light moves on this property, our recommendation list is a good starting point.',
               },
               {
                 label: 'Florals',
+                range: '$2,000 and up',
                 copy: 'The range here is enormous and almost entirely a style choice. Simple greenery and personal flowers look beautiful and cost far less than full floral installations. Couples who use the borrow shed often find they need far less than they originally planned.',
               },
               {
                 label: 'Music',
+                range: '$1,600–$9,000',
                 copy: 'A DJ and a live band are very different price points. Ceremony musicians (a string quartet, an acoustic guitar) are usually a separate booking. What you spend here is largely about how important live music is to you.',
               },
               {
                 label: 'Tent (if applicable)',
+                range: '$1,600–$9,000',
                 copy: 'Not required. If you\'re planning an outdoor reception and want weather insurance, a tent with flooring and sidewalls is worth pricing out. Many couples skip it and use the ballroom as the rain plan, which works well.',
               },
               {
                 label: 'Everything else',
-                copy: 'Officiant. Guest transportation. Hair and makeup for the wedding party. Cake or dessert. Signage, stationery, favors. These add up but most are optional and all are yours to decide.',
+                copy: 'Officiant (around $350). Hair and makeup (from $350 per face). Guest transportation ($1,500 to $4,500). Cake or dessert. Signage, stationery, favors. These add up but most are optional and all are yours to decide.',
               },
-            ].map(({ label, copy }) => (
+            ].map(({ label, range, copy }) => (
               <FadeUp key={label}>
                 <div className="border-t border-[var(--border)] pt-7">
                   <h3
-                    className="text-[18px] italic text-[var(--ink)] mb-3"
+                    className={`text-[18px] italic text-[var(--ink)] ${range ? 'mb-1' : 'mb-3'}`}
                     style={{ fontFamily: 'var(--font-display)' }}
                   >
                     {label}
                   </h3>
+                  {range && (
+                    <p
+                      className="text-[11px] tracking-[0.2em] uppercase text-[var(--rose)] mb-4"
+                      style={{ fontFamily: 'var(--font-ui)' }}
+                    >
+                      {range}
+                    </p>
+                  )}
                   <p className="body-copy">{copy}</p>
                 </div>
               </FadeUp>
