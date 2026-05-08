@@ -305,13 +305,10 @@ export default async function ComparePage() {
             rather you knew now.
           </p>
           <p className="body-copy" style={{ marginBottom: 32 }}>
-            If the Rixey description sounded right — a wedding built around you, with someone
-            who knows what they're doing in your corner — take the quiz, or skip it and book the tour.
+            If the Rixey description sounded right, a wedding built around you, with someone
+            who knows what they're doing in your corner, come and see it for yourself.
           </p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <Link href="/quiz" className="btn-rose">
-              Take the quiz
-            </Link>
             <Link href="/pricing#book-tour" className="btn-primary">
               Book a tour
             </Link>

@@ -14,7 +14,6 @@ const navLinks = [
   { label: 'Gallery', href: '/gallery' },
   { label: 'FAQ', href: '/faq' },
   { label: 'The App', href: '/app' },
-  { label: 'Take the Quiz', href: '/quiz', accent: true },
 ]
 
 export default function Navbar({ calendlyUrl = '' }) {

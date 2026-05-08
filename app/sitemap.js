@@ -23,7 +23,6 @@ export default async function sitemap() {
     { url: 'https://www.rixeymanor.com/availability', lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.8 },
     { url: 'https://www.rixeymanor.com/extras',      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: 'https://www.rixeymanor.com/compare',     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: 'https://www.rixeymanor.com/quiz',        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: 'https://www.rixeymanor.com/blog',        lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.7 },
     { url: 'https://www.rixeymanor.com/app',         lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
   ]

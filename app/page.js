@@ -10,7 +10,6 @@ import IncludedStrip from '@/components/home/IncludedStrip'
 import PressStrip from '@/components/home/PressStrip'
 import TestimonialsSection from '@/components/home/TestimonialsSection'
 import SpacesSection from '@/components/home/SpacesSection'
-import QuizSection from '@/components/home/QuizSection'
 import PricingSignal from '@/components/home/PricingSignal'
 import StorySection from '@/components/home/StorySection'
 import FinalCTA from '@/components/home/FinalCTA'
@@ -46,7 +45,6 @@ async function getHomeData() {
     supabase.from('homepage_press').select('*').order('sort_order'),
     supabase.from('spaces').select('*').order('sort_order'),
     supabase.from('site_content').select('key, value').in('key', [
-      'quiz_url',
       'calendly_url',
       'pricing_one_day_from',
       'pricing_weekend_from',
@@ -56,7 +54,7 @@ async function getHomeData() {
       'video_real_wedding',
       'what_it_costs_enabled',
     ]),
-    getSiteImages(['hero-homepage', 'home-spaces-ceremony', 'home-spaces-ballroom', 'home-spaces-terrace', 'home-spaces-bar', 'home-team-isadora', 'home-quiz-bg']),
+    getSiteImages(['hero-homepage', 'home-spaces-ceremony', 'home-spaces-ballroom', 'home-spaces-terrace', 'home-spaces-bar', 'home-team-isadora']),
   ])
 
   const siteContent = (content || []).reduce((acc, row) => {
@@ -76,7 +74,6 @@ async function getHomeData() {
       bar:       siteImages['home-spaces-bar'],
       suite:     siteImages['home-spaces-suite'] || siteImages['venue-room-newlywed'],
     },
-    quizBgImage: siteImages['home-quiz-bg'],
     isadoraImage: siteImages['home-team-isadora'],
     siteContent,
     featureVideoUrl:    siteContent.feature_video_url || '',
@@ -105,7 +102,6 @@ export default async function HomePage() {
     spaces,
     spaceImages,
     heroImage,
-    quizBgImage,
     isadoraImage,
     siteContent,
     featureVideoUrl,
@@ -155,7 +151,6 @@ export default async function HomePage() {
         eyebrow="Real Rixey"
         heading={<>A real wedding,<br /><em>start to finish.</em></>}
       />
-      <QuizSection quizUrl={siteContent.quiz_url} backgroundImage={quizBgImage} />
       <PricingSignal
         oneDayFrom={siteContent.pricing_one_day_from}
         weekendFrom={siteContent.pricing_weekend_from}
