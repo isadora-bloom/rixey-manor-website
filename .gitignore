@@ -43,3 +43,6 @@ next-env.d.ts
 # Processed image output (already uploaded to Supabase)
 scripts/output/
 scripts/output2/
+
+# Client-data exports — contain PII, never commit
+exports/

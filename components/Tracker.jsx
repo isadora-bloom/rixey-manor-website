@@ -22,6 +22,42 @@ export default function Tracker() {
     captureAttribution()
   }, [])
 
+  // Tracked email links: if the visitor arrived with ?lid=<code>, claim it.
+  // Claiming stamps the known client identity (set in /admin/track-link) onto
+  // this browser's visitor_id and records the open. Claim each code at most
+  // once per browser so reloads and email-scanner pre-fetches don't inflate
+  // the count — a localStorage ledger gates it.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const lid = searchParams?.get('lid')
+    if (!lid) return
+
+    const LEDGER_KEY = 'rixey_claimed_links'
+    let claimed = []
+    try { claimed = JSON.parse(localStorage.getItem(LEDGER_KEY) || '[]') } catch {}
+    if (claimed.includes(lid)) return
+
+    const visitor_id = getVisitorId()
+    if (!visitor_id) return
+
+    fetch('/api/track/link-claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: lid, visitor_id }),
+      keepalive: true,
+    })
+      .then((res) => {
+        // Record the claim locally even on a 4xx (unknown code) so we don't
+        // keep retrying a dead link; only skip the ledger on network failure.
+        if (res.ok || (res.status >= 400 && res.status < 500)) {
+          try {
+            localStorage.setItem(LEDGER_KEY, JSON.stringify([...claimed, lid]))
+          } catch {}
+        }
+      })
+      .catch(() => {})
+  }, [searchParams])
+
   useEffect(() => {
     if (typeof window === 'undefined' || !pathname) return
 
