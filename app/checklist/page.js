@@ -72,6 +72,20 @@ const ROWS = [
   { item: 'Recommended vendors only',                            wd: '−5%',  ew: '−5%',  mode: 'percent' },
   { item: 'Under 50 Saturday guests',                            wd: '−10%', ew: '−10%', mode: 'percent' },
   { item: 'Military / veteran / first responder',                wd: '−10%', ew: '−10%', mode: 'percent' },
+
+  // ── Section 4: BYO freedom + other policies ─────────────────────────────
+  // The things couples never think to ask about — until they're six months in
+  // and find out their venue forbids candles, or requires a $300 liability
+  // insurance binder, or charges a corkage fee per bottle.
+  { section: 'header', label: 'Bring-your-own + other policies' },
+  { item: 'Outside caterer of your choice allowed',              wd: 'check', ew: 'check', mode: 'yesno' },
+  { item: 'Food trucks allowed',                                 wd: 'check', ew: 'check', mode: 'yesno' },
+  { item: 'Sparklers allowed (wedding-safe)',                    wd: 'check', ew: 'check', mode: 'yesno' },
+  { item: 'Open-flame candles allowed',                          wd: 'check', ew: 'check', mode: 'yesno' },
+  { item: 'Real-flower petals allowed',                          wd: 'check', ew: 'check', mode: 'yesno' },
+  { item: 'Indoor backup if it rains',                           wd: 'check', ew: 'check', mode: 'yesno' },
+  { item: 'No day-of liability insurance required by venue',     wd: 'check', ew: 'check', mode: 'yesno' },
+  { item: 'Same-sex / LGBTQ+ weddings welcome',                  wd: 'check', ew: 'check', mode: 'yesno' },
 ]
 
 function Cell({ value }) {
