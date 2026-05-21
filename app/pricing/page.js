@@ -2,9 +2,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import FadeUp from '@/components/ui/FadeUp'
 import PricingCalculator from '@/components/pricing/PricingCalculator'
+import InclusionGrid from '@/components/pricing/InclusionGrid'
 import AnchorNav from '@/components/layout/AnchorNav'
 import FinalCTA from '@/components/home/FinalCTA'
 import CalendlyInline from '@/components/ui/CalendlyInline'
+import { ROWS, filterRowsBySection } from '@/lib/inclusionRows'
 import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import { getOgImage } from '@/lib/getPageSeo'
@@ -37,8 +39,9 @@ const breadcrumbSchema = {
 }
 
 const PRICING_ANCHORS = [
-  { label: "What's Included", href: '#included' },
+  { label: 'Why',             href: '#included' },
   { label: 'Calculator',      href: '#calculator' },
+  { label: "What's In It",    href: '#whats-in-it' },
   { label: 'Other Costs',     href: '#other-costs' },
   { label: 'Elopements',      href: '#elopements' },
   { label: 'Book a Tour',     href: '#book-tour' },
@@ -180,10 +183,12 @@ export default async function PricingPage() {
             {/* Left: text */}
             <div>
               <FadeUp>
-                <p className="eyebrow mb-6">What every wedding includes</p>
+                <p className="eyebrow mb-6">Why we sell things this way</p>
                 <p className="body-copy mb-14 max-w-2xl">
-                  Before the number, here's what's in it. We put this first because a price without context
-                  is just a number. You should know what you're getting before you decide if it makes sense.
+                  Three pitches before the calculator. We put them first because a number without
+                  context is just a number — and the way Rixey is priced is the whole point.
+                  The full line-item grid lives below the calculator, and the printable comparison
+                  version is at <Link href="/checklist" className="text-link">/checklist</Link>.
                 </p>
               </FadeUp>
 
@@ -203,36 +208,6 @@ export default async function PricingPage() {
                     <p className="body-copy mt-3">
                       Most venues rent you a room for the afternoon. Rixey gives you a home for the day.
                       Your wedding, built the way you actually want it.
-                    </p>
-                  </div>
-                </FadeUp>
-
-                <FadeUp delay={100}>
-                  <div className="border-t border-[var(--border)] pt-8">
-                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      A coordinator. Included.
-                    </h3>
-                    <p className="body-copy">
-                      Not someone who shows up at 2pm with a clipboard. A coordinator who has run hundreds of
-                      weddings on this specific property, knows which vendors work well here, and has seen
-                      what can go sideways and how to stop it before you notice. She is part of your day from
-                      the start. This is not an add-on.
-                    </p>
-                  </div>
-                </FadeUp>
-
-                <FadeUp delay={140}>
-                  <div className="border-t border-[var(--border)] pt-8">
-                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      Bring your own bar. We pour it.
-                    </h3>
-                    <p className="body-copy">
-                      Rixey is BYOB. You choose the beer, the wine, the spirits. You buy them at retail,
-                      no markup, no corkage fee, no required wine list. Our licensed in-house bartenders
-                      pour it (required by Virginia ABC for our liquor licence and insurance) — and that
-                      bartending is in the package price. Up to six hours of bar service, no separate
-                      invoice. Couples consistently say this saved them thousands compared to per-drink
-                      venue pricing. That is genuinely the point.
                     </p>
                   </div>
                 </FadeUp>
@@ -262,19 +237,6 @@ export default async function PricingPage() {
                   </div>
                 </FadeUp>
 
-                <FadeUp delay={170}>
-                  <div className="border-t border-[var(--border)] pt-8">
-                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      Dogs welcome. No guest minimum.
-                    </h3>
-                    <p className="body-copy">
-                      Bring the dog. We've had a lot of good ones. There's no guest minimum either —
-                      we'll host an elopement of twelve or a wedding of two hundred. Up to 200 Saturday
-                      guests on any package; up to 150 on Friday for Estate Weekend rehearsal dinners.
-                    </p>
-                  </div>
-                </FadeUp>
-
                 <FadeUp delay={180}>
                   <div className="border-t border-[var(--border)] pt-8">
                     <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
@@ -288,35 +250,6 @@ export default async function PricingPage() {
                       And we don't take a markup or referral commission on your other vendors. What they
                       invoice you is what they invoice you. The full vendor and policy notes live in the{' '}
                       <Link href="/faq" className="text-link">FAQ</Link>.
-                    </p>
-                  </div>
-                </FadeUp>
-
-                <FadeUp delay={220}>
-                  <div className="border-t border-[var(--border)] pt-8">
-                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      The borrow shed.
-                    </h3>
-                    <p className="body-copy">
-                      Over a decade of weddings at Rixey has left behind a real collection: arbors, signs,
-                      table numbers, easels, lanterns, card boxes, candleholders, frames. All of it is
-                      available to use at no charge. Most couples who find this out end up cutting a
-                      meaningful chunk from their rentals budget. More of the{' '}
-                      <Link href="/extras" className="text-link">things you can only do here</Link>.
-                    </p>
-                  </div>
-                </FadeUp>
-
-                <FadeUp delay={260}>
-                  <div className="border-t border-[var(--border)] pt-8">
-                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      What you see is what you pay.
-                    </h3>
-                    <p className="body-copy">
-                      No cake-cutting fee. No corkage fee. No service charge added at the end.
-                      No venue insurance requirement buried in page 6 of the contract. We quote a number
-                      and that is what you pay. The calculator below gives you a real estimate, not a
-                      range designed to get you on the phone.
                     </p>
                   </div>
                 </FadeUp>
@@ -362,28 +295,47 @@ export default async function PricingPage() {
         <PricingCalculator />
       </section>
 
-      {/* Comparison checklist callout — strip between calculator and the rest. */}
-      <section className="bg-[var(--warm-white)] border-t border-[var(--border)] py-12 lg:py-14 px-6 lg:px-10">
-        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <div>
-            <p className="eyebrow mb-2">Touring other venues?</p>
-            <p
-              className="text-[var(--ink)] leading-snug mb-1"
-              style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.5vw, 22px)', fontStyle: 'italic' }}
+      {/* What's actually in your number — the line-item grid that replaces
+          the long narrative inclusion list. Shows base + upgrades, Rixey
+          columns only (no competitor columns — that version is at /checklist
+          for couples comparing venues). Same grid component, different config. */}
+      <section id="whats-in-it" className="bg-[var(--cream)] border-t border-[var(--border)] py-20 lg:py-24 px-6 lg:px-10">
+        <div className="max-w-5xl mx-auto">
+          <FadeUp>
+            <p className="eyebrow mb-4">What's actually in your number</p>
+            <h2
+              className="text-[28px] lg:text-[36px] leading-[1.1] text-[var(--ink)] mb-6"
+              style={{ fontFamily: 'var(--font-display)' }}
             >
-              The honest comparison fits on one page.
+              Every line. <em>Both packages.</em>
+            </h2>
+            <p className="body-copy mb-10 max-w-2xl">
+              The base price covers everything in the green band below. Upgrades are listed
+              underneath at their actual cost — no quote-on-request, no asterisks.
             </p>
-            <p className="body-copy text-[14px] mt-2 max-w-lg">
-              Print the checklist, take it on every tour, fill in what's included and what costs extra.
-              The number at the bottom is the real one.
-            </p>
-          </div>
-          <Link
-            href="/checklist"
-            className="btn-outline-white !text-[var(--ink-mid)] !border-[var(--border)] hover:!border-[var(--sage)] hover:!bg-transparent shrink-0"
-          >
-            Use the checklist →
-          </Link>
+          </FadeUp>
+
+          <FadeUp delay={80}>
+            <InclusionGrid
+              rows={filterRowsBySection(ROWS, 'base', 'upgrades')}
+              showCompetitorCols={false}
+              showHeadlinePrice={true}
+              showTotals={false}
+            />
+          </FadeUp>
+
+          <FadeUp delay={140}>
+            <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-[var(--border)]">
+              <p className="body-copy text-[14px] max-w-md">
+                Touring other venues? The printable version of this grid has two blank
+                columns for you to fill in their numbers — plus the discounts and BYO
+                policies you'll want to ask about.
+              </p>
+              <Link href="/checklist" className="text-link shrink-0">
+                Use the printable comparison →
+              </Link>
+            </div>
+          </FadeUp>
         </div>
       </section>
 

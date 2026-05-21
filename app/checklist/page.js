@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import FinalCTA from '@/components/home/FinalCTA'
 import PrintButton from './PrintButton'
+import InclusionGrid from '@/components/pricing/InclusionGrid'
+import { ROWS } from '@/lib/inclusionRows'
 import { supabaseServer } from '@/lib/supabaseServer'
 import { getOgImage } from '@/lib/getPageSeo'
 
@@ -21,112 +23,6 @@ export async function generateMetadata() {
   }
 }
 
-// The checklist is structured as 3 sections so couples can compare what's
-// included, what's available as an upgrade, and what discounts apply at each
-// venue. Rows with `section: 'header'` render a band across all columns.
-//
-// wd / ew values for cell rows:
-//   'check' → green ✓     'dash' → em-dash (not included / not available)
-//   any other string is rendered verbatim ("10pm", "None", "+$1,750", "−10%")
-// `mode` controls how the BLANK competitor columns render:
-//   'dollar' (default) → ☐ +$_____
-//   'yesno'            → ☐ yes / ☐ no
-//   'text'             → ___________________
-//   'percent'          → ☐ +____% (for discount rows)
-const ROWS = [
-  // ── Section 1: what you get for the headline price ──────────────────────
-  { section: 'header', label: "What's in the base price" },
-  { item: 'Venue rental, full day',                       wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Friday access for rehearsal dinner',           wd: 'dash',  ew: 'check', mode: 'dollar' },
-  { item: 'Two nights lodging for 14 (manor + cottage)',  wd: 'dash',  ew: 'check', mode: 'dollar' },
-  { item: 'Chiavari chairs & tables',                     wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Two separate getting-ready spaces',            wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'One wedding per weekend (no shared events)',   wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Licensed bartending — Saturday',               wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Licensed bartending — Friday',                 wd: 'dash',  ew: 'check', mode: 'dollar' },
-  { item: 'BYOB, no corkage fees',                        wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Basic linens',                                 wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Silk floral + candle centerpieces',            wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Borrow shed (décor library)',                  wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'No required vendor list',                      wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'No vendor markup or facility fee',             wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Day-of venue team',                            wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Day-of coordinator',                           wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Pets welcome at ceremony',                     wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Outdoor finish time',                          wd: '10pm',  ew: '10pm',  mode: 'text' },
-  { item: 'Guest minimum',                                wd: 'None',  ew: 'None',  mode: 'text' },
-
-  // ── Section 2: paid upgrades ────────────────────────────────────────────
-  { section: 'header', label: 'Available upgrades' },
-  { item: 'Extra hour beyond standard finish (manor interior)', wd: '+$750/hr', ew: '+$750/hr', mode: 'dollar' },
-  { item: 'Third night of lodging',                              wd: 'dash',     ew: '+$1,750',  mode: 'dollar' },
-  { item: 'Overnight — one night before or after',               wd: '+$1,750',  ew: 'dash',     mode: 'dollar' },
-  { item: 'Overnight — two nights around the wedding',           wd: '+$3,250',  ew: 'dash',     mode: 'dollar' },
-  { item: 'Extra event (cultural ceremony, exit brunch, etc.)',  wd: '+$1,500/50', ew: '+$1,500/50', mode: 'dollar' },
-  { item: 'Larger guest count (101–150 Saturday)',               wd: '+$1,500',  ew: '+$1,500',  mode: 'dollar' },
-  { item: 'Larger guest count (151–200 Saturday)',               wd: '+$3,000',  ew: '+$3,000',  mode: 'dollar' },
-
-  // ── Section 3: discounts ────────────────────────────────────────────────
-  { section: 'header', label: 'Available discounts (stackable up to 20% at Rixey)' },
-  { item: 'Off-site ceremony (church, separate venue)',          wd: '−5%',  ew: '−5%',  mode: 'percent' },
-  { item: 'Recommended vendors only',                            wd: '−5%',  ew: '−5%',  mode: 'percent' },
-  { item: 'Under 50 Saturday guests',                            wd: '−10%', ew: '−10%', mode: 'percent' },
-  { item: 'Military / veteran / first responder',                wd: '−10%', ew: '−10%', mode: 'percent' },
-
-  // ── Section 4: BYO freedom + other policies ─────────────────────────────
-  // The things couples never think to ask about — until they're six months in
-  // and find out their venue forbids candles, or requires a $300 liability
-  // insurance binder, or charges a corkage fee per bottle.
-  { section: 'header', label: 'Bring-your-own + other policies' },
-  { item: 'Outside caterer of your choice allowed',              wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Food trucks allowed',                                 wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Multiple ceremony locations on property',             wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Indoor backup if it rains',                           wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Sparklers allowed (wedding-safe)',                    wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Open-flame candles allowed',                          wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Real-flower petals allowed',                          wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Drone photography allowed',                           wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Day-after pickup window for vendor rentals',          wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'No day-of liability insurance required by venue',     wd: 'check', ew: 'check', mode: 'yesno' },
-  { item: 'Same-sex / LGBTQ+ weddings welcome',                  wd: 'check', ew: 'check', mode: 'yesno' },
-]
-
-function Cell({ value }) {
-  if (value === 'check') {
-    return <span style={{ color: 'var(--forest)', fontSize: 16, fontWeight: 500 }}>✓</span>
-  }
-  if (value === 'dash') {
-    return <span style={{ color: 'var(--ink-light)' }}>—</span>
-  }
-  return <span style={{ color: 'var(--ink)', fontSize: 13 }}>{value}</span>
-}
-
-function BlankCell({ mode }) {
-  if (mode === 'yesno') {
-    return (
-      <span style={{ color: 'var(--ink-light)', fontSize: 12, letterSpacing: '0.05em' }}>
-        ☐ yes &nbsp; ☐ no
-      </span>
-    )
-  }
-  if (mode === 'text') {
-    return <span style={{ color: 'var(--ink-light)' }}>_____________</span>
-  }
-  if (mode === 'percent') {
-    return (
-      <span style={{ color: 'var(--ink-light)', fontSize: 12, letterSpacing: '0.05em' }}>
-        ☐ &nbsp; − _____ %
-      </span>
-    )
-  }
-  // dollar
-  return (
-    <span style={{ color: 'var(--ink-light)', fontSize: 12, letterSpacing: '0.05em' }}>
-      ☐ &nbsp; + $ _________
-    </span>
-  )
-}
-
 export default async function ChecklistPage() {
   const { data: contentRows } = await supabaseServer()
     .from('site_content')
@@ -137,10 +33,6 @@ export default async function ChecklistPage() {
     acc[row.key] = row.value
     return acc
   }, {})
-
-  // Shared cell padding so both screen + print stay tight.
-  const cellPad = '10px 14px'
-  const colTemplate = '2.2fr 1.2fr 1.2fr 1.4fr 1.4fr'
 
   return (
     <>
@@ -196,7 +88,9 @@ export default async function ChecklistPage() {
         </div>
       </section>
 
-      {/* CHECKLIST — visible on both screen and print. */}
+      {/* CHECKLIST — visible on both screen and print. All 4 sections, both
+          competitor columns, and the totals row. Identical artifact to the
+          mini-grid on /pricing, just with the comparison columns added. */}
       <section
         className="checklist-print-root"
         style={{
@@ -242,166 +136,12 @@ export default async function ChecklistPage() {
             </p>
           </div>
 
-          {/* The grid. Five columns: label, WD, EW, two blank competitor cols. */}
-          <div
-            className="checklist-grid"
-            style={{
-              background: '#fff',
-              border: '1px solid var(--border)',
-              fontFamily: 'var(--font-body)',
-              fontSize: 13,
-            }}
-          >
-            {/* Header row */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: colTemplate,
-                fontFamily: 'var(--font-ui)',
-                fontSize: 10,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: 'var(--ink-light)',
-                borderBottom: '1px solid var(--border)',
-                background: 'var(--warm-white)',
-              }}
-            >
-              <div style={{ padding: cellPad }}>&nbsp;</div>
-              <div style={{ padding: cellPad, color: 'var(--rose)', borderLeft: '1px solid var(--border)' }}>
-                The Wedding Day
-              </div>
-              <div style={{ padding: cellPad, color: 'var(--rose)', borderLeft: '1px solid var(--border)' }}>
-                The Estate Weekend
-              </div>
-              <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>
-                Venue: ________________
-              </div>
-              <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>
-                Venue: ________________
-              </div>
-            </div>
-
-            {/* Headline price row */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: colTemplate,
-                borderBottom: '1px solid var(--border)',
-                background: 'var(--warm-white)',
-              }}
-            >
-              <div
-                style={{
-                  padding: cellPad,
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 11,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: 'var(--ink-mid)',
-                  fontWeight: 500,
-                }}
-              >
-                Headline price
-              </div>
-              <div style={{ padding: cellPad, color: 'var(--ink)', borderLeft: '1px solid var(--border)' }}>
-                <strong>$16,000</strong> peak<br />
-                <span style={{ color: 'var(--ink-light)' }}>$12,500 off-season</span>
-              </div>
-              <div style={{ padding: cellPad, color: 'var(--ink)', borderLeft: '1px solid var(--border)' }}>
-                <strong>$21,000</strong> peak<br />
-                <span style={{ color: 'var(--ink-light)' }}>$16,000 off-season</span>
-              </div>
-              <div style={{ padding: cellPad, color: 'var(--ink-light)', borderLeft: '1px solid var(--border)' }}>
-                $ _____________
-              </div>
-              <div style={{ padding: cellPad, color: 'var(--ink-light)', borderLeft: '1px solid var(--border)' }}>
-                $ _____________
-              </div>
-            </div>
-
-            {/* Item rows. Section-header rows render as a single band so the
-                couple can visually group "what's included" vs "upgrades" vs
-                "discounts". Index `i` is used for the zebra-striping only on
-                regular rows. */}
-            {(() => {
-              let stripe = 0
-              return ROWS.map((row, i) => {
-                if (row.section === 'header') {
-                  stripe = 0  // restart stripe within each new section
-                  return (
-                    <div
-                      key={`hdr-${i}`}
-                      style={{
-                        padding: '12px 14px',
-                        background: 'var(--forest)',
-                        color: '#fff',
-                        fontFamily: 'var(--font-ui)',
-                        fontSize: 10,
-                        letterSpacing: '0.22em',
-                        textTransform: 'uppercase',
-                        borderTop: i === 0 ? 'none' : '1px solid var(--border)',
-                        borderBottom: '1px solid var(--border)',
-                      }}
-                    >
-                      {row.label}
-                    </div>
-                  )
-                }
-                const bg = stripe % 2 === 0 ? '#fff' : 'var(--warm-white)'
-                stripe++
-                return (
-                  <div
-                    key={row.item}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: colTemplate,
-                      borderBottom: '1px solid var(--border)',
-                      background: bg,
-                    }}
-                  >
-                    <div style={{ padding: cellPad, color: 'var(--ink-mid)' }}>{row.item}</div>
-                    <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
-                      <Cell value={row.wd} />
-                    </div>
-                    <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
-                      <Cell value={row.ew} />
-                    </div>
-                    <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>
-                      <BlankCell mode={row.mode} />
-                    </div>
-                    <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>
-                      <BlankCell mode={row.mode} />
-                    </div>
-                  </div>
-                )
-              })
-            })()}
-
-            {/* Totals row */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: colTemplate,
-                background: 'var(--cream)',
-                fontFamily: 'var(--font-ui)',
-                fontSize: 11,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--ink)',
-                fontWeight: 600,
-              }}
-            >
-              <div style={{ padding: cellPad }}>Real total — headline + every add-on</div>
-              <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
-                $16,000 / $12,500
-              </div>
-              <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
-                $21,000 / $16,000
-              </div>
-              <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>$ ______________</div>
-              <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>$ ______________</div>
-            </div>
-          </div>
+          <InclusionGrid
+            rows={ROWS}
+            showCompetitorCols={true}
+            showHeadlinePrice={true}
+            showTotals={true}
+          />
 
           {/* Tiny footnote — useful on print too, so no data-no-print. */}
           <p
