@@ -1,10 +1,12 @@
 import { supabaseServer } from '@/lib/supabaseServer'
 import Link from 'next/link'
 import FinalCTA from '@/components/home/FinalCTA'
+import { getOgImage } from '@/lib/getPageSeo'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
+  const ogImage = await getOgImage('compare')
   return {
     title: 'All-Inclusive vs. Rixey — Two Kinds of Wedding Venue',
     description: 'An honest read on the trade-off between an all-inclusive venue and choosing your own vendors at Rixey. Both are valid. Here is how to know which one is yours.',
@@ -13,6 +15,7 @@ export async function generateMetadata() {
       title: 'All-Inclusive vs. Rixey',
       description: 'Two kinds of wedding venue. Both valid. Here is the honest version of what each is for.',
       url: 'https://www.rixeymanor.com/compare',
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630 }] }),
     },
   }
 }
@@ -311,6 +314,9 @@ export default async function ComparePage() {
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link href="/pricing#book-tour" className="btn-primary">
               Book a tour
+            </Link>
+            <Link href="/checklist" className="text-link">
+              Touring other venues? Use the checklist →
             </Link>
           </div>
         </div>

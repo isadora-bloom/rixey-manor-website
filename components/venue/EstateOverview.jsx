@@ -33,9 +33,9 @@ export default function EstateOverview() {
             for the kind of weekend a ballroom-in-a-hotel simply cannot replicate.
           </p>
           <p className="body-copy">
-            When you book Rixey, you get all of it. The whole building. The whole grounds. From Friday afternoon
-            through Sunday morning. No other events, no strangers, no clock running out at midnight. Just your
-            wedding, the way you actually imagined it.
+            When you book the Estate Weekend, you get all of it. The whole building. The whole grounds.
+            From Friday afternoon through Sunday morning. No other events, no strangers, no clock telling
+            you when to leave. Just your wedding, the way you actually imagined it.
           </p>
         </FadeUp>
 

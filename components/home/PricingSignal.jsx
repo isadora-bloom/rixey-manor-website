@@ -3,8 +3,12 @@ import FadeUp from '@/components/ui/FadeUp'
 import CalendlyPopupButton from '@/components/ui/CalendlyPopupButton'
 
 export default function PricingSignal({ oneDayFrom, weekendFrom, availabilityBlurb, calendlyUrl = '' }) {
-  const oneDay = oneDayFrom || '$6,000'
-  const weekend = weekendFrom || '$20,000+'
+  // Defaults aligned with the three-package, two-tier season model.
+  // Midweek (off-season) is the lowest starting point; Estate Weekend (peak)
+  // is the upper bound on the headline range. Real values come from
+  // site_content.pricing_one_day_from / pricing_weekend_from when present.
+  const oneDay = oneDayFrom || '$7,000'
+  const weekend = weekendFrom || '$21,000'
   const availability = availabilityBlurb || 'Peak season weekends still available in 2026 & 2027'
 
   return (
@@ -24,15 +28,18 @@ export default function PricingSignal({ oneDayFrom, weekendFrom, availabilityBlu
           </h2>
           <div className="flex flex-col gap-5 mb-10">
             <p className="body-copy">
-              Midweek and one-day weddings start from <strong>{oneDay}</strong>.
-              Full weekends in peak season reach <strong>{weekend}</strong> depending on guest count and what you add.
-              You can build your own estimate before you ever talk to us.
+              Three packages. Midweek weddings start from <strong>{oneDay}</strong>.
+              Estate Weekends — Friday rehearsal dinner through Sunday brunch with
+              two nights of lodging — reach <strong>{weekend}</strong> in peak season,
+              depending on guest count and what you add. You can build your own
+              estimate before you ever talk to us.
             </p>
             <p className="body-copy">
-              What you see is what you pay. No corkage fees — you buy your own
-              bar at retail and keep the difference. No required vendors. No
-              mandatory upgrades. A coordinator, overnight rooms, and a full
-              décor borrow shed are included before you spend a dollar extra.
+              What you see is what you pay. Licensed bartending, linens, our silk floral
+              and candle package, and the day-of venue team are <strong>in the price</strong>.
+              No corkage fees, no required vendors, no markup on your other vendors. The
+              coordinator and the borrow shed come with every package, before you spend
+              a dollar extra.
             </p>
           </div>
           <Link href="/pricing" className="btn-primary">
@@ -57,7 +64,8 @@ export default function PricingSignal({ oneDayFrom, weekendFrom, availabilityBlu
                 {availability}
               </p>
               <p className="body-copy text-[14px] mb-6">
-                Peak season runs April through November.
+                Off-season is January, February, July and August.
+                Peak is everything else — March through June, September through December.
                 Weekends book quickly. Autumn especially.
               </p>
               <div className="flex flex-col gap-3">

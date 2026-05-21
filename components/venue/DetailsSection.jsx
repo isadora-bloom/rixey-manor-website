@@ -121,10 +121,14 @@ export default function DetailsSection() {
                   Discounts.
                 </h3>
                 <p className="body-copy mb-3">
-                  10% discount for active military, veterans, and first responders. Applied to venue fee. Confirm eligibility when booking.
+                  Stackable discounts up to 20%: off-site ceremony (5%), recommended vendors only (5%),
+                  under-50 Saturday guests (10%), military / veteran / first responder (10%).
+                  Confirmed at signing.
                 </p>
                 <p className="body-copy">
-                  Off-peak pricing available for non-peak months and weekdays, visible in the{' '}
+                  Off-season rates run January, February, July and August across all three packages.
+                  Midweek (Tuesday or Wednesday) carries its own lower rate year-round. The numbers
+                  are visible in the{' '}
                   <Link href="/pricing" className="text-link-forest">pricing calculator</Link>.
                 </p>
               </div>
