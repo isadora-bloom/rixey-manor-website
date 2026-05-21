@@ -8,7 +8,7 @@ export default function PricingSignal({ oneDayFrom, weekendFrom, availabilityBlu
   // is the upper bound on the headline range. Real values come from
   // site_content.pricing_one_day_from / pricing_weekend_from when present.
   const oneDay = oneDayFrom || '$7,000'
-  const weekend = weekendFrom || '$21,000'
+  const weekend = weekendFrom || '$19,000'
   const availability = availabilityBlurb || 'Peak season weekends still available in 2026 & 2027'
 
   return (
