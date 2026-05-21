@@ -113,8 +113,8 @@ const INCLUDED = [
   'Day-of venue team',
   'Licensed bartending — up to 6 hours',
   'BYOB, no corkage fees',
-  'Linens',
-  'Silk floral + candle centerpieces',
+  'Basic table linens (upgrade through your florist/decorator)',
+  'Silk floral + candle centerpieces (real florals through our recommended florists)',
   'Chiavari chairs and tables',
   'Borrow shed — vases, candles, lanterns, signs',
   'No required vendor list',
@@ -462,13 +462,18 @@ export default function PricingCalculator() {
             </div>
           </div>
 
-          {/* 3. Saturday guest count */}
+          {/* 3. Saturday guest count + the under-50 discount lives here, so couples
+              see it at the moment of deciding their guest count — not buried in the
+              discounts section below. */}
           <div>
             <SectionHead num="03" label="Saturday guest count" />
-            <p className="text-[13px] text-[var(--ink-light)] mb-4" style={{ fontFamily: 'var(--font-body)' }}>
+            <p className="text-[13px] text-[var(--ink-light)] mb-1" style={{ fontFamily: 'var(--font-body)' }}>
               Maximum 200 guests. Every 50 (or part of 50) over 100 adds $1,500.
             </p>
-            <div className="flex flex-wrap gap-3">
+            <p className="text-[13px] text-[var(--ink-mid)] mb-4 italic" style={{ fontFamily: 'var(--font-body)' }}>
+              You can always increase your guest count later — start on the lower end if you're unsure.
+            </p>
+            <div className="flex flex-wrap gap-3 mb-5">
               {SAT_TIERS.map(g => (
                 <button
                   key={g.key}
@@ -482,6 +487,26 @@ export default function PricingCalculator() {
                   {g.add > 0 && <span className="ml-2 text-[12px] text-[var(--ink-light)]">+{fmt(g.add)}</span>}
                 </button>
               ))}
+            </div>
+
+            {/* Under-50 discount toggle. Lives here (not in #6/#7) because it's
+                a question about guest count, not a separate discount the couple
+                hunts for. */}
+            <div className="flex items-start gap-4 py-4 px-4 border border-[var(--border)] bg-[var(--cream)]">
+              <Toggle
+                checked={discounts.has('small-wedding')}
+                onChange={() => toggleSet(setDiscounts, 'small-wedding')}
+                id="small-wedding-inline"
+              />
+              <label htmlFor="small-wedding-inline" className="flex-1 cursor-pointer">
+                <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>
+                  Will you have under 50 Saturday guests?
+                </span>
+                <span className="block text-[12px] text-[var(--ink-light)] mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>
+                  Tick for a 10% discount. Only applies when Saturday is genuinely under 50.
+                </span>
+              </label>
+              <span className="text-[13px] font-medium text-[var(--forest)] whitespace-nowrap" style={{ fontFamily: 'var(--font-ui)' }}>−10%</span>
             </div>
           </div>
 
@@ -595,14 +620,16 @@ export default function PricingCalculator() {
             </div>
           </div>
 
-          {/* 7. Discounts */}
+          {/* 7. Discounts. The under-50-guests discount is rendered up near the
+              Saturday guest count selector instead — it's a guest-count question
+              by nature. Filtering it out here keeps the UI single-source. */}
           <div>
-            <SectionHead num={isEW ? '07' : '06'} label="Discounts" />
+            <SectionHead num={isEW ? '07' : '06'} label="Other discounts" />
             <p className="text-[13px] text-[var(--ink-light)] mb-4" style={{ fontFamily: 'var(--font-body)' }}>
-              Stackable, capped at 20% total. Confirmed at signing.
+              Stackable with the small-wedding discount above, capped at 20% total. Confirmed at signing.
             </p>
             <div className="flex flex-col mb-4">
-              {DISCOUNTS.map(d => (
+              {DISCOUNTS.filter(d => d.key !== 'small-wedding').map(d => (
                 <div key={d.key} className="flex items-start gap-4 py-4 border-b border-[var(--border)]">
                   <Toggle checked={discounts.has(d.key)} onChange={() => toggleSet(setDiscounts, d.key)} id={d.key} />
                   <label htmlFor={d.key} className="flex-1 cursor-pointer">

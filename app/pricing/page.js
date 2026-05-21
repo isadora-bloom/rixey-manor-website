@@ -240,14 +240,24 @@ export default async function PricingPage() {
                 <FadeUp delay={155}>
                   <div className="border-t border-[var(--border)] pt-8">
                     <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      Linens, centerpieces, the venue team. All in.
+                      Linens, centerpieces, the venue team. A floor, not a ceiling.
                     </h3>
                     <p className="body-copy">
-                      We've done hundreds of weddings. We know what a table should look like, so we set
-                      it for you — table linens and our silk floral and candle centerpiece package come
-                      with every booking. The day-of venue team is included too: the people who handle
-                      the bits that fall between vendor contracts (setup details, food service support,
-                      guest direction, the small moments nobody else owns). All in the price. No à la carte.
+                      Basic table linens and our silk floral and candle centerpiece package come with
+                      every booking. Set for you, ready to go. For couples whose wedding isn't really
+                      about the décor, that's the table done — it looks good, move on.
+                    </p>
+                    <p className="body-copy mt-3">
+                      For couples where the flowers and the styling <em>are</em> part of the day — and
+                      we work with a lot of them — we know epic florists, decorators, and installation
+                      artists who do real flowers, hanging installations, full tablescapes, anything you
+                      can picture. Use what's included as your floor and build up from there. Your
+                      coordinator brings the right names.
+                    </p>
+                    <p className="body-copy mt-3">
+                      The day-of venue team is included too: the people who handle the bits that fall
+                      between vendor contracts (setup details, food service support, guest direction,
+                      the small moments nobody else owns). All in the price. No à la carte.
                     </p>
                   </div>
                 </FadeUp>

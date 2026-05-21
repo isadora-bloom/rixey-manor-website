@@ -21,14 +21,21 @@ export async function generateMetadata() {
   }
 }
 
-// One row per line in the checklist. wd / ew values:
-//   'check' → green ✓     'dash' → em-dash (not included on this package)
-//   any other string is rendered verbatim ("10pm", "None", etc.)
-// mode controls how the BLANK competitor columns render:
+// The checklist is structured as 3 sections so couples can compare what's
+// included, what's available as an upgrade, and what discounts apply at each
+// venue. Rows with `section: 'header'` render a band across all columns.
+//
+// wd / ew values for cell rows:
+//   'check' → green ✓     'dash' → em-dash (not included / not available)
+//   any other string is rendered verbatim ("10pm", "None", "+$1,750", "−10%")
+// `mode` controls how the BLANK competitor columns render:
 //   'dollar' (default) → ☐ +$_____
 //   'yesno'            → ☐ yes / ☐ no
 //   'text'             → ___________________
+//   'percent'          → ☐ +____% (for discount rows)
 const ROWS = [
+  // ── Section 1: what you get for the headline price ──────────────────────
+  { section: 'header', label: "What's in the base price" },
   { item: 'Venue rental, full day',                       wd: 'check', ew: 'check', mode: 'dollar' },
   { item: 'Friday access for rehearsal dinner',           wd: 'dash',  ew: 'check', mode: 'dollar' },
   { item: 'Two nights lodging for 14 (manor + cottage)',  wd: 'dash',  ew: 'check', mode: 'dollar' },
@@ -38,7 +45,7 @@ const ROWS = [
   { item: 'Licensed bartending — Saturday',               wd: 'check', ew: 'check', mode: 'dollar' },
   { item: 'Licensed bartending — Friday',                 wd: 'dash',  ew: 'check', mode: 'dollar' },
   { item: 'BYOB, no corkage fees',                        wd: 'check', ew: 'check', mode: 'dollar' },
-  { item: 'Linens',                                       wd: 'check', ew: 'check', mode: 'dollar' },
+  { item: 'Basic linens',                                 wd: 'check', ew: 'check', mode: 'dollar' },
   { item: 'Silk floral + candle centerpieces',            wd: 'check', ew: 'check', mode: 'dollar' },
   { item: 'Borrow shed (décor library)',                  wd: 'check', ew: 'check', mode: 'dollar' },
   { item: 'No required vendor list',                      wd: 'check', ew: 'check', mode: 'dollar' },
@@ -48,6 +55,23 @@ const ROWS = [
   { item: 'Pets welcome at ceremony',                     wd: 'check', ew: 'check', mode: 'yesno' },
   { item: 'Outdoor finish time',                          wd: '10pm',  ew: '10pm',  mode: 'text' },
   { item: 'Guest minimum',                                wd: 'None',  ew: 'None',  mode: 'text' },
+
+  // ── Section 2: paid upgrades ────────────────────────────────────────────
+  { section: 'header', label: 'Available upgrades' },
+  { item: 'Extra hour beyond standard finish (manor interior)', wd: '+$750/hr', ew: '+$750/hr', mode: 'dollar' },
+  { item: 'Third night of lodging',                              wd: 'dash',     ew: '+$1,750',  mode: 'dollar' },
+  { item: 'Overnight — one night before or after',               wd: '+$1,750',  ew: 'dash',     mode: 'dollar' },
+  { item: 'Overnight — two nights around the wedding',           wd: '+$3,250',  ew: 'dash',     mode: 'dollar' },
+  { item: 'Extra event (cultural ceremony, exit brunch, etc.)',  wd: '+$1,500/50', ew: '+$1,500/50', mode: 'dollar' },
+  { item: 'Larger guest count (101–150 Saturday)',               wd: '+$1,500',  ew: '+$1,500',  mode: 'dollar' },
+  { item: 'Larger guest count (151–200 Saturday)',               wd: '+$3,000',  ew: '+$3,000',  mode: 'dollar' },
+
+  // ── Section 3: discounts ────────────────────────────────────────────────
+  { section: 'header', label: 'Available discounts (stackable up to 20% at Rixey)' },
+  { item: 'Off-site ceremony (church, separate venue)',          wd: '−5%',  ew: '−5%',  mode: 'percent' },
+  { item: 'Recommended vendors only',                            wd: '−5%',  ew: '−5%',  mode: 'percent' },
+  { item: 'Under 50 Saturday guests',                            wd: '−10%', ew: '−10%', mode: 'percent' },
+  { item: 'Military / veteran / first responder',                wd: '−10%', ew: '−10%', mode: 'percent' },
 ]
 
 function Cell({ value }) {
@@ -70,6 +94,13 @@ function BlankCell({ mode }) {
   }
   if (mode === 'text') {
     return <span style={{ color: 'var(--ink-light)' }}>_____________</span>
+  }
+  if (mode === 'percent') {
+    return (
+      <span style={{ color: 'var(--ink-light)', fontSize: 12, letterSpacing: '0.05em' }}>
+        ☐ &nbsp; − _____ %
+      </span>
+    )
   }
   // dollar
   return (
@@ -271,32 +302,63 @@ export default async function ChecklistPage() {
               </div>
             </div>
 
-            {/* Item rows */}
-            {ROWS.map((row, i) => (
-              <div
-                key={row.item}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: colTemplate,
-                  borderBottom: '1px solid var(--border)',
-                  background: i % 2 === 0 ? '#fff' : 'var(--warm-white)',
-                }}
-              >
-                <div style={{ padding: cellPad, color: 'var(--ink-mid)' }}>{row.item}</div>
-                <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
-                  <Cell value={row.wd} />
-                </div>
-                <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
-                  <Cell value={row.ew} />
-                </div>
-                <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>
-                  <BlankCell mode={row.mode} />
-                </div>
-                <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>
-                  <BlankCell mode={row.mode} />
-                </div>
-              </div>
-            ))}
+            {/* Item rows. Section-header rows render as a single band so the
+                couple can visually group "what's included" vs "upgrades" vs
+                "discounts". Index `i` is used for the zebra-striping only on
+                regular rows. */}
+            {(() => {
+              let stripe = 0
+              return ROWS.map((row, i) => {
+                if (row.section === 'header') {
+                  stripe = 0  // restart stripe within each new section
+                  return (
+                    <div
+                      key={`hdr-${i}`}
+                      style={{
+                        padding: '12px 14px',
+                        background: 'var(--forest)',
+                        color: '#fff',
+                        fontFamily: 'var(--font-ui)',
+                        fontSize: 10,
+                        letterSpacing: '0.22em',
+                        textTransform: 'uppercase',
+                        borderTop: i === 0 ? 'none' : '1px solid var(--border)',
+                        borderBottom: '1px solid var(--border)',
+                      }}
+                    >
+                      {row.label}
+                    </div>
+                  )
+                }
+                const bg = stripe % 2 === 0 ? '#fff' : 'var(--warm-white)'
+                stripe++
+                return (
+                  <div
+                    key={row.item}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: colTemplate,
+                      borderBottom: '1px solid var(--border)',
+                      background: bg,
+                    }}
+                  >
+                    <div style={{ padding: cellPad, color: 'var(--ink-mid)' }}>{row.item}</div>
+                    <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
+                      <Cell value={row.wd} />
+                    </div>
+                    <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
+                      <Cell value={row.ew} />
+                    </div>
+                    <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>
+                      <BlankCell mode={row.mode} />
+                    </div>
+                    <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)' }}>
+                      <BlankCell mode={row.mode} />
+                    </div>
+                  </div>
+                )
+              })
+            })()}
 
             {/* Totals row */}
             <div
