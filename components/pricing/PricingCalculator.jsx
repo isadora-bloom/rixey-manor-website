@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
+import InclusionGrid from '@/components/pricing/InclusionGrid'
+import { ROWS, filterRowsBySection } from '@/lib/inclusionRows'
 import { getUTM } from '@/lib/utm'
 import { getVisitorContext } from '@/lib/visitor'
 
@@ -107,23 +109,10 @@ const NEXT_STEPS = [
   { key: 'planning',  label: 'Learn more about full planning services' },
 ]
 
-const INCLUDED = [
-  'Whole property — one wedding per weekend',
-  'On-site coordinator (planning + wedding day)',
-  'Day-of venue team',
-  'Licensed bartending — up to 6 hours',
-  'BYOB, no corkage fees',
-  'Basic table linens (upgrade through your florist/decorator)',
-  'Silk floral + candle centerpieces (real florals through our recommended florists)',
-  'Chiavari chairs and tables',
-  'Borrow shed — vases, candles, lanterns, signs',
-  'No required vendor list',
-  'No vendor markup or facility fee',
-  'Manor + Blacksmith Cottage for getting ready',
-  'Parking on-site · Wi-Fi throughout the manor',
-  'Pets welcome at the ceremony',
-  'No guest minimum',
-]
+// Inclusions used to live as an inline `INCLUDED` array rendered as bullets.
+// Replaced with <InclusionGrid> in Section #5 so the calculator, the post-
+// calculator grid on /pricing, and /checklist all share one design language.
+// Single source of truth: lib/inclusionRows.js.
 
 const TAX_RATE = 0.06          // Virginia 6% sales tax on venue
 
@@ -535,17 +524,18 @@ export default function PricingCalculator() {
             </div>
           )}
 
-          {/* 5. What's included */}
+          {/* 5. What's included — rendered as the same grid component used on
+              /pricing and /checklist, so the design language stays consistent
+              across surfaces. Just the base-price section, both packages
+              shown side-by-side for compare. */}
           <div>
             <SectionHead num={isEW ? '05' : '04'} label="Included with every package" />
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
-              {INCLUDED.map(item => (
-                <li key={item} className="flex items-start gap-3">
-                  <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[var(--forest)] flex-shrink-0" />
-                  <span className="text-[14px] text-[var(--ink-mid)] leading-snug" style={{ fontFamily: 'var(--font-body)' }}>{item}</span>
-                </li>
-              ))}
-            </ul>
+            <InclusionGrid
+              rows={filterRowsBySection(ROWS, 'base')}
+              showCompetitorCols={false}
+              showHeadlinePrice={false}
+              showTotals={false}
+            />
             <p className="text-[12px] text-[var(--ink-light)] mt-4 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
               Bartending is in-house only — Virginia ABC requires our liquor licence and insurance to cover the bar. The bar is open up to 6 hours.
             </p>
