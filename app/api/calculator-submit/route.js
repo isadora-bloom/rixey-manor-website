@@ -89,9 +89,9 @@ export async function POST(req) {
     const wantsContract = nextSteps?.some(s => /contract/i.test(s))
 
     const summaryLines = [
-      `Season: ${season}`,
+      `Package & season: ${season}`,
       `Guests: ${guests}`,
-      `Overnight stays: ${nights}`,
+      nights ? `Overnight stays: ${nights}` : null,
       upgrades?.length ? `Upgrades: ${upgrades.join(', ')}` : null,
       discounts5?.length ? `5% discounts: ${discounts5.join(', ')}` : null,
       discounts10?.length ? `10% discounts: ${discounts10.join(', ')}` : null,
@@ -100,7 +100,7 @@ export async function POST(req) {
       tax ? `  Sales tax (6%): $${tax.toLocaleString()}` : null,
       `Per payment (×3): $${perPayment?.toLocaleString()}`,
       ``,
-      `Plus bartending — required, billed separately. Two-bartender minimum, ~1 per 50 guests (around ${bartenders ?? 2} for this guest count). In-house bartenders only — final staffing and pricing confirmed directly.`,
+      `Bartending, linens, silk floral + candle package, venue team, coordinator: all in the price above.`,
     ].filter(Boolean).join('\n')
 
     const coupleHtml = `
@@ -110,9 +110,9 @@ export async function POST(req) {
 
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
           ${[
-            ['Season', season],
+            ['Package & season', season],
             ['Guests', guests],
-            ['Overnight stays', nights],
+            nights ? ['Overnight stays', nights] : null,
             upgrades?.length ? ['Upgrades', upgrades.join(', ')] : null,
             discounts5?.length ? ['5% discounts', discounts5.join(', ')] : null,
             discounts10?.length ? ['10% discounts', discounts10.join(', ')] : null,
@@ -132,12 +132,9 @@ export async function POST(req) {
         </div>
 
         <div style="border: 1px solid #E0D8D0; padding: 20px; margin-bottom: 24px;">
-          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #B8908A; margin: 0 0 8px;">Plus bartending — required, billed separately</p>
-          <p style="font-size: 14px; color: #3D3530; margin: 0 0 6px; line-height: 1.5;">
-            You bring your own alcohol, but bartending must be staffed by our in-house team — outside bartenders aren't permitted, for licensing and insurance reasons. <strong>Two-bartender minimum</strong>, typically one per 50 guests.
-          </p>
-          <p style="font-size: 13px; color: #7A6E68; margin: 0;">
-            For ${guests} guests, plan on around <strong>${bartenders ?? 2} bartenders</strong>. We'll confirm staffing and pricing with you directly.
+          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #2E7D54; margin: 0 0 8px;">What's in the price above</p>
+          <p style="font-size: 14px; color: #3D3530; margin: 0; line-height: 1.6;">
+            Licensed bartending (up to 6 hours), table linens, the silk floral and candle package, day-of venue team, on-site coordinator, Chiavari chairs and tables, and the borrow shed — all included. BYOB with no corkage. No required vendor list. No vendor markup.
           </p>
         </div>
 

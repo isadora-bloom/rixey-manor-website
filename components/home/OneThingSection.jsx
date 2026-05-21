@@ -60,13 +60,13 @@ export default function OneThingSection() {
             <AdaptiveCopy
               as="p"
               className="body-copy"
-              defaultContent="There are no other events. No strangers in the next room. No one hurrying you out at midnight. Just your people, your weekend, your wedding, exactly as you imagined it."
+              defaultContent="There are no other events. No strangers in the next room. No one hurrying you out before you're ready. Just your people, your weekend, your wedding, exactly as you imagined it."
               byRole={{
-                couple:        "There are no other events. No strangers in the next room. No one hurrying you out at midnight. Just your people, your weekend, your wedding, exactly as you imagined it.",
-                parent:        "There are no other events. No strangers in the next room. No one hurrying anyone out at midnight. Just the right people, the whole weekend, the wedding exactly as they imagined it.",
-                friend_family: "There are no other events. No strangers in the next room. No one hurrying anyone out at midnight. Just the right people, the whole weekend, the wedding exactly as they imagined it.",
-                planner:       "There are no other events. No strangers in the next room. No one hurrying anyone out at midnight. Just the right people, the whole weekend, the wedding exactly as your couple imagined it.",
-                browsing:      "There are no other events. No strangers in the next room. No one hurrying anyone out at midnight. Just the right people, the whole weekend, the wedding exactly as imagined.",
+                couple:        "There are no other events. No strangers in the next room. No one hurrying you out before you're ready. Just your people, your weekend, your wedding, exactly as you imagined it.",
+                parent:        "There are no other events. No strangers in the next room. No one hurrying anyone out before they're ready. Just the right people, the whole weekend, the wedding exactly as they imagined it.",
+                friend_family: "There are no other events. No strangers in the next room. No one hurrying anyone out before they're ready. Just the right people, the whole weekend, the wedding exactly as they imagined it.",
+                planner:       "There are no other events. No strangers in the next room. No one hurrying anyone out before they're ready. Just the right people, the whole weekend, the wedding exactly as your couple imagined it.",
+                browsing:      "There are no other events. No strangers in the next room. No one hurrying anyone out before they're ready. Just the right people, the whole weekend, the wedding exactly as imagined.",
               }}
             />
           </div>

@@ -2,9 +2,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import FadeUp from '@/components/ui/FadeUp'
 import PricingCalculator from '@/components/pricing/PricingCalculator'
+import InclusionGrid from '@/components/pricing/InclusionGrid'
 import AnchorNav from '@/components/layout/AnchorNav'
 import FinalCTA from '@/components/home/FinalCTA'
 import CalendlyInline from '@/components/ui/CalendlyInline'
+import { ROWS, filterRowsBySection } from '@/lib/inclusionRows'
 import { supabaseServer } from '@/lib/supabaseServer'
 import { getSiteImages } from '@/lib/getSiteImages'
 import { getOgImage } from '@/lib/getPageSeo'
@@ -37,7 +39,8 @@ const breadcrumbSchema = {
 }
 
 const PRICING_ANCHORS = [
-  { label: "What's Included", href: '#included' },
+  { label: 'Why',             href: '#included' },
+  { label: "What's In It",    href: '#whats-in-it' },
   { label: 'Calculator',      href: '#calculator' },
   { label: 'Other Costs',     href: '#other-costs' },
   { label: 'Elopements',      href: '#elopements' },
@@ -50,33 +53,53 @@ const pricingFaqSchema = {
   mainEntity: [
     {
       '@type': 'Question',
-      name: 'What is included in the Rixey Manor venue fee?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Every booking includes full exclusive use of the estate, a Rixey coordinator, tables and chairs for up to 100 indoor guests, use of the borrow shed, overnight accommodation for up to 14 guests, and on-site parking. Catering, alcohol, and third-party vendors are not included and are chosen by the couple.' },
+      name: 'What are the three Rixey Manor wedding packages?',
+      acceptedAnswer: { '@type': 'Answer', text: 'There are three. The Estate Weekend (Friday afternoon through Sunday morning, includes Friday rehearsal dinner and two nights of lodging for up to 14 guests). The Wedding Day (Saturday only, 8am to 10pm, no rehearsal dinner, overnights available as upgrades). The Midweek Wedding (Tuesday or Wednesday, 8am to 9pm, no rehearsal dinner and no overnights). Same venue, same team, same coordinator across all three.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is included in the Rixey Manor wedding package?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Every package includes full exclusive use of the estate (one wedding per weekend), a Rixey coordinator, the day-of venue team, licensed in-house bartending (up to 6 hours), table linens, our silk floral and candle centerpiece package, Chiavari chairs and tables, the borrow shed (décor library), BYOB with no corkage fees, and no required vendor list. Catering, alcohol, and third-party vendors are chosen by the couple. The Estate Weekend additionally includes Friday rehearsal dinner space and two nights of lodging for up to 14 guests.' },
     },
     {
       '@type': 'Question',
       name: 'Can we bring our own alcohol?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Rixey Manor is BYOB with no corkage fees — you source and purchase your own bar. Bartending must be staffed by our licensed in-house team for licensing and insurance reasons; outside bartenders are not permitted. Bartenders are billed separately at $400 each for 2027 weddings onward (or $350 for remaining 2026 dates), with a two-bartender minimum and roughly one bartender per 50 guests.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Rixey Manor is BYOB with no corkage fees — you source and purchase your own bar at retail. Bartending is included in the package price (up to 6 hours), staffed by our licensed in-house team, as required by Virginia ABC licensing and insurance. Outside bartenders are not permitted.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'What time does the wedding need to wrap up?',
+      acceptedAnswer: { '@type': 'Answer', text: 'On the Estate Weekend and Wedding Day, the standard wrap is 10pm. Extra hours are available as an upgrade at $750 per hour, and they include tent access, amplified music, and the fire pit outside — guests can stay where they are, the bar can keep pouring (within the 6-hour bar maximum), the music can keep playing. The Midweek Wedding finishes at 9pm with the property fully cleared by 10pm; no extensions available on Midweek.' },
     },
     {
       '@type': 'Question',
       name: 'Do you require us to use your preferred vendors?',
-      acceptedAnswer: { '@type': 'Answer', text: 'No. Rixey Manor has no required vendor list. You can hire any licensed and insured caterer, photographer, florist, or other vendor you choose. The one exception is bartending, which must be staffed by our licensed in-house team — billed separately, with a two-bartender minimum.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'No. Rixey Manor has no required vendor list. You can hire any licensed and insured caterer, photographer, florist, DJ, or other vendor you choose. The only exception is bartending, which is included in the package and staffed by our licensed in-house team. We do not take a markup or referral commission on your other vendors.' },
     },
     {
       '@type': 'Question',
       name: 'Is there a military or first responder discount?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Yes. A 10% discount applies to the venue fee for active military, veterans, and first responders. Confirm eligibility when booking.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Yes. A 10% discount applies for active military, veterans, and first responders. Discounts stack with off-site ceremony (5%), recommended vendors only (5%), and under-50 Saturday guests (10%), up to a total cap of 20%.' },
     },
     {
       '@type': 'Question',
       name: 'Do you offer elopement packages?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Elopement packages are available Monday through Wednesday for up to 12 guests, starting at $950.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Elopement packages are available Monday through Wednesday for up to 12 guests, ranging from $950 to $1,250.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the maximum guest count?',
+      acceptedAnswer: { '@type': 'Answer', text: '200 guests Saturday on any package. The Estate Weekend Friday rehearsal dinner is capped at 150 guests. There is no minimum — we host elopements as small as twelve and weddings up to two hundred.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Are pets welcome at the ceremony?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Dogs are welcome at the ceremony and on the property.' },
     },
     {
       '@type': 'Question',
       name: 'Are there hidden fees?',
-      acceptedAnswer: { '@type': 'Answer', text: 'No. There is no cake-cutting fee, corkage fee, service charge, or venue insurance requirement. The price quoted is what you pay.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'No. There is no cake-cutting fee, no corkage fee, no service charge added at the end, no venue insurance requirement, and no vendor markup or facility fee on your other vendors. The price quoted in the calculator is what you pay (plus 6% Virginia sales tax, shown).' },
     },
   ],
 }
@@ -160,11 +183,7 @@ export default async function PricingPage() {
             {/* Left: text */}
             <div>
               <FadeUp>
-                <p className="eyebrow mb-6">What every wedding includes</p>
-                <p className="body-copy mb-14 max-w-2xl">
-                  Before the number, here's what's in it. We put this first because a price without context
-                  is just a number. You should know what you're getting before you decide if it makes sense.
-                </p>
+                <p className="eyebrow mb-10">Why we sell things this way</p>
               </FadeUp>
 
               <div className="flex flex-col gap-10">
@@ -187,32 +206,27 @@ export default async function PricingPage() {
                   </div>
                 </FadeUp>
 
-                <FadeUp delay={100}>
+                <FadeUp delay={155}>
                   <div className="border-t border-[var(--border)] pt-8">
                     <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      A coordinator. Included.
+                      Linens, centerpieces, the venue team. A floor, not a ceiling.
                     </h3>
                     <p className="body-copy">
-                      Not someone who shows up at 2pm with a clipboard. A coordinator who has run hundreds of
-                      weddings on this specific property, knows which vendors work well here, and has seen
-                      what can go sideways and how to stop it before you notice. She is part of your day from
-                      the start. This is not an add-on.
+                      Basic table linens and our silk floral and candle centerpiece package come with
+                      every booking. Set for you, ready to go. For couples whose wedding isn't really
+                      about the décor, that's the table done. It looks good. Move on.
                     </p>
-                  </div>
-                </FadeUp>
-
-                <FadeUp delay={140}>
-                  <div className="border-t border-[var(--border)] pt-8">
-                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      Bring your own bar. Keep your money.
-                    </h3>
-                    <p className="body-copy">
-                      Rixey is BYOB. You choose the beer, the wine, the spirits. You buy them at retail,
-                      no markup, no corkage fee, no required wine list. Our licensed in-house bartenders
-                      pour it — required for licensing and insurance, billed separately at $400 each
-                      for 2027 dates onward (or $350 for remaining 2026 dates), with a two-bartender minimum.
-                      Couples consistently say this saved them thousands compared to per-drink venue pricing.
-                      That is genuinely the point.
+                    <p className="body-copy mt-3">
+                      For couples where the flowers and the styling <em>are</em> part of the day (and
+                      we work with a lot of them), we know epic florists, decorators, and installation
+                      artists who do real flowers, hanging installations, full tablescapes, anything you
+                      can picture. Use what's included as your floor and build up from there. Your
+                      coordinator brings the right names.
+                    </p>
+                    <p className="body-copy mt-3">
+                      The day-of venue team is included too: the people who handle the bits that fall
+                      between vendor contracts (setup details, food service support, guest direction,
+                      the small moments nobody else owns). All in the price. No à la carte.
                     </p>
                   </div>
                 </FadeUp>
@@ -220,44 +234,16 @@ export default async function PricingPage() {
                 <FadeUp delay={180}>
                   <div className="border-t border-[var(--border)] pt-8">
                     <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      Your people, your vendors.
+                      Your people, your vendors. No markup.
                     </h3>
                     <p className="body-copy">
                       Hire your cousin's band. Use the caterer your family loves. Book the photographer
-                      whose work you've followed for two years. The only exception is bartending, which our
-                      licensed in-house team handles. Everything else is yours to choose. We have a vetted
-                      recommendation list if you want a starting point. It's a list, not a mandate.
-                      The full vendor and policy notes live in the{' '}
+                      whose work you've followed for two years. The only exception is bartending, which
+                      our licensed in-house team handles. Everything else is yours to choose. We have a
+                      vetted recommendation list if you want a starting point. It's a list, not a mandate.
+                      And we don't take a markup or referral commission on your other vendors. What they
+                      invoice you is what they invoice you. The full vendor and policy notes live in the{' '}
                       <Link href="/faq" className="text-link">FAQ</Link>.
-                    </p>
-                  </div>
-                </FadeUp>
-
-                <FadeUp delay={220}>
-                  <div className="border-t border-[var(--border)] pt-8">
-                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      The borrow shed.
-                    </h3>
-                    <p className="body-copy">
-                      Over a decade of weddings at Rixey has left behind a real collection: arbors, signs,
-                      table numbers, easels, lanterns, card boxes, candleholders, frames. All of it is
-                      available to use at no charge. Most couples who find this out end up cutting a
-                      meaningful chunk from their rentals budget. More of the{' '}
-                      <Link href="/extras" className="text-link">things you can only do here</Link>.
-                    </p>
-                  </div>
-                </FadeUp>
-
-                <FadeUp delay={260}>
-                  <div className="border-t border-[var(--border)] pt-8">
-                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                      What you see is what you pay.
-                    </h3>
-                    <p className="body-copy">
-                      No cake-cutting fee. No corkage fee. No service charge added at the end.
-                      No venue insurance requirement buried in page 6 of the contract. We quote a number
-                      and that is what you pay. The calculator below gives you a real estimate, not a
-                      range designed to get you on the phone.
                     </p>
                   </div>
                 </FadeUp>
@@ -287,6 +273,51 @@ export default async function PricingPage() {
             )}
 
           </div>
+        </div>
+      </section>
+
+      {/* What's actually in your number — line-item grid showing base price
+          inclusions + upgrades. Rixey columns only (the comparison-with-blank-
+          competitor-columns version lives at /checklist for printing). Sits
+          between the voice blocks and the calculator: couples see the full
+          inclusion picture before they build their estimate. */}
+      <section id="whats-in-it" className="bg-[var(--cream)] border-t border-[var(--border)] py-20 lg:py-24 px-6 lg:px-10">
+        <div className="max-w-5xl mx-auto">
+          <FadeUp>
+            <p className="eyebrow mb-4">What's actually in your number</p>
+            <h2
+              className="text-[28px] lg:text-[36px] leading-[1.1] text-[var(--ink)] mb-6"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Every line. <em>Both packages.</em>
+            </h2>
+            <p className="body-copy mb-10 max-w-2xl">
+              The base price covers everything in the green band below. Upgrades are listed
+              underneath at their actual cost. No quote-on-request. No asterisks.
+            </p>
+          </FadeUp>
+
+          <FadeUp delay={80}>
+            <InclusionGrid
+              rows={filterRowsBySection(ROWS, 'base', 'upgrades')}
+              showCompetitorCols={false}
+              showHeadlinePrice={true}
+              showTotals={false}
+            />
+          </FadeUp>
+
+          <FadeUp delay={140}>
+            <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-[var(--border)]">
+              <p className="body-copy text-[14px] max-w-md">
+                Touring other venues? The printable version of this grid has two blank
+                columns for you to fill in their numbers, plus the discounts and BYO
+                policies you'll want to ask about.
+              </p>
+              <Link href="/checklist" className="text-link shrink-0">
+                Use the printable comparison →
+              </Link>
+            </div>
+          </FadeUp>
         </div>
       </section>
 
@@ -371,9 +402,9 @@ export default async function PricingPage() {
                 copy: 'The biggest variable, and the one that most affects your total. It depends heavily on service style, menu, and guest count. Food trucks and family-style options tend to run lower than plated full-service. You choose your own caterer. We can connect you with people who know this kitchen.',
               },
               {
-                label: 'Bar',
+                label: 'Bar (alcohol only)',
                 range: '$10–$20 per person',
-                copy: 'Since Rixey is BYOB, you buy alcohol at retail. What you spend depends on what you serve and how long the reception runs. Beer and wine only is meaningfully less than a full open bar. Our in-house bartenders handle service and are billed separately from venue fee.',
+                copy: 'Since Rixey is BYOB, you buy alcohol at retail. What you spend depends on what you serve and how long the reception runs. Beer and wine only is meaningfully less than a full open bar. Our licensed in-house bartenders pour it for up to six hours — and that bartending is already in your package price. No corkage, no service charge, no separate bar invoice.',
               },
               {
                 label: 'Photography',
