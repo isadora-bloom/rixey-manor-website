@@ -2,8 +2,6 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
-import InclusionGrid from '@/components/pricing/InclusionGrid'
-import { ROWS, filterRowsBySection } from '@/lib/inclusionRows'
 import { getUTM } from '@/lib/utm'
 import { getVisitorContext } from '@/lib/visitor'
 
@@ -109,10 +107,11 @@ const NEXT_STEPS = [
   { key: 'planning',  label: 'Learn more about full planning services' },
 ]
 
-// Inclusions used to live as an inline `INCLUDED` array rendered as bullets.
-// Replaced with <InclusionGrid> in Section #5 so the calculator, the post-
-// calculator grid on /pricing, and /checklist all share one design language.
-// Single source of truth: lib/inclusionRows.js.
+// The "what's included" list used to live inside the calculator as Section #5.
+// It now lives ABOVE the calculator on /pricing (as <InclusionGrid>) so couples
+// see the full inclusion picture before they start building their estimate.
+// Calculator stays focused on price-building. Single source of truth for the
+// grid data: lib/inclusionRows.js.
 
 const TAX_RATE = 0.06          // Virginia 6% sales tax on venue
 
@@ -273,7 +272,7 @@ export default function PricingCalculator() {
       .filter(u => upgrades.has(u.key) && u.packages.includes(pkg))
       .map(u => ({ key: u.key, label: u.label, price: u.price }))
     if (extraHours > 0 && allowsExtraHour) {
-      upgradesArr.push({ key: 'extra-hour', label: `Extra hour${extraHours > 1 ? `s × ${extraHours}` : ''} (manor interior)`, price: extraHours * 750 })
+      upgradesArr.push({ key: 'extra-hour', label: `Extra hour${extraHours > 1 ? `s × ${extraHours}` : ''} (tent + amplified music + fire pit)`, price: extraHours * 750 })
     }
     if (extraEvent) {
       const ee = EXTRA_EVENT_TIERS.find(e => e.key === extraEvent)
@@ -524,26 +523,11 @@ export default function PricingCalculator() {
             </div>
           )}
 
-          {/* 5. What's included — rendered as the same grid component used on
-              /pricing and /checklist, so the design language stays consistent
-              across surfaces. Just the base-price section, both packages
-              shown side-by-side for compare. */}
+          {/* 5. Upgrades — filtered by package. (Section formerly numbered 6;
+              the "Included" section that used to live here has moved above
+              the calculator on /pricing.) */}
           <div>
-            <SectionHead num={isEW ? '05' : '04'} label="Included with every package" />
-            <InclusionGrid
-              rows={filterRowsBySection(ROWS, 'base')}
-              showCompetitorCols={false}
-              showHeadlinePrice={false}
-              showTotals={false}
-            />
-            <p className="text-[12px] text-[var(--ink-light)] mt-4 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
-              Bartending is in-house only — Virginia ABC requires our liquor licence and insurance to cover the bar. The bar is open up to 6 hours.
-            </p>
-          </div>
-
-          {/* 6. Upgrades — filtered by package */}
-          <div>
-            <SectionHead num={isEW ? '06' : '05'} label="Upgrades" />
+            <SectionHead num={isEW ? '05' : '04'} label="Upgrades" />
             {isMW && (
               <p className="text-[13px] text-[var(--ink-light)] mb-4" style={{ fontFamily: 'var(--font-body)' }}>
                 Midweek finishes at 9pm and has no overnight option. Only extra events apply here.
@@ -564,13 +548,14 @@ export default function PricingCalculator() {
               ))}
             </div>
 
-            {/* Extra hour — manor interior only — EW + WD */}
+            {/* Extra hour — tent, amplified music, fire pit all stay open
+                (EW + WD only; Midweek's 9pm finish is firm). */}
             {allowsExtraHour && (
               <div className="flex items-start gap-4 py-4 border-b border-[var(--border)]">
                 <div className="flex-1">
-                  <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>Extra hour — manor interior only</span>
+                  <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>Extra hour beyond 10pm</span>
                   <span className="block text-[12px] text-[var(--ink-light)] mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>
-                    Tent and outdoor areas vacated by 10pm regardless. Continuation inside the manor only.
+                    Tent stays open, amplified music continues, guests can still hang by the fire pit outside.
                   </span>
                 </div>
                 <select
@@ -614,7 +599,7 @@ export default function PricingCalculator() {
               Saturday guest count selector instead — it's a guest-count question
               by nature. Filtering it out here keeps the UI single-source. */}
           <div>
-            <SectionHead num={isEW ? '07' : '06'} label="Other discounts" />
+            <SectionHead num={isEW ? '06' : '05'} label="Other discounts" />
             <p className="text-[13px] text-[var(--ink-light)] mb-4" style={{ fontFamily: 'var(--font-body)' }}>
               Stackable with the small-wedding discount above, capped at 20% total. Confirmed at signing.
             </p>
@@ -639,7 +624,7 @@ export default function PricingCalculator() {
 
           {/* 8. Contact form */}
           <div className="border-t-2 border-[var(--forest)] pt-10">
-            <SectionHead num={isEW ? '08' : '07'} label="Send yourself a copy" />
+            <SectionHead num={isEW ? '07' : '06'} label="Send yourself a copy" />
 
             {submitted ? (
               <div className="bg-[var(--cream)] border border-[var(--border)] p-8">

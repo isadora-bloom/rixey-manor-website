@@ -40,8 +40,8 @@ const breadcrumbSchema = {
 
 const PRICING_ANCHORS = [
   { label: 'Why',             href: '#included' },
-  { label: 'Calculator',      href: '#calculator' },
   { label: "What's In It",    href: '#whats-in-it' },
+  { label: 'Calculator',      href: '#calculator' },
   { label: 'Other Costs',     href: '#other-costs' },
   { label: 'Elopements',      href: '#elopements' },
   { label: 'Book a Tour',     href: '#book-tour' },
@@ -69,7 +69,7 @@ const pricingFaqSchema = {
     {
       '@type': 'Question',
       name: 'What time does the wedding need to wrap up?',
-      acceptedAnswer: { '@type': 'Answer', text: 'On the Estate Weekend and Wedding Day, all outdoor activity (tent, patio, lawns) ends at 10pm — no exceptions. Continuation inside the manor interior is available as a paid upgrade at $750 per hour. The Midweek Wedding finishes at 9pm with the property fully cleared by 10pm; no extensions available.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'On the Estate Weekend and Wedding Day, the standard wrap is 10pm. Extra hours are available as an upgrade at $750 per hour, and they include tent access, amplified music, and the fire pit outside — guests can stay where they are, the bar can keep pouring (within the 6-hour bar maximum), the music can keep playing. The Midweek Wedding finishes at 9pm with the property fully cleared by 10pm; no extensions available on Midweek.' },
     },
     {
       '@type': 'Question',
@@ -183,13 +183,7 @@ export default async function PricingPage() {
             {/* Left: text */}
             <div>
               <FadeUp>
-                <p className="eyebrow mb-6">Why we sell things this way</p>
-                <p className="body-copy mb-14 max-w-2xl">
-                  Three pitches before the calculator. We put them first because a number without
-                  context is just a number — and the way Rixey is priced is the whole point.
-                  The full line-item grid lives below the calculator, and the printable comparison
-                  version is at <Link href="/checklist" className="text-link">/checklist</Link>.
-                </p>
+                <p className="eyebrow mb-10">Why we sell things this way</p>
               </FadeUp>
 
               <div className="flex flex-col gap-10">
@@ -220,11 +214,11 @@ export default async function PricingPage() {
                     <p className="body-copy">
                       Basic table linens and our silk floral and candle centerpiece package come with
                       every booking. Set for you, ready to go. For couples whose wedding isn't really
-                      about the décor, that's the table done — it looks good, move on.
+                      about the décor, that's the table done. It looks good. Move on.
                     </p>
                     <p className="body-copy mt-3">
-                      For couples where the flowers and the styling <em>are</em> part of the day — and
-                      we work with a lot of them — we know epic florists, decorators, and installation
+                      For couples where the flowers and the styling <em>are</em> part of the day (and
+                      we work with a lot of them), we know epic florists, decorators, and installation
                       artists who do real flowers, hanging installations, full tablescapes, anything you
                       can picture. Use what's included as your floor and build up from there. Your
                       coordinator brings the right names.
@@ -246,7 +240,7 @@ export default async function PricingPage() {
                       Hire your cousin's band. Use the caterer your family loves. Book the photographer
                       whose work you've followed for two years. The only exception is bartending, which
                       our licensed in-house team handles. Everything else is yours to choose. We have a
-                      vetted recommendation list if you want a starting point — it's a list, not a mandate.
+                      vetted recommendation list if you want a starting point. It's a list, not a mandate.
                       And we don't take a markup or referral commission on your other vendors. What they
                       invoice you is what they invoice you. The full vendor and policy notes live in the{' '}
                       <Link href="/faq" className="text-link">FAQ</Link>.
@@ -282,23 +276,11 @@ export default async function PricingPage() {
         </div>
       </section>
 
-      {/* Calculator */}
-      <section id="calculator" className="bg-[var(--warm-white)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-4">
-          <FadeUp>
-            <p className="eyebrow mb-4">Build your estimate</p>
-            <p className="body-copy max-w-xl mb-2">
-              Select your options below. The total updates as you go. Final pricing is confirmed at your tour.
-            </p>
-          </FadeUp>
-        </div>
-        <PricingCalculator />
-      </section>
-
-      {/* What's actually in your number — the line-item grid that replaces
-          the long narrative inclusion list. Shows base + upgrades, Rixey
-          columns only (no competitor columns — that version is at /checklist
-          for couples comparing venues). Same grid component, different config. */}
+      {/* What's actually in your number — line-item grid showing base price
+          inclusions + upgrades. Rixey columns only (the comparison-with-blank-
+          competitor-columns version lives at /checklist for printing). Sits
+          between the voice blocks and the calculator: couples see the full
+          inclusion picture before they build their estimate. */}
       <section id="whats-in-it" className="bg-[var(--cream)] border-t border-[var(--border)] py-20 lg:py-24 px-6 lg:px-10">
         <div className="max-w-5xl mx-auto">
           <FadeUp>
@@ -311,7 +293,7 @@ export default async function PricingPage() {
             </h2>
             <p className="body-copy mb-10 max-w-2xl">
               The base price covers everything in the green band below. Upgrades are listed
-              underneath at their actual cost — no quote-on-request, no asterisks.
+              underneath at their actual cost. No quote-on-request. No asterisks.
             </p>
           </FadeUp>
 
@@ -328,7 +310,7 @@ export default async function PricingPage() {
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-[var(--border)]">
               <p className="body-copy text-[14px] max-w-md">
                 Touring other venues? The printable version of this grid has two blank
-                columns for you to fill in their numbers — plus the discounts and BYO
+                columns for you to fill in their numbers, plus the discounts and BYO
                 policies you'll want to ask about.
               </p>
               <Link href="/checklist" className="text-link shrink-0">
@@ -337,6 +319,19 @@ export default async function PricingPage() {
             </div>
           </FadeUp>
         </div>
+      </section>
+
+      {/* Calculator */}
+      <section id="calculator" className="bg-[var(--warm-white)]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-4">
+          <FadeUp>
+            <p className="eyebrow mb-4">Build your estimate</p>
+            <p className="body-copy max-w-xl mb-2">
+              Select your options below. The total updates as you go. Final pricing is confirmed at your tour.
+            </p>
+          </FadeUp>
+        </div>
+        <PricingCalculator />
       </section>
 
       {/* Planning app teaser */}
