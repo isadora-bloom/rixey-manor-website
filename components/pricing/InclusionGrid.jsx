@@ -123,12 +123,12 @@ export default function InclusionGrid({
             Headline price
           </div>
           <div style={{ padding: cellPad, color: 'var(--ink)', borderLeft: '1px solid var(--border)' }}>
-            <strong>$14,000</strong> peak<br />
-            <span style={{ color: 'var(--ink-light)' }}>$10,500 off-season</span>
+            <strong>$15,500</strong> peak<br />
+            <span style={{ color: 'var(--ink-light)' }}>$12,000 off-season</span>
           </div>
           <div style={{ padding: cellPad, color: 'var(--ink)', borderLeft: '1px solid var(--border)' }}>
-            <strong>$19,000</strong> peak<br />
-            <span style={{ color: 'var(--ink-light)' }}>$14,000 off-season</span>
+            <strong>$21,000</strong> peak<br />
+            <span style={{ color: 'var(--ink-light)' }}>$16,000 off-season</span>
           </div>
           {showCompetitorCols && (
             <>
@@ -222,10 +222,10 @@ export default function InclusionGrid({
         >
           <div style={{ padding: cellPad }}>Real total — headline + every add-on</div>
           <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
-            $14,000 / $10,500
+            $15,500 / $12,000
           </div>
           <div style={{ padding: cellPad, borderLeft: '1px solid var(--border)', textAlign: 'center' }}>
-            $19,000 / $14,000
+            $21,000 / $16,000
           </div>
           {showCompetitorCols && (
             <>
