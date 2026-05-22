@@ -64,12 +64,12 @@ const pricingFaqSchema = {
     {
       '@type': 'Question',
       name: 'Can we bring our own alcohol?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Rixey Manor is BYOB with no corkage fees — you source and purchase your own bar at retail. Bartending is included in the package price (up to 6 hours), staffed by our licensed in-house team, as required by Virginia ABC licensing and insurance. Outside bartenders are not permitted.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Yes. Rixey Manor is BYOB with no corkage fees — you source and purchase your own bar at retail. Bartending is included in the package price (up to 6 hours, or 7 if you add an extra hour beyond the 10pm finish), staffed by our licensed in-house team, as required by Virginia ABC licensing and insurance. Outside bartenders are not permitted.' },
     },
     {
       '@type': 'Question',
       name: 'What time does the wedding need to wrap up?',
-      acceptedAnswer: { '@type': 'Answer', text: 'On the Estate Weekend and Wedding Day, the standard wrap is 10pm. Extra hours are available as an upgrade at $750 per hour, and they include tent access, amplified music, and the fire pit outside — guests can stay where they are, the bar can keep pouring (within the 6-hour bar maximum), the music can keep playing. The Midweek Wedding finishes at 9pm with the property fully cleared by 10pm; no extensions available on Midweek.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'On the Estate Weekend and Wedding Day, the standard wrap is 10pm. Extra hours are available as an upgrade at $750 per hour. After 10pm the celebration moves indoors — the bar can keep pouring and the music can keep playing inside — or guests can gather around the fire pit outside. There is no amplified music outdoors after 10pm. Adding an extra hour also extends the bar service maximum from 6 hours to 7. The Midweek Wedding finishes at 9pm with the property fully cleared by 10pm; no extensions available on Midweek.' },
     },
     {
       '@type': 'Question',
@@ -152,7 +152,9 @@ export default async function PricingPage() {
             </h1>
             <p className="body-copy max-w-xl">
               Most venue websites end with "contact us for pricing." This one doesn't.
-              Build your estimate below, and if the numbers work, come and see the place.
+              Build your estimate below — and if the numbers feel right, come walk the
+              grounds and meet the team who'll run your day. Getting married at Rixey is
+              a feeling — you'll know it the moment you're standing in it.
             </p>
           </FadeUp>
         </div>

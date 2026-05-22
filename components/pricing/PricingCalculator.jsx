@@ -272,7 +272,7 @@ export default function PricingCalculator() {
       .filter(u => upgrades.has(u.key) && u.packages.includes(pkg))
       .map(u => ({ key: u.key, label: u.label, price: u.price }))
     if (extraHours > 0 && allowsExtraHour) {
-      upgradesArr.push({ key: 'extra-hour', label: `Extra hour${extraHours > 1 ? `s × ${extraHours}` : ''} (tent + amplified music + fire pit)`, price: extraHours * 750 })
+      upgradesArr.push({ key: 'extra-hour', label: `Extra hour${extraHours > 1 ? `s × ${extraHours}` : ''} (party moves inside, or the fire pit)`, price: extraHours * 750 })
     }
     if (extraEvent) {
       const ee = EXTRA_EVENT_TIERS.find(e => e.key === extraEvent)
@@ -564,14 +564,15 @@ export default function PricingCalculator() {
               ))}
             </div>
 
-            {/* Extra hour — tent, amplified music, fire pit all stay open
-                (EW + WD only; Midweek's 9pm finish is firm). */}
+            {/* Extra hour — celebration moves indoors (amplified music continues
+                inside) or out to the fire pit; no tent, no amplified music
+                outside after 10pm. (EW + WD only; Midweek's 9pm finish is firm). */}
             {allowsExtraHour && (
               <div className="flex items-start gap-4 py-4 border-b border-[var(--border)]">
                 <div className="flex-1">
                   <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>Extra hour beyond 10pm</span>
                   <span className="block text-[12px] text-[var(--ink-light)] mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>
-                    Tent stays open, amplified music continues, guests can still hang by the fire pit outside.
+                    The celebration moves indoors — the bar keeps pouring and the music keeps playing — or guests can gather around the fire pit outside.
                   </span>
                 </div>
                 <select
