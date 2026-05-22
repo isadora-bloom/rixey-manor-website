@@ -350,6 +350,17 @@ export default function PricingCalculator() {
     const friLabel = isEW ? FRI_TIERS.find(g => g.key === friGuests)?.label : null
     const guestsField = friLabel ? `Saturday ${satLabel} · Friday ${friLabel}` : `Saturday ${satLabel}`
 
+    // Structured add-ons for the ContractHouse handoff: { calculator_key: qty }.
+    // Keys match service_items.calculator_key in ContractHouse's Rixey seed.
+    const addons = {}
+    UPGRADES.filter(u => upgrades.has(u.key) && u.packages.includes(pkg)).forEach(u => { addons[u.key] = 1 })
+    if (extraHours > 0 && allowsExtraHour) addons['extra-hour'] = extraHours
+    if (extraEvent) {
+      const ee = EXTRA_EVENT_TIERS.find(e => e.key === extraEvent)
+      // ContractHouse prices extra-event at $1,500/unit; qty = number of $1,500 blocks.
+      if (ee) addons['extra-event'] = Math.max(1, Math.round(ee.price / 1500))
+    }
+
     const payload = {
       season:   `${pkgDef.label} · ${seasonDef.label}`,
       guests:   guestsField,
@@ -364,6 +375,11 @@ export default function PricingCalculator() {
       bartenders: 0,
       bartenderRate: 0,
       bartenderCost: 0,
+      // Structured fields for the ContractHouse handoff (draft-contract creation).
+      packageKey:     pkg,
+      seasonKey:      season,
+      subtotalPreTax: result ? Math.round(result.subAfterDisc) : 0,
+      addons,
       nextSteps:   NEXT_STEPS.filter(s => nextSteps.has(s.key)).map(s => s.label),
       weddingDate, p1Name, p1Email, p1Phone, p2Name, p2Phone, notes,
       ...getUTM(),
@@ -660,10 +676,9 @@ export default function PricingCalculator() {
                     Do you have a specific date in mind? {wantsContract && <span className="text-[var(--rose)]">*</span>}
                   </label>
                   <input
-                    type="text"
+                    type="date"
                     value={weddingDate}
                     onChange={e => setWeddingDate(e.target.value)}
-                    placeholder="e.g. October 4, 2026"
                     required={wantsContract}
                     className={inputCls}
                     style={{ fontFamily: 'var(--font-body)' }}

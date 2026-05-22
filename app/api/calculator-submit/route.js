@@ -21,6 +21,8 @@ export async function POST(req) {
     notes,
     source, medium, campaign, referrer,
     visitor_id,
+    // Structured fields for the ContractHouse handoff
+    packageKey, seasonKey, subtotalPreTax, addons,
   } = data
 
   // 1. Save to Supabase
@@ -201,5 +203,55 @@ export async function POST(req) {
     ])
   }
 
-  return Response.json({ ok: true })
+  // 3. ContractHouse handoff — when the couple asked to be sent a contract,
+  // forward the structured calculator output so ContractHouse drafts a contract
+  // for the venue to review and send. Best-effort: a handoff failure never
+  // breaks the calculator submission (the couple still gets their estimate
+  // email, and the venue can draft the contract manually).
+  const wantsContract = nextSteps?.some((s) => /contract/i.test(s))
+  let contractDraftId = null
+  const chSecret = process.env.CONTRACTHOUSE_CALCULATOR_SECRET
+  const chUrl = process.env.CONTRACTHOUSE_URL || 'https://contracthouse.vercel.app'
+
+  if (
+    wantsContract &&
+    chSecret &&
+    packageKey &&
+    typeof subtotalPreTax === 'number' &&
+    typeof weddingDate === 'string' &&
+    /^\d{4}-\d{2}-\d{2}$/.test(weddingDate)
+  ) {
+    try {
+      const res = await fetch(`${chUrl}/api/calculator/handoff`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Calculator-Secret': chSecret,
+        },
+        body: JSON.stringify({
+          venue_slug: 'rixey-manor',
+          partner_1_name: p1Name,
+          partner_1_email: p1Email,
+          partner_1_phone: p1Phone || null,
+          partner_2_name: p2Name || null,
+          partner_2_phone: p2Phone || null,
+          wedding_date_start: weddingDate,
+          subtotal: subtotalPreTax,
+          package: packageKey,
+          addons: addons || {},
+          context: { season: seasonKey || null, guests: guests || null },
+        }),
+      })
+      if (res.ok) {
+        const json = await res.json()
+        contractDraftId = json?.contract_id ?? null
+      } else {
+        console.error('[calculator-submit] ContractHouse handoff failed:', res.status, await res.text())
+      }
+    } catch (e) {
+      console.error('[calculator-submit] ContractHouse handoff error:', e?.message || e)
+    }
+  }
+
+  return Response.json({ ok: true, contractDraftId })
 }
