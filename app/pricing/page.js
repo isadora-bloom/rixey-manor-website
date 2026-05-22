@@ -289,10 +289,10 @@ export default async function PricingPage() {
                     <p className="body-copy">
                       We discount two things. Service first — 10% off for active military,
                       veterans, and first responders, with our thanks for the work you do.
-                      And then the choices that make the day itself run smoother: holding
-                      your ceremony off-site, finishing a little earlier in the evening,
-                      working with vendors who already know the property. Each one lifts a
-                      layer of logistics off the day, so each one comes off the price.
+                      Then the choices that lift a layer of logistics off the day itself:
+                      holding your ceremony off-site, or building your vendor team entirely
+                      from people who already know the property. Each of those is 5% off. A
+                      smaller Saturday — under 50 guests — earns its own 10%.
                     </p>
                     <p className="body-copy mt-3">
                       Discounts stack, up to a total of 20%, and the{' '}

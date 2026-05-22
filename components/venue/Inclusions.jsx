@@ -93,7 +93,7 @@ export default function Inclusions({ accentImages = [] }) {
                   Discounts available.
                 </h3>
                 <p className="body-copy text-[14px]">
-                  5% off for ceremony held off-site, early event finish, or using only recommended vendors. 10% off for military, veterans, and first responders. Early 2026 dates may qualify for an additional 10%. Discounts are reflected in the <a href="/pricing#calculator" className="text-link">pricing calculator</a>.
+                  5% off each for holding your ceremony off-site or using only recommended vendors. 10% off for under 50 Saturday guests, and 10% off for active military, veterans, and first responders. Discounts stack up to a 20% cap, and the <a href="/pricing#calculator" className="text-link">pricing calculator</a> applies them as you go.
                 </p>
               </div>
             </FadeUp>
