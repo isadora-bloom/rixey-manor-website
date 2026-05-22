@@ -208,6 +208,37 @@ export default async function PricingPage() {
                   </div>
                 </FadeUp>
 
+                <FadeUp delay={95}>
+                  <div className="border-t border-[var(--border)] pt-8">
+                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
+                      A planning portal, from the day you book.
+                    </h3>
+                    <p className="body-copy">
+                      Most venues hand you a date and a contract and leave the planning to
+                      you, your inbox, and a stack of spreadsheets. Every Rixey couple gets a
+                      custom planning portal instead — the timeline, vendor details, floor
+                      plans, checklists, payments, and a direct line to your coordinator, all
+                      in one place. It's yours from the moment you book, and it stays current
+                      right up to the day.
+                    </p>
+                  </div>
+                </FadeUp>
+
+                <FadeUp delay={125}>
+                  <div className="border-t border-[var(--border)] pt-8">
+                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
+                      The décor is already here.
+                    </h3>
+                    <p className="body-copy">
+                      Arbors, lanterns, card boxes, easels, table numbers, candleholders,
+                      signage — a full décor inventory, free to use. Plus the borrow shed,
+                      stocked with pieces couples have left behind from weddings past. Décor
+                      is one of the biggest line items couples brace for, and most find they
+                      barely need to buy a thing. Borrow what works, bring what's truly yours.
+                    </p>
+                  </div>
+                </FadeUp>
+
                 <FadeUp delay={155}>
                   <div className="border-t border-[var(--border)] pt-8">
                     <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>

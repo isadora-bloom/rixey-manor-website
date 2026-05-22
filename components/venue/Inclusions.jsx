@@ -12,16 +12,16 @@ const BLOCKS = [
     copy: 'Every couple gets a custom Rixey planning portal — your own private space for the timeline, vendor details, floor plans, checklists, payments, and a direct line to your coordinator, all in one place. No lost email threads, no scattered spreadsheets. Everything for your wedding lives here, and it is yours from the moment you book.',
   },
   {
+    subhead: 'The décor is already here.',
+    copy: 'A full décor inventory — arbors, table numbers, card boxes, lanterns, easels, candleholders, signage and more — free for you to use. Plus the borrow shed, stocked with pieces couples have left behind from weddings past. Décor is one of the biggest line items couples brace themselves for, and at Rixey most find they barely need to buy a thing. Classic white Chiavari chairs and round, rectangular, and cocktail tables are included too.',
+  },
+  {
     subhead: 'A place to get ready.',
     copy: 'The Newlywed Suite is held for the couple on the wedding day. The manor\'s kitchen, dining room, library, and sitting rooms are available for VIPs and vendors. Overnight accommodation across the manor house and Blacksmith Cottage (up to 14 guests) is available as an add-on — one night, two nights, or three.',
   },
   {
     subhead: 'A coordinator — not a day-of, a real one.',
     copy: 'A Rixey coordinator is included with every booking, and it is one of the things couples are most surprised to find in the price. This is not a day-of coordinator who arrives for the ceremony and leaves after dinner. This is someone who has worked this property, knows these vendors, and has seen what can go sideways — and how to prevent it. Planning meetings throughout, a walkthrough of every detail, and full wedding day coverage from setup to send-off. Most venues charge $2,000–3,000 for a fraction of this, or leave you to hire it yourself.',
-  },
-  {
-    subhead: 'The décor is already here.',
-    copy: 'A full décor inventory — arbors, table numbers, card boxes, lanterns, easels, candleholders, signage and more — free for you to use. Plus the borrow shed, stocked with pieces couples have left behind from weddings past. Décor is one of the biggest line items couples brace themselves for, and at Rixey most find they barely need to buy a thing. Classic white Chiavari chairs and round, rectangular, and cocktail tables are included too.',
   },
   {
     subhead: 'The things you forget to budget for.',
