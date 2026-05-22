@@ -281,6 +281,27 @@ export default async function PricingPage() {
                   </div>
                 </FadeUp>
 
+                <FadeUp delay={205}>
+                  <div className="border-t border-[var(--border)] pt-8">
+                    <h3 className="text-[20px] italic text-[var(--ink)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
+                      Discounts for service, and for a smoother day.
+                    </h3>
+                    <p className="body-copy">
+                      We discount two things. Service first — 10% off for active military,
+                      veterans, and first responders, with our thanks for the work you do.
+                      And then the choices that make the day itself run smoother: holding
+                      your ceremony off-site, finishing a little earlier in the evening,
+                      working with vendors who already know the property. Each one lifts a
+                      layer of logistics off the day, so each one comes off the price.
+                    </p>
+                    <p className="body-copy mt-3">
+                      Discounts stack, up to a total of 20%, and the{' '}
+                      <Link href="#calculator" className="text-link">calculator</Link>{' '}
+                      applies them as you go — no codes, no asking, no fine print.
+                    </p>
+                  </div>
+                </FadeUp>
+
               </div>
             </div>
 
