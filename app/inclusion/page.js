@@ -46,12 +46,12 @@ const faqSchema = {
     {
       '@type': 'Question',
       name: 'Is Rixey Manor LGBTQ+ friendly?',
-      acceptedAnswer: { '@type': 'Answer', text: "Yes. LGBTQ+ couples and families are welcomed and protected at Rixey Manor by name, in writing, in every contract. Our intake forms use Partner 1 and Partner 2, our getting-ready spaces are couple's suites, our team uses 'wedding party' not 'bridal party', and we use the words you use for your wedding, your partner or partners, and your family. The coordinator briefs every vendor on names, pronouns and roles ahead of the day. On request we can connect you with past LGBTQ+ couples who are happy to share their experience." },
+      acceptedAnswer: { '@type': 'Answer', text: "Yes. LGBTQ+ couples and families are welcomed and protected at Rixey Manor by name, in writing, in every contract. Our intake forms use Partner 1 and Partner 2, our getting-ready spaces are couple's suites, our team uses 'wedding party' not 'bridal party', and we use the words you use for your wedding, your partner or partners, and your family. The coordinator briefs every vendor on the names, pronouns and roles that matter — yours, your wedding party's and your family's — ahead of the day, so nobody is misnamed in front of your guests. On request we can connect you with past LGBTQ+ couples who are happy to share their experience." },
     },
     {
       '@type': 'Question',
       name: 'Does Rixey Manor accommodate couples with chronic illness or ongoing medical needs?',
-      acceptedAnswer: { '@type': 'Answer', text: "Yes. Chronic illness, pregnancy, recovery, unpredictable flares, medication schedules, dietary needs that cannot slip — Rixey plans around all of it. Food and medication windows sit on the day-of timeline alongside the ceremony and first dance. A private space is reserved for the couple for the whole day at no additional charge, no questions asked when used. The bar and catering teams are briefed on what matters without medical detail leaving the office. The couple decides what to disclose to guests, vendors, and family. If a condition is new to the venue, the team asks you first, not Google." },
+      acceptedAnswer: { '@type': 'Answer', text: "Yes — and the same applies to medical needs in the wedding party or family. Chronic illness, pregnancy, recovery, unpredictable flares, medication schedules, dietary needs that cannot slip — Rixey plans around all of it. Food and medication windows sit on the day-of timeline alongside the ceremony and first dance. A private space is reserved for the whole day at no additional charge, no questions asked when the couple, a wedding-party member or a guest needs to use it. The bar and catering teams are briefed on what matters without medical detail leaving the office. The couple decides what to disclose to guests, vendors, and family. If a condition is new to the venue, the team asks you first, not Google." },
     },
     {
       '@type': 'Question',
@@ -61,7 +61,7 @@ const faqSchema = {
     {
       '@type': 'Question',
       name: 'Does Rixey Manor accommodate neurodivergent couples?',
-      acceptedAnswer: { '@type': 'Answer', text: "Yes, and it is a named operational commitment in every contract. Autistic, ADHD, AuDHD, sensory-sensitive, anxious, or simply wired differently than weddings tend to be built for. Planning starts by asking what celebrating actually looks like for you. Adaptations include agendas sent in advance, written summaries after every conversation, communication synced across text and email, shorter sessions and more check-ins, DJ lighting reviewed in advance, a quiet space available throughout the event, and built-in breaks across the day. Nothing on the day is locked: a pre-agreed signal lets the coordinator pause, cut, or end any moment without making it a conversation in front of guests." },
+      acceptedAnswer: { '@type': 'Answer', text: "Yes, and it is a named operational commitment in every contract — for the couple, their wedding party, family and guests. Autistic, ADHD, AuDHD, sensory-sensitive, anxious, or simply wired differently than weddings tend to be built for. Planning starts by asking what celebrating actually looks like for you and what would reduce anxiety for the people standing closest to you on the day. The commitment is to listen and adapt, not to apply a template. Possible adaptations include agendas ahead of planning meetings, written summaries after conversations, communication synced across text and email, shorter sessions and more check-ins, DJ lighting reviewed in advance, a quiet space held open throughout the event, built-in breaks across the day. Nothing on the day is locked: a pre-agreed signal lets the coordinator pause, cut, or end any moment without making it a conversation in front of guests." },
     },
     {
       '@type': 'Question',
@@ -82,48 +82,52 @@ const COMMUNITIES = [
     title: 'LGBTQ+ couples and families',
     body: [
       "You are welcomed and protected at Rixey Manor by name, in writing. Our intake forms use Partner 1 and Partner 2, our getting-ready spaces are couple's suites, our team uses “wedding party” not “bridal party”, and we use the words you use for your wedding, your partner or partners, and your family.",
-      "Our coordinator briefs every vendor on names, pronouns and roles ahead of the day, so you never have to correct anyone in front of your guests. On request, we can connect you with past LGBTQ+ couples who are happy to share what working with us was like.",
+      "Our coordinator briefs every vendor on the names, pronouns and roles that matter — yours, your wedding party's, your family's — ahead of the day, so nobody is misnamed in front of your guests. On request, we can connect you with past LGBTQ+ couples who are happy to share what working with us was like.",
     ],
   },
   {
     slug: 'chronic-illness',
     title: 'Couples with chronic illness or ongoing medical needs',
     body: [
-      "Chronic illness, pregnancy, recovery, unpredictable flares, medication schedules, dietary needs that can’t slip. We plan around all of it. Food and medication windows go on the day-of timeline alongside the ceremony and first dance. A private space is reserved for you for the whole day at no additional charge, no questions asked when you use it.",
-      "We brief the bar and the catering team on what matters without your medical detail leaving our office. You decide what to disclose to guests, vendors and even your own family — we follow your lead. If your condition is new to us, we ask you first, not Google.",
+      "Chronic illness, pregnancy, recovery, unpredictable flares, medication schedules, dietary needs that can’t slip — for you, or for someone in your wedding party or family. We plan around all of it. Food and medication windows go on the day-of timeline alongside the ceremony and first dance. A private space is reserved for the whole day at no additional charge, no questions asked when you or a guest needs to use it.",
+      "We brief the bar and the catering team on what matters without medical detail leaving our office. You decide what to disclose to guests, vendors and even your own family — we follow your lead. If your condition is new to us, we ask you first, not Google.",
     ],
   },
   {
     slug: 'disabled',
     title: 'Disabled couples and couples with disabilities',
     body: [
-      "The ballroom, the main-floor restrooms, the patio, and the lakeside ceremony lawn are step-free and ADA-compliant. Accessible parking is held adjacent to the entrance with a level path to the door. Our coordinator walks the full route with any couple or guest who wants it mapped, photographed, or measured in advance.",
-      "The historic upstairs bedrooms and the rooftop are reached by stairs only. We name this in your first tour and in writing so it never becomes a day-of surprise. Mobility, sensory, Deaf/hard-of-hearing, blind/low-vision, or any access need not listed here: tell us, and we build the day around your answer rather than the other way round. Service animals are welcome with a designated relief area and water. We use the words you use for yourself.",
+      "The ballroom, the main-floor restrooms, the patio, and the lakeside ceremony lawn are step-free and ADA-compliant. Accessible parking is held adjacent to the entrance with a level path to the door. Our coordinator walks the full route with any couple, family member, wedding-party member or guest who wants it mapped, photographed, or measured in advance.",
+      "The historic upstairs bedrooms and the rooftop are reached by stairs only. We name this in your first tour and in writing so it never becomes a day-of surprise. Mobility, sensory, Deaf/hard-of-hearing, blind/low-vision, or any access need not listed here — yours or anyone in your party's — tell us, and we build the day around the answer rather than the other way round. Service animals are welcome with a designated relief area and water. We use the words you use for yourself.",
     ],
   },
   {
     slug: 'neurodivergent',
     title: 'Neurodivergent couples',
     body: [
-      "Autistic, ADHD, AuDHD, sensory-sensitive, anxious, or simply wired differently than weddings tend to be built for. We start by asking what celebrating actually looks like for you. Not what the timeline says. Not what the photos should look like. What does a good day feel like in your body, for your brain, with your people?",
-      "From there, we adapt. Agendas sent in advance of every planning meeting. Written summaries after every conversation, so nothing relies on memory. Communication synced across text and email. Shorter sessions and more check-ins. DJ lighting reviewed in advance. A quiet space available throughout the event. Built-in breaks across the day.",
-      "Nothing on the day is locked. If you need to leave the room, shorten the speeches, cut the dancing, or end early, that decision is yours and the coordinator carries it out without making it a conversation in front of your guests. A pre-agreed signal works if speaking out loud doesn’t.",
+      "Autistic, ADHD, AuDHD, sensory-sensitive, anxious, or simply wired differently than weddings tend to be built for. We start by asking what celebrating actually looks like for you — and, where it matters, for the people standing closest to you on the day. What does a good day feel like in your body, for your brain, with your people?",
+      "From there, we adapt to whatever actually reduces the anxiety in the room. That might mean agendas ahead of planning meetings, written summaries after conversations, communication synced across text and email, shorter sessions and more check-ins, DJ lighting reviewed in advance, a quiet space held open throughout the event, built-in breaks across the day — or some combination we work out together. We don't assume the same things help everyone. We listen, we try, and we change course when something isn't working.",
+      "Nothing on the day is locked. If you, your partner, or anyone in your wedding party needs to leave the room, shorten the speeches, cut the dancing, or end early, that decision is yours and the coordinator carries it out without making it a conversation in front of your guests. A pre-agreed signal works if speaking out loud doesn’t.",
     ],
   },
 ]
 
+// These are EXAMPLES of adaptations we've made when they would help — not a
+// universal checklist we run on every wedding. The point of the list is to
+// show range, not to promise we'll do every item on every booking. Anchored
+// in adaptive language ("when …", "if …") rather than declarative practice.
 const PRACTICE_BULLETS = [
-  'Meetings that start by understanding how you process information best.',
-  'Agendas sent in advance of every planning meeting.',
-  'Written summaries after every conversation, so nothing relies on memory.',
-  'Communication synced across text, email and video, so nothing falls through the gaps.',
-  'More check-ins, shorter sessions, or a slower overall pace if that helps.',
-  'Pre-ceremony time with guests, so nerves can settle before the formal moments begin.',
-  'Built-in breaks throughout the day.',
-  'DJ lighting reviewed and adjusted in advance (no surprise strobes, no sudden changes).',
-  'A quiet space available throughout your event.',
-  'Medication and food plans mapped into the day timeline.',
-  'Vendor teams briefed on what matters, without oversharing.',
+  'Asking, at the start, how you and the people closest to you process information best.',
+  "Sending agendas ahead of planning meetings when that lowers the load.",
+  'Writing up summaries after conversations when memory feels unreliable or shared notes help.',
+  "Syncing communication across text, email and video so the people who don't read every email still get the update.",
+  "Shorter sessions, more check-ins, or a slower planning pace when that's what helps.",
+  'Pre-ceremony time with guests when nerves need to settle before the formal moments begin.',
+  'Built-in breaks across the day when standing through hours at a stretch is too much.',
+  'Reviewing DJ lighting in advance when strobes or sudden changes are a problem.',
+  'Holding a quiet space open throughout the event so anyone in your party can step out.',
+  'Mapping medication, food and rest into the day timeline when that timing matters.',
+  'Briefing vendors on what matters to you, your wedding party and your guests, without oversharing.',
 ]
 
 // Contract commitments rewritten from principles into verifiable, operational
@@ -134,7 +138,7 @@ const CONTRACT_COMMITMENTS = [
   "Explicit welcome and protection for LGBTQ+ couples and families, including pronoun and name use on all paperwork, vendor briefings, signage, and seating, with a named coordinator accountable.",
   "Chronic-illness and medical-needs planning: a private space reserved for the couple for the whole day at no additional charge, dietary requirements communicated to catering in writing at least 14 days before the event, and couple-controlled disclosure to guests, vendors and family.",
   "ADA accessibility: step-free access to the ballroom, main-floor restrooms, patio, and ceremony lawn; accessible parking adjacent to the entrance with a level path; coordinator walk-through offered to any guest in advance.",
-  "Neurodivergent inclusion, written into how we operate: agendas in advance of every planning meeting, written summaries after every conversation, a quiet space available throughout the event, and a pre-agreed pause-or-end signal honoured without discussion.",
+  "Neurodivergent inclusion, written into how we operate: a commitment to ask what reduces anxiety for you, your wedding party and your guests — and to adapt to whichever combination of agendas, written summaries, communication syncing, slower pacing, lighting review, quiet space, breaks or pre-agreed pause-or-end signals actually helps. The commitment is to listen and adjust, not to apply a template.",
   "A commitment to ask you, not Google, when a need is new to us — and to connect you with community-expert consultants we trust where it would help, rather than refer you elsewhere.",
   "An anti-abuse clause protecting every couple and guest on the property from abusive behaviour during the booking.",
   "A zero-tolerance anti-hate-speech and anti-harassment clause covering sexual orientation, gender identity and expression, race, religion, disability, national origin, age, and pregnancy. No exceptions, applied to every person on the property — guests, vendors and family alike.",
@@ -261,13 +265,17 @@ export default async function InclusionPage() {
               We adapt, and we learn.
             </h2>
             <p className="body-copy mb-4">
-              The four groups above cover most of the couples who have ever told us a one-size-fits-all
-              wedding doesn't work for them. If your situation is new to us, we say so. We ask you
-              first, not Google. Where it would help, we connect you with community-expert consultants
-              and planners we trust, so the answer comes from someone who actually lives it.
+              The four groups above cover most of the couples — and the families, wedding parties and
+              guests around them — who have ever told us a one-size-fits-all wedding doesn't work for
+              them. If your situation is new to us, we say so. We ask you first, not Google. Where it
+              would help, we connect you with community-expert consultants and planners we trust, so
+              the answer comes from someone who actually lives it.
             </p>
             <p className="body-copy">
-              We would rather get it right than pretend.
+              We don't promise to run the same set of practices on every wedding. We promise to ask
+              what reduces the anxiety in the room and to adapt to that — for the couple, for the
+              family, for the wedding party, and for the guests. We would rather get it right than
+              pretend.
             </p>
           </FadeUp>
         </div>
@@ -285,8 +293,11 @@ export default async function InclusionPage() {
               What that looks like on the ground.
             </h2>
             <p className="body-copy mb-8">
-              Every couple starts in the same place. We ask what celebrating actually looks like for you.
-              From there, we adapt. That might mean:
+              Every couple starts in the same place. We ask what celebrating actually looks like for
+              you and the people standing closest to you on the day. From there, we adapt to whatever
+              reduces anxiety for the people in the room — couple, family, wedding party, guests.
+              None of the items below are universal practice. They're things we have done for past
+              couples when those things would have helped:
             </p>
           </FadeUp>
 
