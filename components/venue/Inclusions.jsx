@@ -108,6 +108,17 @@ export default function Inclusions({ accentImages = [] }) {
                 </Link>
               </div>
             </FadeUp>
+
+            <FadeUp>
+              <div className="mt-8 pt-8 border-t border-[var(--border)]">
+                <p className="body-copy text-[14px] text-[var(--ink-light)]">
+                  How we plan around you. LGBTQ+ couples, disabled couples, couples with chronic illness or ongoing medical needs, and neurodivergent couples are named and protected in every contract.
+                </p>
+                <Link href="/inclusion" className="text-link inline-block mt-3" style={{ fontFamily: 'var(--font-ui)', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  Built for every couple →
+                </Link>
+              </div>
+            </FadeUp>
           </div>
 
           {/* Right: photo stack */}

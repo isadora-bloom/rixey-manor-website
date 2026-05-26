@@ -37,6 +37,7 @@ export default function Footer() {
               { label: 'All-inclusive vs. Rixey', href: '/compare' },
               { label: 'Gallery', href: '/gallery' },
               { label: 'FAQs', href: '/faq' },
+              { label: 'Inclusion', href: '/inclusion' },
               { label: 'Blog', href: '/blog' },
             ].map(link => (
               <Link
