@@ -15,15 +15,47 @@ export async function POST(req) {
     season, guests, nights, upgrades, discounts5, discounts10,
     estimate, tax, perPayment,
     bartenders, bartenderRate, bartenderCost,
-    nextSteps, weddingDate,
+    nextSteps, nextStepKeys, weddingDate,
     p1Name, p1Email, p1Phone,
     p2Name, p2Phone,
     notes,
     source, medium, campaign, referrer,
     visitor_id,
-    // Structured fields for the ContractHouse handoff
-    packageKey, seasonKey, subtotalPreTax, addons,
+    // Structured fields for the ContractHouse handoff + richer emails
+    packageKey, seasonKey, packageLabel, seasonLabel,
+    subtotalPreTax, addons, breakdown,
   } = data
+
+  // Package timing surfaced in both emails so the couple sees their hours up
+  // front and the venue inbox sees what they're committing to at a glance.
+  const PACKAGE_TIMES = {
+    'estate-weekend': 'Friday 3pm to Sunday 10am (1pm with brunch upgrade)',
+    'wedding-day':    'Saturday, 8am to 10pm',
+    'midweek':        'Tuesday or Wednesday, 8am to 9pm',
+  }
+  const packageTiming = PACKAGE_TIMES[packageKey] || ''
+
+  // Translate the boxes the couple ticked into a "what happens next" line so
+  // the email tells them what to expect instead of echoing a checklist.
+  const NEXT_STEP_MESSAGES = {
+    'more-info': "We'll be in touch within 1–2 business days with more information about Rixey and your date.",
+    'contract':  'A draft contract is being prepared for you and will arrive in your inbox shortly.',
+    'pre-tour':  "We'll be in touch before your tour to learn a little more about your wedding.",
+    'planning':  "We'll include information about our full planning services in our reply.",
+  }
+  const nextStepLines = Array.isArray(nextStepKeys)
+    ? nextStepKeys.map(k => NEXT_STEP_MESSAGES[k]).filter(Boolean)
+    : []
+
+  // Friendly date formatter for the wedding-date field. Falls back to the raw
+  // YYYY-MM-DD if the input is anything else.
+  const fmtDate = (s) => {
+    if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return s || ''
+    const [y, m, d] = s.split('-').map(Number)
+    const dt = new Date(Date.UTC(y, m - 1, d))
+    return dt.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+  }
+  const money = (n) => '$' + (Number(n) || 0).toLocaleString()
 
   // 1. Save to Supabase
   const { error: dbError } = await supabase.from('calculator_submissions').insert({
@@ -105,14 +137,30 @@ export async function POST(req) {
       `Bartending, linens, silk floral + candle package, venue team, coordinator: all in the price above.`,
     ].filter(Boolean).join('\n')
 
+    // Itemized breakdown rows. Each row is rendered only if it has a non-zero
+    // amount. The discount row sits between subtotal and tax, mirroring the
+    // sticky price panel inside the calculator.
+    const breakdownRows = breakdown ? [
+      ['Package base',                                                    money(breakdown.base)],
+      breakdown.satMod       ? ['Saturday guests',                        '+' + money(breakdown.satMod)]                        : null,
+      breakdown.friMod       ? ['Friday guests',                          '+' + money(breakdown.friMod)]                        : null,
+      breakdown.upgradeAmt   ? ['Upgrades',                               '+' + money(breakdown.upgradeAmt)]                    : null,
+      breakdown.hoursAmt     ? [`Extra hour${breakdown.extraHours > 1 ? `s × ${breakdown.extraHours}` : ''} (after 10pm)`, '+' + money(breakdown.hoursAmt)] : null,
+      breakdown.extraEventAmt? [`Extra event${breakdown.extraEventLabel ? ` (${breakdown.extraEventLabel.toLowerCase()})` : ''}`, '+' + money(breakdown.extraEventAmt)] : null,
+      ['__subtotal__',                                                    money(breakdown.subtotal)],
+      breakdown.discountAmt  ? [`Discount (${breakdown.discountPct}%)`,   '−' + money(breakdown.discountAmt)]                   : null,
+      ['Sales tax (6%)',                                                  '+' + money(breakdown.tax)],
+    ].filter(Boolean) : []
+
     const coupleHtml = `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1C1814;">
         <h2 style="font-size: 28px; font-weight: normal; margin-bottom: 8px;">Your Rixey Manor estimate</h2>
-        <p style="color: #7A6E68; font-size: 15px; margin-bottom: 24px;">Here's a summary of what you put together. We'll be in touch soon.</p>
+        <p style="color: #7A6E68; font-size: 15px; margin-bottom: 24px;">A copy of what you put together. Here's what's next.</p>
 
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
           ${[
             ['Package & season', season],
+            packageTiming ? ['Timing', packageTiming] : null,
             ['Guests', guests],
             nights ? ['Overnight stays', nights] : null,
             upgrades?.length ? ['Upgrades', upgrades.join(', ')] : null,
@@ -133,22 +181,64 @@ export async function POST(req) {
           <p style="font-size: 12px; color: #7A6E68; margin: 0;">Retainer to reserve the date · halfway through planning · 3 months before the wedding.</p>
         </div>
 
+        ${breakdownRows.length ? `
         <div style="border: 1px solid #E0D8D0; padding: 20px; margin-bottom: 24px;">
+          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #2E7D54; margin: 0 0 12px;">How that total is built</p>
+          <table style="width: 100%; border-collapse: collapse;">
+            ${breakdownRows.map(([label, value]) => label === '__subtotal__' ? `
+              <tr>
+                <td style="padding: 10px 0 6px; border-top: 1px solid #E0D8D0; font-size: 13px; color: #7A6E68;">Subtotal</td>
+                <td style="padding: 10px 0 6px; border-top: 1px solid #E0D8D0; font-size: 13px; color: #7A6E68; text-align: right;">${value}</td>
+              </tr>
+            ` : `
+              <tr>
+                <td style="padding: 6px 0; font-size: 13px; color: #3D3530;">${label}</td>
+                <td style="padding: 6px 0; font-size: 13px; color: #3D3530; text-align: right;">${value}</td>
+              </tr>
+            `).join('')}
+            <tr>
+              <td style="padding: 10px 0 0; border-top: 1px solid #1C1814; font-size: 14px; color: #1C1814;"><strong>Total</strong></td>
+              <td style="padding: 10px 0 0; border-top: 1px solid #1C1814; font-size: 14px; color: #2E7D54; text-align: right;"><strong>${money(breakdown.total)}</strong></td>
+            </tr>
+          </table>
+        </div>
+        ` : ''}
+
+        <div style="border: 1px solid #E0D8D0; padding: 20px; margin-bottom: 16px;">
           <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #2E7D54; margin: 0 0 8px;">What's in the price above</p>
           <p style="font-size: 14px; color: #3D3530; margin: 0; line-height: 1.6;">
-            Licensed bartending (up to 6 hours), table linens, the silk floral and candle package, day-of venue team, on-site coordinator, Chiavari chairs and tables, and the borrow shed — all included. BYOB with no corkage. No required vendor list. No vendor markup.
+            Licensed bartending, table linens, the silk floral and candle package, day-of venue team, on-site coordinator, Chiavari chairs and tables, and the borrow shed — all included. BYOB with no corkage. No required vendor list. No vendor markup.
           </p>
         </div>
 
-        ${weddingDate ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Date in mind:</strong> ${weddingDate}</p>` : ''}
-        ${nextSteps?.length ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Next steps requested:</strong> ${nextSteps.join(', ')}</p>` : ''}
-        ${p1Phone ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Phone on file:</strong> ${p1Phone}</p>` : ''}
-        ${notes ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Notes:</strong> ${notes}</p>` : ''}
+        <div style="border: 1px solid #E0D8D0; padding: 20px; margin-bottom: 24px;">
+          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #B8908A; margin: 0 0 8px;">What you'll bring on your own</p>
+          <p style="font-size: 14px; color: #3D3530; margin: 0; line-height: 1.6;">
+            Catering, alcohol (BYOB, no corkage), photography, flowers, music, hair &amp; makeup, and any cake or sweets. Your coordinator helps you build that team — and using only our recommended vendors earns a 5% discount on the venue.
+          </p>
+        </div>
+
+        ${nextStepLines.length ? `
+        <div style="background: #FBF7F1; border-left: 3px solid #2E7D54; padding: 18px 20px; margin-bottom: 24px;">
+          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #2E7D54; margin: 0 0 10px;">What happens next</p>
+          ${nextStepLines.map(line => `<p style="font-size: 14px; color: #3D3530; margin: 0 0 6px; line-height: 1.5;">• ${line}</p>`).join('')}
+          <p style="font-size: 13px; color: #7A6E68; margin: 12px 0 0;">Or skip the wait — reply to this email or call <a href="tel:+15402124545" style="color: #2E7D54;">(540) 212-4545</a>.</p>
+        </div>
+        ` : `
+        <div style="background: #FBF7F1; border-left: 3px solid #2E7D54; padding: 18px 20px; margin-bottom: 24px;">
+          <p style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #2E7D54; margin: 0 0 10px;">What happens next</p>
+          <p style="font-size: 14px; color: #3D3530; margin: 0; line-height: 1.5;">We'll be in touch within 1–2 business days. To skip the wait, reply to this email or call <a href="tel:+15402124545" style="color: #2E7D54;">(540) 212-4545</a>.</p>
+        </div>
+        `}
+
+        ${weddingDate ? `<p style="font-size: 14px; margin-bottom: 8px;"><strong>Date in mind:</strong> ${fmtDate(weddingDate)}</p>` : ''}
+        ${p1Phone ? `<p style="font-size: 14px; margin-bottom: 8px;"><strong>Phone on file:</strong> ${p1Phone}</p>` : ''}
+        ${notes ? `<p style="font-size: 14px; margin-bottom: 16px;"><strong>Your note to us:</strong> ${notes}</p>` : ''}
 
         <hr style="border: none; border-top: 1px solid #E0D8D0; margin: 24px 0;" />
         <p style="font-size: 13px; color: #7A6E68;">
           This is an estimate. Final pricing is confirmed at your tour.<br>
-          Rixey Manor · 9155 Pleasant Hill Lane, Rixeyville, VA 22737 · (540) 212-4545
+          Rixey Manor · 9155 Pleasant Hill Lane, Rixeyville, VA 22737 · <a href="tel:+15402124545" style="color: #7A6E68;">(540) 212-4545</a>
         </p>
       </div>
     `
@@ -160,36 +250,101 @@ export async function POST(req) {
       referrer && `referrer: ${referrer}`,
     ].filter(Boolean).join(' · ')
 
+    // Tel-link helper: strip everything but digits + leading +.
+    const telHref = (p) => p ? `tel:${String(p).replace(/[^0-9+]/g, '')}` : null
+
     const venueHtml = `
-      <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1C1814;">
+      <div style="font-family: Georgia, serif; max-width: 640px; margin: 0 auto; color: #1C1814;">
         <h2 style="font-size: 24px; font-weight: normal; margin-bottom: 4px;">New calculator submission${wantsContract ? ' — contract requested' : ''}</h2>
-        <p style="color: #7A6E68; font-size: 14px; margin-bottom: 24px;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <p style="color: #7A6E68; font-size: 13px; margin-bottom: 20px;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
-        <p style="font-size: 16px; margin-bottom: 4px;"><strong>${p1Name}</strong>${p2Name ? ` & ${p2Name}` : ''}</p>
-        <p style="font-size: 14px; color: #3D3530; margin-bottom: 2px;">${p1Email}</p>
-        ${p1Phone ? `<p style="font-size: 14px; color: #3D3530; margin-bottom: 2px;">P1 phone: ${p1Phone}</p>` : ''}
-        ${p2Phone ? `<p style="font-size: 14px; color: #3D3530; margin-bottom: 16px;">P2 phone: ${p2Phone}</p>` : '<br/>'}
+        <!-- Couple block — names + clickable contact details, front and centre -->
+        <div style="background: #FBF7F1; border: 1px solid #E0D8D0; padding: 18px 20px; margin-bottom: 20px;">
+          <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7A6E68; margin: 0 0 10px;">The couple</p>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68; width: 130px;">Partner 1</td>
+              <td style="padding: 4px 0; color: #1C1814;"><strong>${p1Name || '—'}</strong></td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68;">Email</td>
+              <td style="padding: 4px 0;"><a href="mailto:${p1Email}" style="color: #2E7D54;">${p1Email}</a></td>
+            </tr>
+            ${p1Phone ? `
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68;">Phone</td>
+              <td style="padding: 4px 0;"><a href="${telHref(p1Phone)}" style="color: #2E7D54;">${p1Phone}</a></td>
+            </tr>` : ''}
+            ${p2Name ? `
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68; padding-top: 10px;">Partner 2</td>
+              <td style="padding: 4px 0; color: #1C1814; padding-top: 10px;"><strong>${p2Name}</strong></td>
+            </tr>` : ''}
+            ${p2Phone ? `
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68;">Phone</td>
+              <td style="padding: 4px 0;"><a href="${telHref(p2Phone)}" style="color: #2E7D54;">${p2Phone}</a></td>
+            </tr>` : ''}
+          </table>
+        </div>
 
-        ${weddingDate ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>Date in mind:</strong> ${weddingDate}</p>` : ''}
-        ${nextSteps?.length ? `<p style="font-size: 14px; margin: 0 0 6px;"><strong>Next steps:</strong> ${nextSteps.join(', ')}</p>` : ''}
+        <!-- Wedding block — date, package, timing, headline estimate -->
+        <div style="border: 1px solid #E0D8D0; padding: 18px 20px; margin-bottom: 20px;">
+          <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7A6E68; margin: 0 0 10px;">The wedding</p>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            ${weddingDate ? `
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68; width: 130px;">Date in mind</td>
+              <td style="padding: 4px 0; color: #1C1814;"><strong>${fmtDate(weddingDate)}</strong></td>
+            </tr>` : ''}
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68;">Package</td>
+              <td style="padding: 4px 0; color: #1C1814;">${packageLabel || ''}${seasonLabel ? ` · ${seasonLabel}` : ''}</td>
+            </tr>
+            ${packageTiming ? `
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68;">Timing</td>
+              <td style="padding: 4px 0; color: #1C1814;">${packageTiming}</td>
+            </tr>` : ''}
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68;">Guests</td>
+              <td style="padding: 4px 0; color: #1C1814;">${guests || ''}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 0 4px; color: #7A6E68; border-top: 1px solid #E0D8D0;">Estimate</td>
+              <td style="padding: 10px 0 4px; color: #2E7D54; border-top: 1px solid #E0D8D0;"><strong>$${estimate?.toLocaleString()}</strong> <span style="color: #7A6E68;">(${perPayment ? `$${perPayment.toLocaleString()} × 3` : '—'})</span></td>
+            </tr>
+          </table>
+        </div>
 
-        <pre style="font-size: 14px; background: #F7F3EE; padding: 16px; white-space: pre-wrap; margin-top: 16px;">${summaryLines}</pre>
+        ${nextSteps?.length ? `
+        <div style="margin-bottom: 16px;">
+          <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7A6E68; margin: 0 0 6px;">Next steps requested</p>
+          <p style="font-size: 14px; color: #1C1814; margin: 0;">${nextSteps.join(' · ')}</p>
+        </div>` : ''}
 
-        ${notes ? `<p style="font-size: 14px;"><strong>Notes:</strong> ${notes}</p>` : ''}
+        ${notes ? `
+        <div style="background: #FFF8E7; border-left: 3px solid #C9974E; padding: 14px 18px; margin-bottom: 20px;">
+          <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #8A6A2E; margin: 0 0 6px;">Note from the couple</p>
+          <p style="font-size: 14px; color: #1C1814; margin: 0; line-height: 1.5;">${notes}</p>
+        </div>` : ''}
+
+        <pre style="font-size: 13px; background: #F7F3EE; padding: 14px 16px; white-space: pre-wrap; margin: 16px 0 0; color: #3D3530;">${summaryLines}</pre>
+
         ${utmBits ? `<p style="font-size: 12px; color: #7A6E68; margin-top: 16px;"><strong>Attribution:</strong> ${utmBits}</p>` : ''}
       </div>
     `
 
     const venueSubject = wantsContract
       ? `Contract requested: ${p1Name}${p2Name ? ` & ${p2Name}` : ''}${weddingDate ? ` — ${weddingDate}` : ''} — $${estimate?.toLocaleString()}`
-      : `New estimate: ${p1Name}${p2Name ? ` & ${p2Name}` : ''} — $${estimate?.toLocaleString()}`
+      : `New estimate: ${p1Name}${p2Name ? ` & ${p2Name}` : ''}${weddingDate ? ` — ${weddingDate}` : ''} — $${estimate?.toLocaleString()}`
 
     await Promise.allSettled([
-      // Email to couple
+      // Email to couple (no info@ CC — the dedicated venue notification
+      // below is the single record for Bloom / the inbox to ingest).
       resend.emails.send({
         from: 'Rixey Manor <hello@rixeymanor.com>',
         to: p1Email,
-        cc: 'info@rixeymanor.com',
         subject: 'Your Rixey Manor estimate',
         html: coupleHtml,
       }),
