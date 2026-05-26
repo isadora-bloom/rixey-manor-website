@@ -74,7 +74,12 @@ const pricingFaqSchema = {
     {
       '@type': 'Question',
       name: 'Do you require us to use your preferred vendors?',
-      acceptedAnswer: { '@type': 'Answer', text: 'No. Rixey Manor has no required vendor list. You can hire any licensed and insured caterer, photographer, florist, DJ, or other vendor you choose. The only exception is bartending, which is included in the package and staffed by our licensed in-house team. We do not take a markup or referral commission on your other vendors.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'No. Rixey Manor has no required vendor list. You can hire any licensed and insured caterer, photographer, florist, DJ, or other vendor you choose. The two exceptions are bartending (included in the package and staffed by our licensed in-house team) and external wedding planners (see the planner question below). We do not take a markup or referral commission on your other vendors.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can we bring our own outside wedding planner?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Yes, with two ground rules. If you are already working with a planner when you book Rixey, they need to be approved before the contract is signed. They must have planned at least five weddings and carry their own liability insurance. If you decide to hire a planner after your contract is signed, they need to come from our recommended planner list, which we will send on request — and they must carry insurance. Planners are the one role that actually stands next to your coordinator on the day, which is why we vet them before they are on the property.' },
     },
     {
       '@type': 'Question',
@@ -271,11 +276,15 @@ export default async function PricingPage() {
                     </h3>
                     <p className="body-copy">
                       Hire your cousin's band. Use the caterer your family loves. Book the photographer
-                      whose work you've followed for two years. The only exception is bartending, which
-                      our licensed in-house team handles. Everything else is yours to choose. We have a
-                      vetted recommendation list if you want a starting point. It's a list, not a mandate.
-                      And we don't take a markup or referral commission on your other vendors. What they
-                      invoice you is what they invoice you. The full vendor and policy notes live in the{' '}
+                      whose work you've followed for two years. Two exceptions — both about who stands
+                      next to your coordinator on the day. Bartending is ours (licensed in-house team).
+                      And any outside wedding planner has to be approved before you sign your contract:
+                      a minimum of five weddings planned, their own liability insurance. After you sign,
+                      any planner you add later comes from our recommended list (we'll send it on request).
+                      Everything else is yours to choose. We have a vetted recommendation list across
+                      every category if you want a starting point — it's a list, not a mandate — and we
+                      don't take a markup or referral commission on your other vendors. What they invoice
+                      you is what they invoice you. The full vendor and policy notes live in the{' '}
                       <Link href="/faq" className="text-link">FAQ</Link>.
                     </p>
                   </div>
