@@ -15,8 +15,8 @@ const PACKAGES = [
   {
     key: 'estate-weekend',
     label: 'The Estate Weekend',
-    subtitle: 'Friday afternoon through Sunday morning',
-    summary: 'Rehearsal dinner Friday, wedding Saturday, brunch and exit Sunday. Two nights of lodging for 14. The whole estate, the whole weekend.',
+    subtitle: 'Friday 3pm to Sunday 10am',
+    summary: 'Rehearsal dinner Friday, wedding Saturday, brunch and exit Sunday — 10am check-out, or 1pm with the brunch upgrade. Two nights of lodging for 14. The whole estate, the whole weekend.',
     prices: { off: 16000, peak: 21000 },
     capacity: { saturday: 200, friday: 150 },
   },
