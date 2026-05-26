@@ -54,7 +54,7 @@ const pricingFaqSchema = {
     {
       '@type': 'Question',
       name: 'What are the three Rixey Manor wedding packages?',
-      acceptedAnswer: { '@type': 'Answer', text: 'There are three. The Estate Weekend (Friday afternoon through Sunday morning, includes Friday rehearsal dinner and two nights of lodging for up to 14 guests). The Wedding Day (Saturday only, 8am to 10pm, no rehearsal dinner, overnights available as upgrades). The Midweek Wedding (Tuesday or Wednesday, 8am to 9pm, no rehearsal dinner and no overnights). Same venue, same team, same coordinator across all three.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'There are three. The Estate Weekend (Friday 3pm to Sunday 10am — or 1pm with the brunch upgrade — includes Friday rehearsal dinner and two nights of lodging for up to 14 guests). The Wedding Day (Saturday only, 8am to 10pm, no rehearsal dinner, overnights available as upgrades). The Midweek Wedding (Tuesday or Wednesday, 8am to 9pm, no rehearsal dinner and no overnights). Same venue, same team, same coordinator across all three.' },
     },
     {
       '@type': 'Question',

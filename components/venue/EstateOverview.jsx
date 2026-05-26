@@ -34,8 +34,9 @@ export default function EstateOverview() {
           </p>
           <p className="body-copy">
             When you book the Estate Weekend, you get all of it. The whole building. The whole grounds.
-            From Friday afternoon through Sunday morning. No other events, no strangers, no clock telling
-            you when to leave. Just your wedding, the way you actually imagined it.
+            From Friday at 3pm through Sunday at 10am — or 1pm with the brunch upgrade. No other events,
+            no strangers, no clock telling you when to leave in between. Just your wedding, the way you
+            actually imagined it.
           </p>
         </FadeUp>
 
