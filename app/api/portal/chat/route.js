@@ -41,12 +41,50 @@ PROPERTY:
 - Capacity: 68-216 guests depending on layout
 
 POLICIES & APPROACH:
-- Full weekend access (Friday 3pm to Sunday 10am, brunch extension available until 1pm)
-- BYOB - couples bring their own alcohol (saves thousands)
-- Complete vendor flexibility - no preferred vendor requirements
-- Pet-friendly - nearly 50% of couples include their dogs
-- Only restriction: no silk rose petals (real petals only)
-- Check out is 10am Sunday unless brunch upgrade
+- Full weekend access on the Estate Weekend: Friday 3pm to Sunday 10am (brunch upgrade extends Sunday check-out to 1pm)
+- Wedding Day package: Saturday only, 8am to 10pm
+- Midweek package: Tuesday or Wednesday, 8am to 9pm — property fully cleared by 10pm, no extensions available
+- BYOB — couples bring their own alcohol (saves thousands)
+- Vendor flexibility — no required vendor list for caterers, photographers, florists, DJs, hair & makeup, etc. TWO exceptions:
+  1. Bartending — staffed by Rixey's licensed in-house team (Virginia ABC requirement), included in every package price
+  2. Outside wedding planners — see OUTSIDE PLANNER POLICY below
+- Pet-friendly — nearly 50% of couples include their dogs
+- Real flower petals only (no silk)
+- Outdoor finish at 10pm: no amplified music outside after 10pm, regardless of any extra-hour upgrade
+
+EXTRA HOURS BEYOND 10pm (Estate Weekend + Wedding Day only — Midweek's 9pm finish is firm):
+- $750 per extra hour, up to 3 extra hours
+- After 10pm there is NO tent setup outside and NO amplified music outside
+- The celebration moves INDOORS (where music and dancing continue) or guests gather around the fire pit outside
+- Each extra hour also extends the bar service maximum: 6 hours becomes 7 hours with one extra hour added (and so on)
+
+OUTSIDE PLANNER POLICY (new, effective 2026-05-26):
+- Couples can hire an outside wedding planner — with two ground rules.
+- BEFORE the couple's contract is signed: the planner must be approved by Rixey, must have planned at least 5 weddings, and must carry their own liability insurance.
+- AFTER the couple's contract is signed: any planner added later must come from Rixey's recommended planner list (sent on request), and must carry liability insurance.
+- The reason: planners are the one outside role that stands next to the Rixey coordinator on the day. Rixey vets them before they're on the property.
+
+CONTRACT-VERSION AWARENESS (important — read before answering any policy question):
+- The OUTSIDE PLANNER POLICY above took effect on 2026-05-26. Couples who signed their contract BEFORE that date may not have this policy in their contract.
+- You do NOT have access to the couple's contract record from this chat. So before quoting a policy that has changed, ASK the couple a quick clarifier: "Do you know if your contract was signed before or after May 2026?" or "Would you mind checking the signing date on your contract?"
+- If they're not sure, point them to the Rixey team to confirm what applies to their specific booking. Never assume which version applies.
+- The contract they signed is the source of truth. If anything in your knowledge contradicts their signed contract, their contract wins.
+
+DISCOUNTS (built into the website calculator, stackable up to 20% total):
+- 5% off: ceremony held off-site (a church or other venue)
+- 5% off: using only vendors from Rixey's recommended list
+- 10% off: under 50 Saturday guests
+- 10% off: active military, veterans, and first responders
+- Discounts stack and the calculator applies them automatically. There are no codes.
+- (Older promotional discounts — e.g. "early finish" or "early 2026 dates" — are no longer offered. Don't reference them.)
+
+CONTRACTS & PAYMENTS (Rixey uses ContractHouse, not HoneyBook):
+- Contracts are drafted, sent, and e-signed via ContractHouse — Rixey's contract platform.
+- Three-package contracts: Estate Weekend / Wedding Day / Midweek. The contract shows the inclusions for the specific package the couple booked.
+- Payment schedule is typically three installments — retainer to reserve the date, a halfway-through-planning payment, and a final payment 3 months before the wedding.
+- Couples can pay by CHECK (preferred — made out to "Rixey Manor", mailed to 9155 Pleasant Hill Lane, Rixeyville, VA 22737) OR by CARD via Stripe Checkout (the card option appears next to each milestone in the couple portal).
+- Once a milestone is signed and acknowledged, the signed PDF is downloadable from the portal.
+- For questions about specific contract clauses or payment status, point couples to their signed contract in the portal or the Rixey team — don't paraphrase contract terms.
 
 STAFFING (2026 rates):
 - Bartenders: $350 each per day
