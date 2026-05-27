@@ -171,6 +171,15 @@ export default function HandbookPage() {
         </HandbookSection>
 
         <HandbookSection id="vendors" title="Vendor Tips">
+          <H3>Outside wedding planners</H3>
+          <P>Our in-house coordinator handles planning through day-of and is included in every package, so most couples don&rsquo;t hire an outside planner. If you want to, two rules (effective 26 May 2026):</P>
+          <UL items={[
+            'BEFORE you sign your contract: the planner must be approved by us, must have planned at least 5 weddings, and must carry their own liability insurance.',
+            'AFTER you sign your contract: any planner added later must come from our recommended planner list (just ask) and must also carry insurance.',
+            'Either way: we need the planner’s certificate of insurance 30 days before the wedding.',
+          ]} />
+          <P>Couples whose contracts were signed before 26 May 2026 aren&rsquo;t bound by this unless they choose to opt in.</P>
+
           <H3>Photography</H3>
           <UL items={[
             'Opt for the trial and pay for your engagement session separately before booking the whole wedding day.',
@@ -252,9 +261,22 @@ export default function HandbookPage() {
         </HandbookSection>
 
         <HandbookSection id="staffing" title="Rixey Staffing">
-          <P>All Rixey staff get paid <strong>$350 per person</strong> in 2026. We will Venmo request you for the payment at the final walkthrough.</P>
+          <div style={{ background: 'var(--warm-white)', border: '1px solid var(--border)', padding: '1rem 1.25rem', marginBottom: '1.25rem', borderRadius: 4 }}>
+            <p style={{ margin: 0, fontSize: 14 }}>
+              <strong>Which model applies to you?</strong> If your contract was signed <strong>on or after 3 May 2026</strong>, bartending and the day-of venue team are <strong>included in your package price</strong> &mdash; nothing extra to pay. If your contract was signed <strong>before that</strong>, bartending was billed separately at $350 per person (the <em>old</em> model). Both are covered below; if you&rsquo;re not sure which you signed, ask Sage or your coordinator.
+            </p>
+          </div>
 
-          <H3>Bartenders</H3>
+          <H3>New model (contracts signed on or after 3 May 2026)</H3>
+          <UL items={[
+            'Bartending and the day-of venue team are included in the package price &mdash; no separate per-person bill.',
+            'Rixey staffs a minimum of 2 bartenders, then 1 per 60 guests, as part of the package.',
+            'Additional staffing &mdash; agreed in advance where your plans add complexity (separate bar setups, heavy DIY decor, food trucks, real glassware, etc.) &mdash; is billed on top at $350/day in 2026 and $400/day in 2027.',
+            'Extra bartenders are still worth considering for: champagne welcome drink, specialty bar on rooftop, satellite bar on patio, wine/champagne poured at tables, or real glassware.',
+          ]} />
+
+          <H3>Old model (contracts signed before 3 May 2026)</H3>
+          <P>All Rixey staff get paid <strong>$350 per person</strong> in 2026. We will Venmo request you for the payment at the final walkthrough.</P>
           <UL items={[
             '$350 per bartender per day (2026).',
             'Friday: required if alcohol is served to anyone not staying on site. One per 50 guests.',
@@ -496,13 +518,17 @@ export default function HandbookPage() {
             'Alcohol: keep original boxes, split leftovers between cars. Unopened cases may be returnable.',
             'Food: take leftover cake, bring coolers for a long drive.',
             'Florals: send home with guests or take them. We\u2019ll donate or use leftover florals.',
-            'Rentals (linens, furniture, tents) usually picked up Monday \u2014 don\u2019t pack venue items by accident.',
+            'Rentals (linens, furniture, daytime tents) usually picked up Monday \u2014 don\u2019t pack venue items by accident. (Tents are allowed for the daytime/cocktail-hour setup; they are NOT an option for the after-10pm extra hour, when the party moves inside or to the fire pit.)',
           ]} />
           <P>Before departure: check all rooms, bar, kitchen, outdoor areas. We\u2019ll gather irreplaceable items into a \u201Cprecious\u201D box (guest book, sentimental d\u00e9cor, etc.).</P>
         </HandbookSection>
 
         <HandbookSection id="tipping" title="Tipping">
-          <P>Each bartender or extra set of hands is paid $350 (required). If you do not want a tip jar on the bar, an additional $100 tip per bartender is required.</P>
+          <H3>Bartenders &amp; extra hands</H3>
+          <P><strong>New model (contracts signed on or after 3 May 2026):</strong> bartending is included in your package, so tipping the bar team is appreciated but optional. Pick an amount that feels right rather than a fixed figure.</P>
+          <P><strong>Old model (contracts signed before 3 May 2026):</strong> each bartender or extra set of hands is paid $350 (required). If you do not want a tip jar on the bar, an additional $100 tip per bartender is required.</P>
+
+          <H3>Everyone else</H3>
           <BudgetList items={[
             ['Grace (Venue Manager)', 'Tip always appreciated'],
             ['Each server', '$20\u2013$50'],

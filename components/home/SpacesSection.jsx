@@ -36,7 +36,7 @@ const defaultSpaces = [
 const BAR = {
   eyebrow: 'The Bar',
   name: 'Built-in, beautiful, and entirely yours.',
-  description: 'The bar at Rixey is not an afterthought. It\'s a proper built-in fixture — the kind of thing guests photograph and couples end up mentioning in their thank-you notes. Bring your own stock, no corkage fees, no restrictions on what you pour. Our licensed in-house bartenders staff the bar (required, two-bartender minimum, billed separately). Stock it your way; serve it our way.',
+  description: 'The bar at Rixey is not an afterthought. It\'s a proper built-in fixture — the kind of thing guests photograph and couples end up mentioning in their thank-you notes. Bring your own stock, no corkage fees, no restrictions on what you pour. Our licensed in-house bartenders staff the bar (two-bartender minimum, included in the package price). Stock it your way; serve it our way.',
   highlight: 'No corkage fees. No mandatory packages. Just a beautiful bar, stocked your way.',
 }
 

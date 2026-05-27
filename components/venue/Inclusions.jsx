@@ -25,7 +25,7 @@ const BLOCKS = [
   },
   {
     subhead: 'The things you forget to budget for.',
-    copy: 'A drop-off appointment the day before. Your wedding rehearsal on site. Parking. WiFi throughout the manor. BYO alcohol — no corkage fees. (Bartenders are staffed by our licensed in-house team — required, billed separately.)',
+    copy: 'A drop-off appointment the day before. Your wedding rehearsal on site. Parking. WiFi throughout the manor. BYO alcohol — no corkage fees. Licensed in-house bartending up to six hours, included in the package price.',
   },
 ]
 
