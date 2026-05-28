@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, Fragment } from 'react'
 import { useAdmin } from '../layout'
 
 // Windows the API supports.
@@ -43,6 +43,57 @@ function StatCard({ label, value }) {
   )
 }
 
+// Funnel chip + small helpers for the drill-down rows.
+const STAGE_STYLES = {
+  scheduled: { bg: '#2E7D54', fg: 'white',         label: 'Tour scheduled' },
+  opened:    { bg: '#B8908A', fg: 'white',         label: 'Tour opened'    },
+  submitted: { bg: '#1C3829', fg: 'white',         label: 'Submitted'      },
+  named:     { bg: '#EAE2D8', fg: 'var(--ink)',    label: 'Named'          },
+  browsing:  { bg: 'transparent', fg: 'var(--ink-light)', label: 'Browsing' },
+}
+
+function StageChip({ stage }) {
+  const s = STAGE_STYLES[stage] || STAGE_STYLES.browsing
+  return (
+    <span style={{
+      display: 'inline-block', padding: '3px 8px', borderRadius: 2,
+      background: s.bg, color: s.fg,
+      fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase',
+    }}>{s.label}</span>
+  )
+}
+
+function FunnelChips({ v }) {
+  const chips = []
+  if (v.calculator_at)     chips.push('Calculator')
+  if (v.contact_at)        chips.push('Contact')
+  if (v.quiz_at)           chips.push('Quiz')
+  if (v.tour_opened_at)    chips.push('Tour open')
+  if (v.tour_scheduled_at) chips.push('Tour booked')
+  if (chips.length === 0) return <span style={{ color: 'var(--ink-light)' }}>—</span>
+  return (
+    <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
+      {chips.map(c => (
+        <span key={c} style={{
+          padding: '2px 6px', borderRadius: 2, background: '#F1ECE6',
+          fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.06em',
+          textTransform: 'uppercase', color: 'var(--ink)',
+        }}>{c}</span>
+      ))}
+    </span>
+  )
+}
+
+function fmtDate(s) {
+  if (!s) return '—'
+  return new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function fmtMoney(n) {
+  if (!n && n !== 0) return '—'
+  return `$${Math.round(n).toLocaleString()}`
+}
+
 export default function SourcesPage() {
   const { password } = useAdmin()
   const [days, setDays]       = useState(30)
@@ -50,6 +101,9 @@ export default function SourcesPage() {
   const [error, setError]     = useState('')
   const [loading, setLoading] = useState(true)
   const [copied, setCopied]   = useState('')
+  // Drill-down state: keyed by `${source}::${medium}`. Values are
+  // { visitors, loading, error } or undefined (not opened yet).
+  const [drill, setDrill]     = useState({})
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -70,6 +124,42 @@ export default function SourcesPage() {
   }, [days, password])
 
   useEffect(() => { load() }, [load])
+
+  // Window change wipes drill cache (the underlying numbers change).
+  useEffect(() => { setDrill({}) }, [days])
+
+  const toggleDrill = useCallback(async (source, medium) => {
+    const key = `${source}::${medium}`
+    const existing = drill[key]
+    if (existing && existing.open) {
+      setDrill(d => ({ ...d, [key]: { ...existing, open: false } }))
+      return
+    }
+    if (existing && existing.visitors) {
+      // Re-open cached
+      setDrill(d => ({ ...d, [key]: { ...existing, open: true } }))
+      return
+    }
+    setDrill(d => ({ ...d, [key]: { open: true, loading: true } }))
+    try {
+      const qs = new URLSearchParams({
+        source: source ?? '',
+        medium: medium ?? '',
+        days: String(days),
+      }).toString()
+      const res = await fetch(`/api/admin/sources/visitors?${qs}`, {
+        headers: { 'x-admin-password': password },
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setDrill(d => ({ ...d, [key]: { open: true, loading: false, error: json.error || 'Failed to load.' } }))
+      } else {
+        setDrill(d => ({ ...d, [key]: { open: true, loading: false, visitors: json.visitors || [] } }))
+      }
+    } catch {
+      setDrill(d => ({ ...d, [key]: { open: true, loading: false, error: 'Network error.' } }))
+    }
+  }, [drill, days, password])
 
   const origin = useMemo(
     () => typeof window !== 'undefined' ? window.location.origin : 'https://www.rixeymanor.com',
@@ -179,20 +269,104 @@ export default function SourcesPage() {
               {loading && (
                 <tr><td colSpan={10} style={{ ...td, textAlign: 'center', color: 'var(--ink-light)', padding: 32 }}>Loading…</td></tr>
               )}
-              {data?.bySource?.map((row, i) => (
-                <tr key={i}>
-                  <td style={td}>{row.source}</td>
-                  <td style={{ ...td, color: 'var(--ink-light)' }}>{row.medium}</td>
-                  <td style={tdNum}>{row.visitors.toLocaleString()}</td>
-                  <td style={tdNum}>{row.identified.toLocaleString()}</td>
-                  <td style={tdNum}>{row.calculator.toLocaleString()}</td>
-                  <td style={tdNum}>{row.contact.toLocaleString()}</td>
-                  <td style={tdNum}>{row.quiz.toLocaleString()}</td>
-                  <td style={tdNum}>{row.tour_intents.toLocaleString()}</td>
-                  <td style={tdNum}>{row.tour_scheduled.toLocaleString()}</td>
-                  <td style={tdNum}>{rate(row.tour_scheduled, row.visitors)}</td>
-                </tr>
-              ))}
+              {data?.bySource?.map((row, i) => {
+                const key = `${row.source}::${row.medium}`
+                const d = drill[key]
+                const isOpen = !!d?.open
+                return (
+                  <Fragment key={i}>
+                    <tr
+                      onClick={() => toggleDrill(row.source, row.medium)}
+                      style={{ cursor: 'pointer', background: isOpen ? '#FDFAF6' : 'transparent' }}
+                    >
+                      <td style={td}>
+                        <span style={{ display: 'inline-block', width: 14, color: 'var(--ink-light)', transition: 'transform 0.15s', transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>▸</span>
+                        {' '}{row.source}
+                      </td>
+                      <td style={{ ...td, color: 'var(--ink-light)' }}>{row.medium}</td>
+                      <td style={tdNum}>{row.visitors.toLocaleString()}</td>
+                      <td style={tdNum}>{row.identified.toLocaleString()}</td>
+                      <td style={tdNum}>{row.calculator.toLocaleString()}</td>
+                      <td style={tdNum}>{row.contact.toLocaleString()}</td>
+                      <td style={tdNum}>{row.quiz.toLocaleString()}</td>
+                      <td style={tdNum}>{row.tour_intents.toLocaleString()}</td>
+                      <td style={tdNum}>{row.tour_scheduled.toLocaleString()}</td>
+                      <td style={tdNum}>{rate(row.tour_scheduled, row.visitors)}</td>
+                    </tr>
+                    {isOpen && (
+                      <tr>
+                        <td colSpan={10} style={{ padding: 0, background: '#FAF5EE', borderBottom: '1px solid #F1ECE6' }}>
+                          {d.loading && (
+                            <p style={{ ...td, color: 'var(--ink-light)', textAlign: 'center', padding: 20, borderBottom: 'none' }}>Loading visitors…</p>
+                          )}
+                          {d.error && (
+                            <p style={{ ...td, color: 'var(--rose)', textAlign: 'center', padding: 20, borderBottom: 'none' }}>{d.error}</p>
+                          )}
+                          {d.visitors && d.visitors.length === 0 && (
+                            <p style={{ ...td, color: 'var(--ink-light)', textAlign: 'center', padding: 20, borderBottom: 'none' }}>No identified visitors in this channel yet.</p>
+                          )}
+                          {d.visitors && d.visitors.length > 0 && (
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr>
+                                  <th style={{ ...th, padding: '8px 16px' }}>Stage</th>
+                                  <th style={{ ...th, padding: '8px 16px' }}>Name</th>
+                                  <th style={{ ...th, padding: '8px 16px' }}>Email · phone</th>
+                                  <th style={{ ...th, padding: '8px 16px' }}>Funnel</th>
+                                  <th style={{ ...th, padding: '8px 16px' }}>Latest estimate</th>
+                                  <th style={{ ...th, padding: '8px 16px' }}>Last seen</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {d.visitors.map(v => (
+                                  <tr key={v.visitor_id}>
+                                    <td style={{ ...td, padding: '10px 16px' }}>
+                                      <StageChip stage={v.stage} />
+                                    </td>
+                                    <td style={{ ...td, padding: '10px 16px' }}>
+                                      <div style={{ fontWeight: v.name ? 500 : 400 }}>{v.name || <span style={{ color: 'var(--ink-light)' }}>Unnamed</span>}</div>
+                                      {v.role && (
+                                        <div style={{ fontSize: 11, color: 'var(--ink-light)', textTransform: 'capitalize' }}>{v.role.replace(/_/g, ' ')}</div>
+                                      )}
+                                    </td>
+                                    <td style={{ ...td, padding: '10px 16px' }}>
+                                      {v.email ? (
+                                        <a href={`mailto:${v.email}`} style={{ color: 'var(--forest)', textDecoration: 'none' }}>{v.email}</a>
+                                      ) : <span style={{ color: 'var(--ink-light)' }}>—</span>}
+                                      {v.phone && (
+                                        <div style={{ fontSize: 12, marginTop: 2 }}>
+                                          <a href={`tel:${v.phone}`} style={{ color: 'var(--ink-light)', textDecoration: 'none' }}>{v.phone}</a>
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td style={{ ...td, padding: '10px 16px' }}>
+                                      <FunnelChips v={v} />
+                                    </td>
+                                    <td style={{ ...td, padding: '10px 16px' }}>
+                                      {v.estimate ? (
+                                        <>
+                                          <div>{fmtMoney(v.estimate)}</div>
+                                          <div style={{ fontSize: 11, color: 'var(--ink-light)' }}>
+                                            {v.guests ? `${v.guests} guests` : ''}{v.guests && v.wedding_date ? ' · ' : ''}{v.wedding_date ? fmtDate(v.wedding_date) : ''}
+                                          </div>
+                                        </>
+                                      ) : <span style={{ color: 'var(--ink-light)' }}>—</span>}
+                                    </td>
+                                    <td style={{ ...td, padding: '10px 16px', whiteSpace: 'nowrap' }}>
+                                      {fmtDate(v.last_seen_at)}
+                                      <div style={{ fontSize: 11, color: 'var(--ink-light)' }}>{v.pageview_count} pageviews · {v.visit_count} visits</div>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                )
+              })}
             </tbody>
           </table>
         </div>
