@@ -100,6 +100,24 @@ const DISCOUNTS = [
 ]
 const MAX_DISCOUNT_PCT = 20
 
+// "How did you find us?" options. Verbatim answer flows to Bloom's
+// discovery-source capture, which maps it to a canonical acquisition
+// channel for attribution. Keep the labels close to the canonical
+// source names so the mapping is unambiguous.
+const HEARD_ABOUT_OPTIONS = [
+  'Google search',
+  'The Knot',
+  'WeddingWire',
+  'Zola',
+  'Instagram',
+  'Facebook',
+  'Pinterest',
+  'Friend or family (word of mouth)',
+  'Been to a wedding/event here',
+  'Wedding planner or vendor',
+  'Other',
+]
+
 const NEXT_STEPS = [
   { key: 'more-info', label: 'Be contacted with more information' },
   { key: 'contract',  label: 'Be sent a contract' },
@@ -119,6 +137,12 @@ const TAX_RATE = 0.06          // Virginia 6% sales tax on venue
 
 function fmt(n) {
   return '$' + Math.round(n).toLocaleString()
+}
+
+// A contract needs each partner's full legal name — first and last at minimum.
+// Used to gate contract submissions; a plain estimate still accepts a first name.
+function isFullName(s) {
+  return (s || '').trim().split(/\s+/).filter(Boolean).length >= 2
 }
 
 function Toggle({ checked, onChange, id }) {
@@ -175,6 +199,8 @@ export default function PricingCalculator() {
   const [p1Phone, setP1Phone] = useState('')
   const [p2Name, setP2Name]   = useState('')
   const [p2Phone, setP2Phone] = useState('')
+  const [heardAbout, setHeardAbout] = useState('')   // "How did you find us?"
+  const [heardAboutOther, setHeardAboutOther] = useState('')
   const [notes, setNotes]     = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted]   = useState(false)
@@ -326,6 +352,8 @@ export default function PricingCalculator() {
     if (!season)                              { setSubmitError('Please select off-season or peak season.'); return }
     if (wantsContract && !weddingDate.trim()) { setSubmitError('Please enter a wedding date to request a contract.'); return }
     if (wantsContract && !p1Phone.trim())     { setSubmitError('Please enter a phone number to request a contract.'); return }
+    if (wantsContract && !isFullName(p1Name)) { setSubmitError('Please enter Partner One’s full name (first and last) to request a contract.'); return }
+    if (wantsContract && !isFullName(p2Name)) { setSubmitError('Please enter Partner Two’s full name (first and last) to request a contract.'); return }
     setSubmitting(true)
     setSubmitError('')
 
@@ -402,6 +430,9 @@ export default function PricingCalculator() {
       nextSteps:    NEXT_STEPS.filter(s => nextSteps.has(s.key)).map(s => s.label),
       nextStepKeys: NEXT_STEPS.filter(s => nextSteps.has(s.key)).map(s => s.key),
       weddingDate, p1Name, p1Email, p1Phone, p2Name, p2Phone, notes,
+      // "How did you find us?" — verbatim answer for Bloom discovery-source
+      // capture. When "Other" is chosen, send the free-text instead.
+      heardAbout: (heardAbout === 'Other' ? heardAboutOther.trim() : heardAbout) || null,
       ...getUTM(),
     }
 
@@ -713,9 +744,12 @@ export default function PricingCalculator() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
-                      Partner One Name <span className="text-[var(--rose)]">*</span>
+                      Partner One {wantsContract ? 'Full Name' : 'Name'} <span className="text-[var(--rose)]">*</span>
                     </label>
                     <input type="text" required value={p1Name} onChange={e => setP1Name(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
+                    {wantsContract && !isFullName(p1Name) && (
+                      <p className="text-[12px] text-[var(--rose)] mt-1" style={{ fontFamily: 'var(--font-body)' }}>Full legal name (first and last) required to request a contract</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
@@ -734,13 +768,46 @@ export default function PricingCalculator() {
                 {/* Partner 2 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>Partner Two Name</label>
-                    <input type="text" value={p2Name} onChange={e => setP2Name(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
+                    <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
+                      Partner Two {wantsContract ? 'Full Name' : 'Name'} {wantsContract && <span className="text-[var(--rose)]">*</span>}
+                    </label>
+                    <input type="text" required={wantsContract} value={p2Name} onChange={e => setP2Name(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
+                    {wantsContract && !isFullName(p2Name) && (
+                      <p className="text-[12px] text-[var(--rose)] mt-1" style={{ fontFamily: 'var(--font-body)' }}>Full legal name (first and last) required to request a contract</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>Partner Two Phone</label>
                     <input type="tel" value={p2Phone} onChange={e => setP2Phone(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
                   </div>
+                </div>
+
+                {/* How did you find us? */}
+                <div>
+                  <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
+                    How did you find us? <span className="text-[11px] normal-case tracking-normal text-[var(--ink-light)]">(optional)</span>
+                  </label>
+                  <select
+                    value={heardAbout}
+                    onChange={e => setHeardAbout(e.target.value)}
+                    className={inputCls}
+                    style={{ fontFamily: 'var(--font-body)' }}
+                  >
+                    <option value="">Select one…</option>
+                    {HEARD_ABOUT_OPTIONS.map(o => (
+                      <option key={o} value={o}>{o}</option>
+                    ))}
+                  </select>
+                  {heardAbout === 'Other' && (
+                    <input
+                      type="text"
+                      value={heardAboutOther}
+                      onChange={e => setHeardAboutOther(e.target.value)}
+                      placeholder="Tell us where you found us"
+                      className={`${inputCls} mt-3`}
+                      style={{ fontFamily: 'var(--font-body)' }}
+                    />
+                  )}
                 </div>
 
                 {/* Notes */}
