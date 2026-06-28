@@ -574,6 +574,57 @@ export default async function PricingPage() {
         </div>
       </section>
 
+      {/* How this works — Rixey family / selectivity */}
+      <section className="bg-[var(--cream)] py-20 lg:py-28 px-6 lg:px-10 border-t border-[var(--border)]">
+        <div className="max-w-3xl mx-auto">
+          <FadeUp>
+            <p className="eyebrow mb-6">Before you book</p>
+            <h2
+              className="text-[30px] lg:text-[42px] leading-[1.1] text-[var(--ink)] mb-10"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              We take 30 couples a year.<br />
+              <em>We choose carefully.</em>
+            </h2>
+          </FadeUp>
+          <div className="flex flex-col gap-6">
+            <FadeUp delay={60}>
+              <p className="body-copy">
+                Thirty weddings is a deliberate number. It's the number that lets us know
+                every couple by name, by story, by the reason they chose each other. Your
+                coordinator isn't managing a queue — she's looking forward to your day.
+                That's only possible when we don't overbook it.
+              </p>
+            </FadeUp>
+            <FadeUp delay={100}>
+              <p className="body-copy">
+                Before you sign a contract with us, we ask that at least one of you tours
+                the estate in person. Not as a formality, and not a sales pitch — because
+                when your day comes, you need to trust us completely, and that trust starts
+                with a real conversation, not a signature. We want to meet you. We want you
+                to meet us.
+              </p>
+            </FadeUp>
+            <FadeUp delay={135}>
+              <p className="body-copy">
+                Our couples use the phrase <em>Rixey family</em> — that's their word,
+                unprompted, in reviews and thank-you notes and the messages we still get
+                years later. It's warm and a little bit wonderful and it doesn't happen by
+                accident. It happens because we're careful about who we do this with, and
+                because the people who are drawn to this place tend to be exactly our kind
+                of people.
+              </p>
+            </FadeUp>
+            <FadeUp delay={165}>
+              <p className="body-copy">
+                If you've built an estimate and it feels right, come and see it. If it's a
+                yes — and you'll know — we'll be so glad you're here.
+              </p>
+            </FadeUp>
+          </div>
+        </div>
+      </section>
+
       {/* Book a tour — inline calendar */}
       <section id="book-tour" className="bg-[var(--warm-white)] py-20 lg:py-24 px-6 lg:px-10 border-t border-[var(--border)]">
         <div className="max-w-3xl mx-auto">
@@ -588,8 +639,7 @@ export default async function PricingPage() {
             </h2>
             <p className="body-copy mb-10">
               Tours take about an hour. We'll walk every space, go through your estimate,
-              and answer everything. Most couples know by the end whether Rixey is the right fit.
-              Or call / text us at <a href="tel:+15402124545" className="text-link">(540) 212-4545</a>.
+              and answer everything. Or call / text us at <a href="tel:+15402124545" className="text-link">(540) 212-4545</a>.
             </p>
           </FadeUp>
           <CalendlyInline url={calendlyUrl} />
