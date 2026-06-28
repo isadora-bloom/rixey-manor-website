@@ -64,8 +64,10 @@ export async function POST(req) {
     upgrades: upgrades?.join(', ') || '',
     discounts: [...(discounts5 || []), ...(discounts10 || [])].join(', '),
     estimate,
+    tax: tax || null,
     per_payment: perPayment,
     next_steps: nextSteps?.join(', ') || '',
+    next_step_keys: Array.isArray(nextStepKeys) ? nextStepKeys.join(', ') : null,
     wedding_date: weddingDate || null,
     p1_name: p1Name,
     p1_email: p1Email,
@@ -77,19 +79,29 @@ export async function POST(req) {
     heard_about: heardAbout || null,
     source: source || null, medium: medium || null, campaign: campaign || null, referrer: referrer || null,
     visitor_id: visitor_id || null,
+    package_key:   packageKey   || null,
+    package_label: packageLabel || null,
+    season_key:    seasonKey    || null,
+    season_label:  seasonLabel  || null,
+    subtotal_pre_tax: typeof subtotalPreTax === 'number' ? subtotalPreTax : null,
+    breakdown: breakdown || null,
+    addons:    addons    || null,
   }
 
   let { error: dbError } = await supabase.from('calculator_submissions').insert(submissionRow)
 
-  // Defensive: the heard_about column is added by a migration
-  // (add_calculator_heard_about.sql). If the website deploys before that
-  // migration is applied, the insert fails on the unknown column. Rather
-  // than drop the whole submission, retry once without heard_about — the
-  // answer still rides along in the venue email below (which Bloom ingests).
-  if (dbError && /heard_about/i.test(dbError.message || '')) {
-    console.warn('[calculator-submit] heard_about column missing — retrying without it. Apply add_calculator_heard_about.sql.')
-    const { heard_about, ...rowWithoutHeardAbout } = submissionRow
-    ;({ error: dbError } = await supabase.from('calculator_submissions').insert(rowWithoutHeardAbout))
+  // Defensive: if a column in submissionRow doesn't exist yet (migration not
+  // applied), Postgres returns an error naming the column. Strip it and retry
+  // once so a missing migration never silently drops the whole submission.
+  // All stripped data still rides along in the venue email (which Bloom ingests).
+  if (dbError) {
+    const unknownCol = (dbError.message || '').match(/column "([^"]+)" of relation/)?.[1]
+    if (unknownCol && unknownCol in submissionRow) {
+      console.warn(`[calculator-submit] column "${unknownCol}" missing — retrying without it. Apply add_calculator_missing_columns.sql.`)
+      const trimmed = { ...submissionRow }
+      delete trimmed[unknownCol]
+      ;({ error: dbError } = await supabase.from('calculator_submissions').insert(trimmed))
+    }
   }
 
   if (dbError) {
