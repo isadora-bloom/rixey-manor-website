@@ -348,7 +348,7 @@ function ContactForm({ tier, path, answers, questions }) {
           <label className="block text-[11px] tracking-[0.15em] uppercase mb-2 text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-ui)' }}>Wedding date in mind</label>
           <input type="text" value={form.date} onChange={e => set('date', e.target.value)}
             className="w-full px-4 py-3 bg-white border border-[var(--border)] text-[15px] focus:outline-none focus:border-[var(--forest)] transition-colors"
-            style={{ fontFamily: 'var(--font-body)' }} placeholder="October 2026, or no idea yet" />
+            style={{ fontFamily: 'var(--font-body)' }} placeholder="October 2027, or no idea yet" />
         </div>
       </div>
       <div>

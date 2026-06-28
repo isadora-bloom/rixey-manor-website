@@ -170,7 +170,7 @@ export default async function PricingPage() {
       <div className="bg-[var(--forest)] px-6 lg:px-10 py-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <p className="text-[14px] text-white" style={{ fontFamily: 'var(--font-body)' }}>
-            Now taking 2027 bookings. We host 30 weddings a year — every couple gets our full attention.
+            Now taking 2027 and 2028 bookings. We host 30 weddings a year — every couple gets our full attention.
           </p>
           <Link href="/availability" className="text-[13px] text-white/80 hover:text-white underline underline-offset-2 whitespace-nowrap" style={{ fontFamily: 'var(--font-ui)' }}>
             Check 2027 dates →
@@ -592,7 +592,7 @@ export default async function PricingPage() {
               <p className="body-copy">
                 Thirty weddings is a deliberate number. It's the number that lets us know
                 every couple by name, by story, by the reason they chose each other. Your
-                coordinator isn't managing a queue — she's looking forward to your day.
+                coordinator isn't managing a queue — they're looking forward to your day.
                 Thirty makes that possible.
               </p>
             </FadeUp>
@@ -617,7 +617,7 @@ export default async function PricingPage() {
             <FadeUp delay={165}>
               <p className="body-copy">
                 If you've built an estimate and it feels right, come and see it. If it's a
-                yes — and you'll know — we'll be so glad you're here.
+                yes, you'll know. We'll be glad you're here.
               </p>
             </FadeUp>
           </div>

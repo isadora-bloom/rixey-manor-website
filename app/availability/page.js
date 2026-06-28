@@ -137,9 +137,9 @@ export default async function AvailabilityPage() {
               <em>See for yourself.</em>
             </h1>
             <p className="max-w-xl text-[17px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', fontFamily: 'var(--font-body)' }}>
-              Now taking 2027 dates. We host 30 weddings a year — not because
-              that's the limit of the estate, but because it's the limit of
-              doing it right.
+              Now taking 2027 and 2028 dates. We host 30 weddings a year — not
+              because that's the limit of the estate, but because it's the
+              limit of doing it right.
             </p>
           </FadeUp>
         </div>

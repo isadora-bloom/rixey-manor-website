@@ -9,7 +9,7 @@ export default function PricingSignal({ oneDayFrom, weekendFrom, availabilityBlu
   // site_content.pricing_one_day_from / pricing_weekend_from when present.
   const oneDay = oneDayFrom || '$7,000'
   const weekend = weekendFrom || '$21,000'
-  const availability = availabilityBlurb || 'Now taking 2027 bookings.'
+  const availability = availabilityBlurb || 'Now taking 2027 and 2028 dates.'
 
   return (
     <section className="section-warm-white py-24 lg:py-32 px-6 lg:px-10 border-t border-[var(--border)]">

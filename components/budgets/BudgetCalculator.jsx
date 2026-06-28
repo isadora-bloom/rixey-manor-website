@@ -529,7 +529,7 @@ export default function BudgetCalculator({
                   <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
                     Do you have a specific date in mind?
                   </label>
-                  <input type="text" value={weddingDate} onChange={e => setWeddingDate(e.target.value)} placeholder="e.g. October 4, 2026" className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
+                  <input type="text" value={weddingDate} onChange={e => setWeddingDate(e.target.value)} placeholder="e.g. October 4, 2027" className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
