@@ -137,8 +137,9 @@ export default async function AvailabilityPage() {
               <em>See for yourself.</em>
             </h1>
             <p className="max-w-xl text-[17px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', fontFamily: 'var(--font-body)' }}>
-              Two years shown below. Dates that are already booked are marked.
-              Everything else is open — weekdays included.
+              2026 is fully booked. We are now taking 2027 dates. We host
+              30 weddings a year — not because that's the limit of the estate,
+              but because it's the limit of doing it right.
             </p>
           </FadeUp>
         </div>

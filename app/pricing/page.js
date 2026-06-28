@@ -166,6 +166,18 @@ export default async function PricingPage() {
       </section>
 
 
+      {/* Availability notice */}
+      <div className="bg-[var(--forest)] px-6 lg:px-10 py-4">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <p className="text-[14px] text-white" style={{ fontFamily: 'var(--font-body)' }}>
+            <strong>2026 is fully booked.</strong> We are now taking 2027 bookings — and we host 30 weddings a year so every couple gets our full attention.
+          </p>
+          <Link href="/availability" className="text-[13px] text-white/80 hover:text-white underline underline-offset-2 whitespace-nowrap" style={{ fontFamily: 'var(--font-ui)' }}>
+            Check 2027 dates →
+          </Link>
+        </div>
+      </div>
+
       <AnchorNav items={PRICING_ANCHORS} />
 
       {/* Manor image — grounds context before the numbers */}
