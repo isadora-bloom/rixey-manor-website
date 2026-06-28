@@ -170,7 +170,7 @@ export default async function PricingPage() {
       <div className="bg-[var(--forest)] px-6 lg:px-10 py-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <p className="text-[14px] text-white" style={{ fontFamily: 'var(--font-body)' }}>
-            <strong>2026 is fully booked.</strong> We are now taking 2027 bookings — and we host 30 weddings a year so every couple gets our full attention.
+            Now taking 2027 bookings. We host 30 weddings a year — every couple gets our full attention.
           </p>
           <Link href="/availability" className="text-[13px] text-white/80 hover:text-white underline underline-offset-2 whitespace-nowrap" style={{ fontFamily: 'var(--font-ui)' }}>
             Check 2027 dates →
@@ -593,7 +593,7 @@ export default async function PricingPage() {
                 Thirty weddings is a deliberate number. It's the number that lets us know
                 every couple by name, by story, by the reason they chose each other. Your
                 coordinator isn't managing a queue — she's looking forward to your day.
-                That's only possible when we don't overbook it.
+                Thirty makes that possible.
               </p>
             </FadeUp>
             <FadeUp delay={100}>
@@ -609,10 +609,9 @@ export default async function PricingPage() {
               <p className="body-copy">
                 Our couples use the phrase <em>Rixey family</em> — that's their word,
                 unprompted, in reviews and thank-you notes and the messages we still get
-                years later. It's warm and a little bit wonderful and it doesn't happen by
-                accident. It happens because we're careful about who we do this with, and
-                because the people who are drawn to this place tend to be exactly our kind
-                of people.
+                years later. It doesn't happen by accident. It happens because we're careful
+                about who we do this with, and because the people drawn to this place tend
+                to be exactly our kind of people.
               </p>
             </FadeUp>
             <FadeUp delay={165}>

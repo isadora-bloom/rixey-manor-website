@@ -9,7 +9,7 @@ export default function PricingSignal({ oneDayFrom, weekendFrom, availabilityBlu
   // site_content.pricing_one_day_from / pricing_weekend_from when present.
   const oneDay = oneDayFrom || '$7,000'
   const weekend = weekendFrom || '$21,000'
-  const availability = availabilityBlurb || '2026 is fully booked. Now taking 2027 dates.'
+  const availability = availabilityBlurb || 'Now taking 2027 bookings.'
 
   return (
     <section className="section-warm-white py-24 lg:py-32 px-6 lg:px-10 border-t border-[var(--border)]">
@@ -64,10 +64,9 @@ export default function PricingSignal({ oneDayFrom, weekendFrom, availabilityBlu
                 {availability}
               </p>
               <p className="body-copy text-[14px] mb-3">
-                We host 30 weddings a year — not because that's the capacity of the estate,
-                but because it's the limit of doing it properly. Every couple gets the same
-                coordinator, the same team, and the same level of attention. That's only
-                possible when we don't overbook it.
+                We host 30 weddings a year — not because that's all the estate can hold,
+                but because it's all we can do properly. Every couple gets the same
+                coordinator, the same team, real attention. That number is the point.
               </p>
               <p className="body-copy text-[14px] mb-6">
                 Off-season is January, February, July and August.
