@@ -46,3 +46,5 @@ scripts/output2/
 
 # Client-data exports — contain PII, never commit
 exports/
+
+.vercel

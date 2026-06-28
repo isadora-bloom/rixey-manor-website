@@ -87,6 +87,31 @@ export default async function RootLayout({ children }) {
           src="https://assets.calendly.com/assets/external/widget.js"
           strategy="lazyOnload"
         />
+
+        {/* Bloom House pixel config. Runs before the pixel loads so it can
+            (a) unify the visitor id — the Bloom pixel keys web_visits on
+            `bloom_visitor_id`, but the site's own attribution layer
+            (lib/visitor.js) keys on `rixey_vid`. We seed bloom_visitor_id
+            from rixey_vid (generating a shared id if neither exists) so a
+            pixel pageview and a later calculator submission stitch to the
+            SAME couple in Bloom. (b) set the per-venue ingest key + endpoint.
+            Key is public by design (mig 309) — safe to embed. */}
+        <Script id="bloom-pixel-config" strategy="beforeInteractive">
+          {`(function(){
+            try{
+              function rc(n){var m=document.cookie.match(new RegExp('(?:^|; )'+n+'=([^;]*)'));return m?decodeURIComponent(m[1]):null}
+              function wc(n,v){document.cookie=n+'='+encodeURIComponent(v)+'; Max-Age=31536000; Path=/; SameSite=Lax'}
+              var id=rc('rixey_vid');
+              if(!id){try{id=localStorage.getItem('rixey_vid')}catch(e){}}
+              if(!id){id=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16)})}
+              wc('rixey_vid',id);try{localStorage.setItem('rixey_vid',id)}catch(e){}
+              wc('bloom_visitor_id',id);
+            }catch(e){}
+            window.BLOOM_PIXEL_KEY=${JSON.stringify(process.env.NEXT_PUBLIC_BLOOM_PIXEL_KEY || '4114bda6-34be-40cb-bdef-dfbb01b0f52f')};
+            window.BLOOM_PIXEL_ENDPOINT=${JSON.stringify(process.env.NEXT_PUBLIC_BLOOM_PIXEL_ENDPOINT || 'https://app.thebloomhouse.ai/api/v1/visit')};
+          })();`}
+        </Script>
+        <Script src="/bloom-pixel.js" strategy="afterInteractive" />
       </body>
     </html>
   )

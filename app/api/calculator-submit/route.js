@@ -17,8 +17,9 @@ export async function POST(req) {
     bartenders, bartenderRate, bartenderCost,
     nextSteps, nextStepKeys, weddingDate,
     p1Name, p1Email, p1Phone,
-    p2Name, p2Phone,
+    p2Name, p2Email, p2Phone,
     notes,
+    heardAbout,
     source, medium, campaign, referrer,
     visitor_id,
     // Structured fields for the ContractHouse handoff + richer emails
@@ -58,7 +59,7 @@ export async function POST(req) {
   const money = (n) => '$' + (Number(n) || 0).toLocaleString()
 
   // 1. Save to Supabase
-  const { error: dbError } = await supabase.from('calculator_submissions').insert({
+  const submissionRow = {
     season, guests, nights,
     upgrades: upgrades?.join(', ') || '',
     discounts: [...(discounts5 || []), ...(discounts10 || [])].join(', '),
@@ -70,11 +71,26 @@ export async function POST(req) {
     p1_email: p1Email,
     p1_phone: p1Phone || null,
     p2_name: p2Name || null,
+    p2_email: p2Email || null,
     p2_phone: p2Phone || null,
     notes: notes || null,
+    heard_about: heardAbout || null,
     source: source || null, medium: medium || null, campaign: campaign || null, referrer: referrer || null,
     visitor_id: visitor_id || null,
-  })
+  }
+
+  let { error: dbError } = await supabase.from('calculator_submissions').insert(submissionRow)
+
+  // Defensive: the heard_about column is added by a migration
+  // (add_calculator_heard_about.sql). If the website deploys before that
+  // migration is applied, the insert fails on the unknown column. Rather
+  // than drop the whole submission, retry once without heard_about — the
+  // answer still rides along in the venue email below (which Bloom ingests).
+  if (dbError && /heard_about/i.test(dbError.message || '')) {
+    console.warn('[calculator-submit] heard_about column missing — retrying without it. Apply add_calculator_heard_about.sql.')
+    const { heard_about, ...rowWithoutHeardAbout } = submissionRow
+    ;({ error: dbError } = await supabase.from('calculator_submissions').insert(rowWithoutHeardAbout))
+  }
 
   if (dbError) {
     console.error('DB error:', dbError.message)
@@ -122,21 +138,6 @@ export async function POST(req) {
   if (resend) {
     const wantsContract = nextSteps?.some(s => /contract/i.test(s))
 
-    const summaryLines = [
-      `Package & season: ${season}`,
-      `Guests: ${guests}`,
-      nights ? `Overnight stays: ${nights}` : null,
-      upgrades?.length ? `Upgrades: ${upgrades.join(', ')}` : null,
-      discounts5?.length ? `5% discounts: ${discounts5.join(', ')}` : null,
-      discounts10?.length ? `10% discounts: ${discounts10.join(', ')}` : null,
-      ``,
-      `Estimated total (incl. 6% tax): $${estimate?.toLocaleString()}`,
-      tax ? `  Sales tax (6%): $${tax.toLocaleString()}` : null,
-      `Per payment (×3): $${perPayment?.toLocaleString()}`,
-      ``,
-      `Bartending, linens, silk floral + candle package, venue team, coordinator: all in the price above.`,
-    ].filter(Boolean).join('\n')
-
     // Itemized breakdown rows. Each row is rendered only if it has a non-zero
     // amount. The discount row sits between subtotal and tax, mirroring the
     // sticky price panel inside the calculator.
@@ -146,7 +147,13 @@ export async function POST(req) {
       breakdown.friMod       ? ['Friday guests',                          '+' + money(breakdown.friMod)]                        : null,
       breakdown.upgradeAmt   ? ['Upgrades',                               '+' + money(breakdown.upgradeAmt)]                    : null,
       breakdown.hoursAmt     ? [`Extra hour${breakdown.extraHours > 1 ? `s × ${breakdown.extraHours}` : ''} (after 10pm)`, '+' + money(breakdown.hoursAmt)] : null,
-      breakdown.extraEventAmt? [`Extra event${breakdown.extraEventLabel ? ` (${breakdown.extraEventLabel.toLowerCase()})` : ''}`, '+' + money(breakdown.extraEventAmt)] : null,
+      breakdown.extraEventAmt ? (() => {
+        const labels = breakdown.extraEventLabels
+        const label = labels?.length
+          ? `Extra event${labels.length > 1 ? 's' : ''}: ${labels.join(', ')}`
+          : `Extra event${breakdown.extraEventLabel ? ` (${breakdown.extraEventLabel.toLowerCase()})` : 's'}`
+        return [label, '+' + money(breakdown.extraEventAmt)]
+      })() : null,
       ['__subtotal__',                                                    money(breakdown.subtotal)],
       breakdown.discountAmt  ? [`Discount (${breakdown.discountPct}%)`,   '−' + money(breakdown.discountAmt)]                   : null,
       ['Sales tax (6%)',                                                  '+' + money(breakdown.tax)],
@@ -258,7 +265,7 @@ export async function POST(req) {
         <h2 style="font-size: 24px; font-weight: normal; margin-bottom: 4px;">New calculator submission${wantsContract ? ' — contract requested' : ''}</h2>
         <p style="color: #7A6E68; font-size: 13px; margin-bottom: 20px;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
-        <!-- Couple block — names + clickable contact details, front and centre -->
+        <!-- Couple block -->
         <div style="background: #FBF7F1; border: 1px solid #E0D8D0; padding: 18px 20px; margin-bottom: 20px;">
           <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7A6E68; margin: 0 0 10px;">The couple</p>
           <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
@@ -280,6 +287,11 @@ export async function POST(req) {
               <td style="padding: 4px 0; color: #7A6E68; padding-top: 10px;">Partner 2</td>
               <td style="padding: 4px 0; color: #1C1814; padding-top: 10px;"><strong>${p2Name}</strong></td>
             </tr>` : ''}
+            ${p2Email ? `
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68;">Email</td>
+              <td style="padding: 4px 0;"><a href="mailto:${p2Email}" style="color: #2E7D54;">${p2Email}</a></td>
+            </tr>` : ''}
             ${p2Phone ? `
             <tr>
               <td style="padding: 4px 0; color: #7A6E68;">Phone</td>
@@ -288,33 +300,124 @@ export async function POST(req) {
           </table>
         </div>
 
-        <!-- Wedding block — date, package, timing, headline estimate -->
+        <!-- Booking details + full contract breakdown -->
         <div style="border: 1px solid #E0D8D0; padding: 18px 20px; margin-bottom: 20px;">
-          <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7A6E68; margin: 0 0 10px;">The wedding</p>
-          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7A6E68; margin: 0 0 12px;">Booking details</p>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px;">
             ${weddingDate ? `
             <tr>
-              <td style="padding: 4px 0; color: #7A6E68; width: 130px;">Date in mind</td>
-              <td style="padding: 4px 0; color: #1C1814;"><strong>${fmtDate(weddingDate)}</strong></td>
+              <td style="padding: 5px 0; color: #7A6E68; width: 150px;">Date in mind</td>
+              <td style="padding: 5px 0; color: #1C1814;"><strong>${fmtDate(weddingDate)}</strong></td>
             </tr>` : ''}
             <tr>
-              <td style="padding: 4px 0; color: #7A6E68;">Package</td>
-              <td style="padding: 4px 0; color: #1C1814;">${packageLabel || ''}${seasonLabel ? ` · ${seasonLabel}` : ''}</td>
+              <td style="padding: 5px 0; color: #7A6E68;">Package</td>
+              <td style="padding: 5px 0; color: #1C1814;">${packageLabel || season || ''}</td>
+            </tr>
+            <tr>
+              <td style="padding: 5px 0; color: #7A6E68;">Season</td>
+              <td style="padding: 5px 0; color: #1C1814;">${seasonLabel || ''}</td>
             </tr>
             ${packageTiming ? `
             <tr>
-              <td style="padding: 4px 0; color: #7A6E68;">Timing</td>
-              <td style="padding: 4px 0; color: #1C1814;">${packageTiming}</td>
+              <td style="padding: 5px 0; color: #7A6E68;">Timing</td>
+              <td style="padding: 5px 0; color: #1C1814;">${packageTiming}</td>
             </tr>` : ''}
             <tr>
-              <td style="padding: 4px 0; color: #7A6E68;">Guests</td>
-              <td style="padding: 4px 0; color: #1C1814;">${guests || ''}</td>
+              <td style="padding: 5px 0; color: #7A6E68;">Guests</td>
+              <td style="padding: 5px 0; color: #1C1814;">${guests || ''}</td>
+            </tr>
+            ${heardAbout ? `
+            <tr>
+              <td style="padding: 5px 0; color: #7A6E68;">How found us</td>
+              <td style="padding: 5px 0; color: #1C1814;">${heardAbout}</td>
+            </tr>` : ''}
+          </table>
+
+          ${breakdown ? `
+          <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #B8908A; margin: 0 0 12px; border-top: 1px solid #E0D8D0; padding-top: 16px;">Contract entry order</p>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <!-- Package base -->
+            <tr>
+              <td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #F0EAE3;">${packageLabel || ''}${seasonLabel ? ` · ${seasonLabel}` : ''}</td>
+              <td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #F0EAE3;">${money(breakdown.base)}</td>
+            </tr>
+            <!-- Saturday guest modifier -->
+            ${breakdown.satMod > 0 ? `
+            <tr>
+              <td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #F0EAE3;">Saturday guests</td>
+              <td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #F0EAE3;">+${money(breakdown.satMod)}</td>
+            </tr>` : ''}
+            <!-- Friday guest modifier -->
+            ${breakdown.friMod > 0 ? `
+            <tr>
+              <td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #F0EAE3;">Friday guests</td>
+              <td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #F0EAE3;">+${money(breakdown.friMod)}</td>
+            </tr>` : ''}
+            <!-- Upgrades — each item individually if detail available, else combined -->
+            ${Array.isArray(breakdown.upgradesDetail) && breakdown.upgradesDetail.length > 0
+              ? breakdown.upgradesDetail.map(u => `
+            <tr>
+              <td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #F0EAE3;">${u.label}</td>
+              <td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #F0EAE3;">+${money(u.price)}</td>
+            </tr>`).join('')
+              : [
+                  breakdown.upgradeAmt > 0 ? `<tr><td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #F0EAE3;">Upgrades</td><td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #F0EAE3;">+${money(breakdown.upgradeAmt)}</td></tr>` : '',
+                  breakdown.hoursAmt > 0   ? `<tr><td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #F0EAE3;">Extra hour${breakdown.extraHours > 1 ? `s × ${breakdown.extraHours}` : ''} after 10pm</td><td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #F0EAE3;">+${money(breakdown.hoursAmt)}</td></tr>` : '',
+                  breakdown.extraEventAmt > 0 ? `<tr><td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #F0EAE3;">Extra event(s)</td><td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #F0EAE3;">+${money(breakdown.extraEventAmt)}</td></tr>` : '',
+                ].join('')}
+            <!-- Subtotal — this is what goes into the contract as the package total -->
+            <tr style="background: #F0EDE8;">
+              <td style="padding: 9px 8px; color: #7A6E68; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; border-top: 2px solid #C8BDB5; border-bottom: 2px solid #C8BDB5;">Subtotal — enter as package total in contract</td>
+              <td style="padding: 9px 8px; color: #1C1814; font-size: 15px; font-weight: bold; text-align: right; border-top: 2px solid #C8BDB5; border-bottom: 2px solid #C8BDB5;">${money(breakdown.subtotal)}</td>
+            </tr>
+            <!-- Discounts — each % listed, then total applied -->
+            ${Array.isArray(breakdown.discountsDetail) && breakdown.discountsDetail.length > 0 ? `
+            ${breakdown.discountsDetail.map(d => `
+            <tr>
+              <td style="padding: 6px 0; color: #7A6E68; border-bottom: 1px solid #F0EAE3;">${d.label}</td>
+              <td style="padding: 6px 0; color: #7A6E68; text-align: right; border-bottom: 1px solid #F0EAE3;">−${d.percent}%</td>
+            </tr>`).join('')}
+            ${breakdown.discountCapApplied ? `
+            <tr>
+              <td style="padding: 4px 8px; color: #B8908A; font-size: 12px; font-style: italic; border-bottom: 1px solid #F0EAE3;" colspan="2">20% cap applied — total discount is ${breakdown.discountPct}%</td>
+            </tr>` : ''}
+            <tr>
+              <td style="padding: 6px 0; color: #7A6E68; border-bottom: 1px solid #E0D8D0;">Total discount (${breakdown.discountPct}%)</td>
+              <td style="padding: 6px 0; color: #7A6E68; text-align: right; border-bottom: 1px solid #E0D8D0;">−${money(breakdown.discountAmt)}</td>
             </tr>
             <tr>
-              <td style="padding: 10px 0 4px; color: #7A6E68; border-top: 1px solid #E0D8D0;">Estimate</td>
-              <td style="padding: 10px 0 4px; color: #2E7D54; border-top: 1px solid #E0D8D0;"><strong>$${estimate?.toLocaleString()}</strong> <span style="color: #7A6E68;">(${perPayment ? `$${perPayment.toLocaleString()} × 3` : '—'})</span></td>
+              <td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #E0D8D0;">After discounts</td>
+              <td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #E0D8D0;">${money(breakdown.subAfterDiscount)}</td>
+            </tr>` : breakdown.discountAmt > 0 ? `
+            <tr>
+              <td style="padding: 6px 0; color: #7A6E68; border-bottom: 1px solid #E0D8D0;">Discount (${breakdown.discountPct}%)</td>
+              <td style="padding: 6px 0; color: #7A6E68; text-align: right; border-bottom: 1px solid #E0D8D0;">−${money(breakdown.discountAmt)}</td>
             </tr>
-          </table>
+            <tr>
+              <td style="padding: 6px 0; color: #3D3530; border-bottom: 1px solid #E0D8D0;">After discounts</td>
+              <td style="padding: 6px 0; color: #1C1814; text-align: right; border-bottom: 1px solid #E0D8D0;">${money(breakdown.subAfterDiscount)}</td>
+            </tr>` : ''}
+            <!-- Tax — auto-applied in contract system -->
+            <tr>
+              <td style="padding: 6px 0; color: #7A6E68; border-bottom: 1px solid #F0EAE3; font-size: 13px;">Sales tax 6% <em style="color: #B8908A;">(auto-applied in contract)</em></td>
+              <td style="padding: 6px 0; color: #7A6E68; text-align: right; border-bottom: 1px solid #F0EAE3; font-size: 13px;">+${money(breakdown.tax)}</td>
+            </tr>
+            <!-- Total -->
+            <tr>
+              <td style="padding: 10px 0 5px; color: #1C1814; font-size: 16px; border-top: 2px solid #1C1814;"><strong>Total</strong></td>
+              <td style="padding: 10px 0 5px; color: #2E7D54; font-size: 18px; text-align: right; border-top: 2px solid #1C1814;"><strong>${money(breakdown.total)}</strong></td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: #7A6E68; font-size: 13px;">Per payment (×3)</td>
+              <td style="padding: 4px 0; color: #7A6E68; font-size: 13px; text-align: right;">${money(Math.round(breakdown.total / 3))}</td>
+            </tr>
+          </table>` : `
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; border-top: 1px solid #E0D8D0; padding-top: 14px; margin-top: 14px;">
+            ${upgrades?.length ? `<tr><td style="padding: 5px 0; color: #7A6E68;">Upgrades</td><td style="padding: 5px 0; color: #1C1814;">${upgrades.join(', ')}</td></tr>` : ''}
+            ${(discounts5?.length || discounts10?.length) ? `<tr><td style="padding: 5px 0; color: #7A6E68;">Discounts</td><td style="padding: 5px 0; color: #1C1814;">${[...(discounts5 || []), ...(discounts10 || [])].join(', ')}</td></tr>` : ''}
+            <tr><td style="padding: 5px 0; color: #7A6E68; font-size: 15px;"><strong>Estimate</strong></td><td style="padding: 5px 0; color: #2E7D54; font-size: 15px;"><strong>${money(estimate)}</strong></td></tr>
+            <tr><td style="padding: 5px 0; color: #7A6E68;">Per payment (×3)</td><td style="padding: 5px 0; color: #1C1814;">${money(perPayment)}</td></tr>
+          </table>`}
         </div>
 
         ${nextSteps?.length ? `
@@ -328,8 +431,6 @@ export async function POST(req) {
           <p style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #8A6A2E; margin: 0 0 6px;">Note from the couple</p>
           <p style="font-size: 14px; color: #1C1814; margin: 0; line-height: 1.5;">${notes}</p>
         </div>` : ''}
-
-        <pre style="font-size: 13px; background: #F7F3EE; padding: 14px 16px; white-space: pre-wrap; margin: 16px 0 0; color: #3D3530;">${summaryLines}</pre>
 
         ${utmBits ? `<p style="font-size: 12px; color: #7A6E68; margin-top: 16px;"><strong>Attribution:</strong> ${utmBits}</p>` : ''}
       </div>
@@ -389,6 +490,7 @@ export async function POST(req) {
           partner_1_email: p1Email,
           partner_1_phone: p1Phone || null,
           partner_2_name: p2Name || null,
+          partner_2_email: p2Email || null,
           partner_2_phone: p2Phone || null,
           wedding_date_start: weddingDate,
           subtotal: subtotalPreTax,

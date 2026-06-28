@@ -187,8 +187,8 @@ export default function PricingCalculator() {
   const [satGuests, setSatGuests]   = useState('u100')
   const [friGuests, setFriGuests]   = useState('u50')
   const [upgrades, setUpgrades]     = useState(new Set())
-  const [extraHours, setExtraHours] = useState(0)           // 0–3 extra manor-interior hours
-  const [extraEvent, setExtraEvent] = useState(null)        // tier key or null
+  const [extraHours, setExtraHours] = useState(0)           // 0–2 extra manor-interior hours (1 per night)
+  const [extraEvents, setExtraEvents] = useState([])        // [{type: string, tier: string}] max 2
   const [discounts, setDiscounts]   = useState(new Set())
 
   // Contact form state
@@ -198,6 +198,7 @@ export default function PricingCalculator() {
   const [p1Email, setP1Email] = useState('')
   const [p1Phone, setP1Phone] = useState('')
   const [p2Name, setP2Name]   = useState('')
+  const [p2Email, setP2Email] = useState('')
   const [p2Phone, setP2Phone] = useState('')
   const [heardAbout, setHeardAbout] = useState('')   // "How did you find us?"
   const [heardAboutOther, setHeardAboutOther] = useState('')
@@ -249,11 +250,24 @@ export default function PricingCalculator() {
   const isEW      = pkg === 'estate-weekend'
   const isMW      = pkg === 'midweek'
   const allowsExtraHour = pkg === 'estate-weekend' || pkg === 'wedding-day'
+  // 1 extra hour per night: Estate Weekend has 2 nights, Wedding Day has 1
+  const maxExtraHours = pkg === 'estate-weekend' ? 2 : 1
+
+  function addExtraEvent() {
+    setExtraEvents(prev => prev.length < 2 ? [...prev, { type: '', tier: '' }] : prev)
+  }
+  function removeExtraEvent(i) {
+    setExtraEvents(prev => prev.filter((_, idx) => idx !== i))
+  }
+  function updateExtraEvent(i, field, value) {
+    setExtraEvents(prev => prev.map((ev, idx) => idx === i ? { ...ev, [field]: value } : ev))
+  }
 
   // Reset selections that don't apply when package changes
   useEffect(() => {
     if (!isEW) setFriGuests('u50')
     if (!allowsExtraHour) setExtraHours(0)
+    else setExtraHours(prev => Math.min(prev, maxExtraHours))
     // Drop any upgrades not available for this package
     setUpgrades(prev => {
       const next = new Set()
@@ -262,7 +276,7 @@ export default function PricingCalculator() {
       }
       return next
     })
-  }, [pkg, isEW, allowsExtraHour])
+  }, [pkg, isEW, allowsExtraHour, maxExtraHours])
 
   const result = useMemo(() => {
     if (!pkg || !season) return null
@@ -273,7 +287,7 @@ export default function PricingCalculator() {
       .filter(u => upgrades.has(u.key) && u.packages.includes(pkg))
       .reduce((s, u) => s + u.price, 0)
     const hoursAmt   = allowsExtraHour ? extraHours * 750 : 0
-    const extraEventAmt = extraEvent ? (EXTRA_EVENT_TIERS.find(e => e.key === extraEvent)?.price ?? 0) : 0
+    const extraEventAmt = extraEvents.reduce((sum, ev) => sum + (EXTRA_EVENT_TIERS.find(e => e.key === ev.tier)?.price ?? 0), 0)
     const subtotal   = base + satMod + friMod + upgradeAmt + hoursAmt + extraEventAmt
     const rawPct     = [...discounts].reduce((s, k) => s + (DISCOUNTS.find(d => d.key === k)?.percent ?? 0), 0)
     const discPct    = Math.min(rawPct, MAX_DISCOUNT_PCT) / 100
@@ -283,7 +297,7 @@ export default function PricingCalculator() {
     const total      = subAfterDisc + tax
     const perPayment = total / 3
     return { base, satMod, friMod, upgradeAmt, hoursAmt, extraEventAmt, subtotal, rawPct, discPct, discAmt, subAfterDisc, tax, total, perPayment }
-  }, [pkg, pkgDef, season, satGuests, friGuests, upgrades, extraHours, extraEvent, discounts, isEW, allowsExtraHour])
+  }, [pkg, pkgDef, season, satGuests, friGuests, upgrades, extraHours, extraEvents, discounts, isEW, allowsExtraHour])
 
   // Auto-save snapshot for /what-it-costs BudgetCalculator. Keeps the legacy
   // shape (season/guests/nights labels, bartenders.cost) so the budget tool
@@ -300,10 +314,10 @@ export default function PricingCalculator() {
     if (extraHours > 0 && allowsExtraHour) {
       upgradesArr.push({ key: 'extra-hour', label: `Extra hour${extraHours > 1 ? `s × ${extraHours}` : ''} (party moves inside, or the fire pit)`, price: extraHours * 750 })
     }
-    if (extraEvent) {
-      const ee = EXTRA_EVENT_TIERS.find(e => e.key === extraEvent)
-      upgradesArr.push({ key: 'extra-event', label: `Extra event (${ee.label.toLowerCase()})`, price: ee.price })
-    }
+    extraEvents.forEach((ev, i) => {
+      const ee = EXTRA_EVENT_TIERS.find(e => e.key === ev.tier)
+      if (ee) upgradesArr.push({ key: `extra-event-${i + 1}`, label: `Extra event ${i + 1}: ${ev.type || 'Additional event'} (${ee.label.toLowerCase()})`, price: ee.price })
+    })
     const discountsArr = DISCOUNTS
       .filter(d => discounts.has(d.key))
       .map(d => ({ key: d.key, label: d.label, percent: d.percent }))
@@ -341,7 +355,7 @@ export default function PricingCalculator() {
     } catch {
       // Quota exceeded or disabled — not worth surfacing to the couple
     }
-  }, [pkg, pkgDef, season, seasonDef, satGuests, friGuests, isEW, upgrades, extraHours, extraEvent, allowsExtraHour, discounts, result])
+  }, [pkg, pkgDef, season, seasonDef, satGuests, friGuests, isEW, upgrades, extraHours, extraEvents, allowsExtraHour, discounts, result])
 
   const wantsContract = nextSteps.has('contract')
 
@@ -354,6 +368,8 @@ export default function PricingCalculator() {
     if (wantsContract && !p1Phone.trim())     { setSubmitError('Please enter a phone number to request a contract.'); return }
     if (wantsContract && !isFullName(p1Name)) { setSubmitError('Please enter Partner One’s full name (first and last) to request a contract.'); return }
     if (wantsContract && !isFullName(p2Name)) { setSubmitError('Please enter Partner Two’s full name (first and last) to request a contract.'); return }
+    if (wantsContract && !p2Email.trim())     { setSubmitError('Please enter Partner Two’s email address to request a contract.'); return }
+    if (wantsContract && p2Email.trim().toLowerCase() === p1Email.trim().toLowerCase()) { setSubmitError('Both partners must have separate email addresses on the contract.'); return }
     setSubmitting(true)
     setSubmitError('')
 
@@ -366,10 +382,10 @@ export default function PricingCalculator() {
     if (extraHours > 0 && allowsExtraHour) {
       upgradeLabels.push(`Extra hour${extraHours > 1 ? `s × ${extraHours}` : ''} (manor interior)`)
     }
-    if (extraEvent) {
-      const ee = EXTRA_EVENT_TIERS.find(e => e.key === extraEvent)
-      upgradeLabels.push(`Extra event (${ee.label.toLowerCase()})`)
-    }
+    extraEvents.filter(ev => ev.tier).forEach((ev, i) => {
+      const ee = EXTRA_EVENT_TIERS.find(e => e.key === ev.tier)
+      upgradeLabels.push(`Extra event ${i + 1}: ${ev.type || 'Additional event'} (${ee.label.toLowerCase()})`)
+    })
 
     const discount5  = DISCOUNTS.filter(d => discounts.has(d.key) && d.percent === 5).map(d => d.label)
     const discount10 = DISCOUNTS.filter(d => discounts.has(d.key) && d.percent === 10).map(d => d.label)
@@ -383,11 +399,11 @@ export default function PricingCalculator() {
     const addons = {}
     UPGRADES.filter(u => upgrades.has(u.key) && u.packages.includes(pkg)).forEach(u => { addons[u.key] = 1 })
     if (extraHours > 0 && allowsExtraHour) addons['extra-hour'] = extraHours
-    if (extraEvent) {
-      const ee = EXTRA_EVENT_TIERS.find(e => e.key === extraEvent)
+    extraEvents.filter(ev => ev.tier).forEach((ev, i) => {
+      const ee = EXTRA_EVENT_TIERS.find(e => e.key === ev.tier)
       // ContractHouse prices extra-event at $1,500/unit; qty = number of $1,500 blocks.
-      if (ee) addons['extra-event'] = Math.max(1, Math.round(ee.price / 1500))
-    }
+      if (ee) addons[`extra-event-${i + 1}`] = Math.max(1, Math.round(ee.price / 1500))
+    })
 
     const payload = {
       season:   `${pkgDef.label} · ${seasonDef.label}`,
@@ -419,7 +435,21 @@ export default function PricingCalculator() {
         hoursAmt:         Math.round(result.hoursAmt),
         extraHours,
         extraEventAmt:    Math.round(result.extraEventAmt),
-        extraEventLabel:  extraEvent ? (EXTRA_EVENT_TIERS.find(e => e.key === extraEvent)?.label || null) : null,
+        extraEventLabels: extraEvents.filter(ev => ev.tier).map(ev => {
+          const ee = EXTRA_EVENT_TIERS.find(e => e.key === ev.tier)
+          return `${ev.type || 'Additional event'} (${ee?.label?.toLowerCase() || ''})`
+        }),
+        // Per-item detail for the venue email contract breakdown
+        upgradesDetail: [
+          ...UPGRADES.filter(u => upgrades.has(u.key) && u.packages.includes(pkg)).map(u => ({ label: u.label, price: u.price })),
+          ...(extraHours > 0 && allowsExtraHour ? [{ label: `Extra hour${extraHours > 1 ? `s × ${extraHours}` : ''} after 10pm`, price: extraHours * 750 }] : []),
+          ...extraEvents.filter(ev => ev.tier).map((ev, i) => {
+            const ee = EXTRA_EVENT_TIERS.find(e => e.key === ev.tier)
+            return { label: `Extra event ${i + 1}: ${ev.type || 'Additional event'} (${ee?.label?.toLowerCase() || ''})`, price: ee?.price ?? 0 }
+          }),
+        ],
+        discountsDetail: DISCOUNTS.filter(d => discounts.has(d.key)).map(d => ({ label: d.label, percent: d.percent })),
+        discountCapApplied: result.rawPct > MAX_DISCOUNT_PCT,
         subtotal:         Math.round(result.subtotal),
         discountPct:      Math.round(result.discPct * 100),
         discountAmt:      Math.round(result.discAmt),
@@ -429,7 +459,7 @@ export default function PricingCalculator() {
       } : null,
       nextSteps:    NEXT_STEPS.filter(s => nextSteps.has(s.key)).map(s => s.label),
       nextStepKeys: NEXT_STEPS.filter(s => nextSteps.has(s.key)).map(s => s.key),
-      weddingDate, p1Name, p1Email, p1Phone, p2Name, p2Phone, notes,
+      weddingDate, p1Name, p1Email, p1Phone, p2Name, p2Email, p2Phone, notes,
       // "How did you find us?" — verbatim answer for Bloom discovery-source
       // capture. When "Other" is chosen, send the free-text instead.
       heardAbout: (heardAbout === 'Other' ? heardAboutOther.trim() : heardAbout) || null,
@@ -615,15 +645,14 @@ export default function PricingCalculator() {
               ))}
             </div>
 
-            {/* Extra hour — celebration moves indoors (amplified music continues
-                inside) or out to the fire pit; no tent, no amplified music
-                outside after 10pm. (EW + WD only; Midweek's 9pm finish is firm). */}
+            {/* Extra hour — 1 per night. Estate Weekend = up to 2 nights = up to 2hrs.
+                Wedding Day = 1 night = 1hr max. Midweek's 9pm finish is firm. */}
             {allowsExtraHour && (
               <div className="flex items-start gap-4 py-4 border-b border-[var(--border)]">
                 <div className="flex-1">
-                  <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>Extra hour beyond 10pm</span>
+                  <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>Extra hour{maxExtraHours > 1 ? 's' : ''} beyond 10pm</span>
                   <span className="block text-[12px] text-[var(--ink-light)] mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>
-                    The celebration moves indoors — the bar keeps pouring and the music keeps playing — or guests can gather around the fire pit outside.
+                    The celebration moves indoors — the bar keeps pouring and the music keeps playing — or guests can gather around the fire pit outside. One extra hour per night ({maxExtraHours === 2 ? 'up to 2 for the Estate Weekend' : '1 for the Wedding Day'}).
                   </span>
                 </div>
                 <select
@@ -634,32 +663,59 @@ export default function PricingCalculator() {
                 >
                   <option value={0}>None</option>
                   <option value={1}>1 hour (+$750)</option>
-                  <option value={2}>2 hours (+$1,500)</option>
-                  <option value={3}>3 hours (+$2,250)</option>
+                  {maxExtraHours >= 2 && <option value={2}>2 hours (+$1,500)</option>}
                 </select>
               </div>
             )}
 
-            {/* Extra event — all packages */}
-            <div className="flex items-start gap-4 py-4 border-b border-[var(--border)]">
-              <div className="flex-1">
-                <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>Extra event</span>
+            {/* Extra events — up to 2, each needs a type and guest count */}
+            <div className="py-4 border-b border-[var(--border)]">
+              <div className="mb-3">
+                <span className="block text-[14px] text-[var(--ink-mid)]" style={{ fontFamily: 'var(--font-body)' }}>Extra events</span>
                 <span className="block text-[12px] text-[var(--ink-light)] mt-0.5" style={{ fontFamily: 'var(--font-body)' }}>
-                  A third distinct event beyond the two included (e.g. cultural ceremony, exit brunch). +$1,500 per 50 guests.
+                  A third or fourth distinct event beyond the two included — e.g. mehndi, baraat, exit brunch, cultural ceremony. +$1,500 per 50 guests. Up to 2 extras.
                   {isEW && <> A mehndi <em>as the rehearsal dinner</em> doesn't count as extra.</>}
                 </span>
               </div>
-              <select
-                value={extraEvent ?? ''}
-                onChange={e => setExtraEvent(e.target.value || null)}
-                className="border border-[var(--border)] bg-white px-3 py-2 text-[14px] text-[var(--ink)] focus:outline-none focus:border-[var(--forest)]"
-                style={{ fontFamily: 'var(--font-body)' }}
-              >
-                <option value="">None</option>
-                {EXTRA_EVENT_TIERS.map(e => (
-                  <option key={e.key} value={e.key}>{e.label} (+{fmt(e.price)})</option>
-                ))}
-              </select>
+
+              {extraEvents.map((ev, i) => (
+                <div key={i} className="mt-3 p-4 border border-[var(--border)] bg-[var(--cream)] flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-medium tracking-widest uppercase text-[var(--ink-light)]" style={{ fontFamily: 'var(--font-ui)' }}>Extra event {i + 1}</span>
+                    <button type="button" onClick={() => removeExtraEvent(i)} className="text-[12px] text-[var(--ink-light)] hover:text-[var(--rose)] transition-colors" style={{ fontFamily: 'var(--font-body)' }}>Remove</button>
+                  </div>
+                  <input
+                    type="text"
+                    value={ev.type}
+                    onChange={e => updateExtraEvent(i, 'type', e.target.value)}
+                    placeholder="What kind of event? e.g. Mehndi, baraat, exit brunch"
+                    className={inputCls}
+                    style={{ fontFamily: 'var(--font-body)' }}
+                  />
+                  <select
+                    value={ev.tier}
+                    onChange={e => updateExtraEvent(i, 'tier', e.target.value)}
+                    className={inputCls}
+                    style={{ fontFamily: 'var(--font-body)' }}
+                  >
+                    <option value="">Guest count for this event…</option>
+                    {EXTRA_EVENT_TIERS.map(t => (
+                      <option key={t.key} value={t.key}>{t.label} (+{fmt(t.price)})</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+
+              {extraEvents.length < 2 && (
+                <button
+                  type="button"
+                  onClick={addExtraEvent}
+                  className="mt-3 text-[13px] text-[var(--forest)] hover:underline"
+                  style={{ fontFamily: 'var(--font-body)' }}
+                >
+                  + Add {extraEvents.length === 0 ? 'an extra event' : 'another event'}
+                </button>
+              )}
             </div>
           </div>
 
@@ -777,9 +833,18 @@ export default function PricingCalculator() {
                     )}
                   </div>
                   <div>
-                    <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>Partner Two Phone</label>
-                    <input type="tel" value={p2Phone} onChange={e => setP2Phone(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
+                    <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>
+                      Partner Two Email {wantsContract ? <span className="text-[var(--rose)]">*</span> : <span className="text-[11px] normal-case tracking-normal text-[var(--ink-light)]">(optional)</span>}
+                    </label>
+                    <input type="email" required={wantsContract} value={p2Email} onChange={e => setP2Email(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
+                    {wantsContract && p2Email.trim() && p2Email.trim().toLowerCase() === p1Email.trim().toLowerCase() && (
+                      <p className="text-[12px] text-[var(--rose)] mt-1" style={{ fontFamily: 'var(--font-body)' }}>Both partners must have separate email addresses on the contract</p>
+                    )}
                   </div>
+                </div>
+                <div>
+                  <label className="block text-[12px] font-medium tracking-widest uppercase text-[var(--ink-light)] mb-2" style={{ fontFamily: 'var(--font-ui)' }}>Partner Two Phone</label>
+                  <input type="tel" value={p2Phone} onChange={e => setP2Phone(e.target.value)} className={inputCls} style={{ fontFamily: 'var(--font-body)' }} />
                 </div>
 
                 {/* How did you find us? */}
