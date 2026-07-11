@@ -24,7 +24,7 @@ const PACKAGES = [
     key: 'wedding-day',
     label: 'The Wedding Day',
     subtitle: 'Saturday, 8am to 10pm',
-    summary: 'Setup, ceremony, reception. No rehearsal dinner. Overnights available as upgrades.',
+    summary: 'Setup, ceremony, reception. No rehearsal dinner.',
     prices: { off: 12000, peak: 15500 },
     capacity: { saturday: 200 },
   },
@@ -73,21 +73,6 @@ const UPGRADES = [
     note: 'Often used for mehndi, baraat, bachelor/bachelorette, or family arrival night.',
     price: 1750,
     packages: ['estate-weekend'],
-  },
-  {
-    key: 'overnight-1',
-    label: 'Overnight — one night',
-    note: 'Night before OR night after the wedding. Manor + Blacksmith Cottage sleep 14.',
-    price: 1750,
-    packages: ['wedding-day'],
-  },
-  {
-    key: 'overnight-2',
-    label: 'Overnight — two nights',
-    note: 'Both nights around the wedding.',
-    price: 3250,
-    packages: ['wedding-day'],
-    excludes: ['overnight-1'],
   },
 ]
 
@@ -225,8 +210,6 @@ export default function PricingCalculator() {
     })
   }
 
-  // When the user toggles an overnight upgrade with `excludes`, drop the
-  // excluded keys to keep the selection coherent (one vs two nights, not both).
   function toggleUpgrade(key) {
     setUpgrades(prev => {
       const next = new Set(prev)
@@ -234,12 +217,6 @@ export default function PricingCalculator() {
         next.delete(key)
         return next
       }
-      const def = UPGRADES.find(u => u.key === key)
-      if (def?.excludes) def.excludes.forEach(k => next.delete(k))
-      // Also drop sibling overnight upgrades that mutually exclude this one
-      UPGRADES.forEach(other => {
-        if (other.excludes?.includes(key)) next.delete(other.key)
-      })
       next.add(key)
       return next
     })
@@ -250,7 +227,6 @@ export default function PricingCalculator() {
   const isEW      = pkg === 'estate-weekend'
   const isMW      = pkg === 'midweek'
   const allowsExtraHour = pkg === 'estate-weekend' || pkg === 'wedding-day'
-  // 1 extra hour per night: Estate Weekend has 2 nights, Wedding Day has 1
   const maxExtraHours = pkg === 'estate-weekend' ? 2 : 1
 
   function addExtraEvent() {
@@ -399,11 +375,13 @@ export default function PricingCalculator() {
     const addons = {}
     UPGRADES.filter(u => upgrades.has(u.key) && u.packages.includes(pkg)).forEach(u => { addons[u.key] = 1 })
     if (extraHours > 0 && allowsExtraHour) addons['extra-hour'] = extraHours
-    extraEvents.filter(ev => ev.tier).forEach((ev, i) => {
-      const ee = EXTRA_EVENT_TIERS.find(e => e.key === ev.tier)
-      // ContractHouse prices extra-event at $1,500/unit; qty = number of $1,500 blocks.
-      if (ee) addons[`extra-event-${i + 1}`] = Math.max(1, Math.round(ee.price / 1500))
-    })
+    const extraEventBlocks = extraEvents
+      .filter(ev => ev.tier)
+      .reduce((sum, ev) => {
+        const ee = EXTRA_EVENT_TIERS.find(e => e.key === ev.tier)
+        return sum + (ee ? Math.max(1, Math.round(ee.price / 1500)) : 0)
+      }, 0)
+    if (extraEventBlocks > 0) addons['extra-event'] = extraEventBlocks
 
     const payload = {
       season:   `${pkgDef.label} · ${seasonDef.label}`,
@@ -645,8 +623,7 @@ export default function PricingCalculator() {
               ))}
             </div>
 
-            {/* Extra hour — 1 per night. Estate Weekend = up to 2 nights = up to 2hrs.
-                Wedding Day = 1 night = 1hr max. Midweek's 9pm finish is firm. */}
+            {/* Extra hour — up to 2 for Estate Weekend, 1 for Wedding Day. Midweek finish is firm. */}
             {allowsExtraHour && (
               <div className="flex items-start gap-4 py-4 border-b border-[var(--border)]">
                 <div className="flex-1">
