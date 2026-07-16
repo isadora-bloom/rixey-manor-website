@@ -35,11 +35,15 @@ export const metadata = {
     siteName: 'Rixey Manor',
     locale: 'en_US',
     type: 'website',
+    // Site-wide default so no page ever ships with an empty card. Pages that
+    // set their own og image via page_seo override this.
+    images: [{ url: '/assets/hero-main.webp', width: 1200, height: 630, alt: 'Rixey Manor, a historic 1801 estate wedding venue in Virginia' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Rixey Manor | Historic Estate Wedding Venue | Rixeyville, Virginia',
     description: 'A historic estate built in 1801 in Northern Virginia, 60 miles from Washington DC. Exclusive use, one wedding per weekend, overnight lodging, no required vendors, BYOB.',
+    images: ['/assets/hero-main.webp'],
   },
   robots: {
     index: true,

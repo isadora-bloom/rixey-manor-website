@@ -109,6 +109,32 @@ const pricingFaqSchema = {
   ],
 }
 
+// Service + AggregateOffer for the pricing page — the schema Google and AI
+// engines most readily attach to a pricing page. Prices mirror the packages
+// in llms.txt and the calculator (off-season starting rates).
+const offersSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: 'Wedding venue hire',
+  name: 'Rixey Manor Wedding Packages',
+  url: 'https://www.rixeymanor.com/pricing',
+  provider: { '@type': 'WeddingVenue', name: 'Rixey Manor', url: 'https://www.rixeymanor.com' },
+  areaServed: { '@type': 'AdministrativeArea', name: 'Northern Virginia' },
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'USD',
+    lowPrice: '950',
+    highPrice: '21000',
+    offerCount: 4,
+    offers: [
+      { '@type': 'Offer', name: 'Elopement (Mon–Wed, up to 12 guests)', price: '950', priceCurrency: 'USD', url: 'https://www.rixeymanor.com/pricing#elopements' },
+      { '@type': 'Offer', name: 'The Midweek Wedding (Tue/Wed)', price: '7000', priceCurrency: 'USD', url: 'https://www.rixeymanor.com/pricing' },
+      { '@type': 'Offer', name: 'The Wedding Day (Saturday)', price: '12000', priceCurrency: 'USD', url: 'https://www.rixeymanor.com/pricing' },
+      { '@type': 'Offer', name: 'The Estate Weekend (Fri–Sun, 2 nights lodging)', price: '16000', priceCurrency: 'USD', url: 'https://www.rixeymanor.com/pricing' },
+    ],
+  },
+}
+
 async function getCalendlyUrl() {
   const { data } = await supabase
     .from('site_content')
@@ -143,6 +169,7 @@ export default async function PricingPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingFaqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(offersSchema) }} />
       {/* Hero */}
       <section className="bg-[var(--cream)] pt-40 pb-16 lg:pt-48 lg:pb-20 px-6 lg:px-10">
         <div className="max-w-3xl">

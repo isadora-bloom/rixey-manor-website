@@ -6,8 +6,7 @@ import AnchorNav from '@/components/layout/AnchorNav'
 import EstateOverview from '@/components/venue/EstateOverview'
 import VenueSpaces from '@/components/venue/VenueSpaces'
 import Accommodations from '@/components/venue/Accommodations'
-import OwnerStory from '@/components/venue/OwnerStory'
-import TeamSection from '@/components/venue/TeamSection'
+import PeopleTeaser from '@/components/venue/PeopleTeaser'
 import Inclusions from '@/components/venue/Inclusions'
 import DetailsSection from '@/components/venue/DetailsSection'
 import FinalCTA from '@/components/home/FinalCTA'
@@ -44,7 +43,6 @@ const VENUE_ANCHORS = [
   { label: 'The Spaces',      href: '#spaces' },
   { label: 'Accommodations',  href: '#accommodations' },
   { label: 'Our Story',       href: '#story' },
-  { label: 'The Team',        href: '#team' },
   { label: "What's Included", href: '#included' },
   { label: 'Details',         href: '#details' },
 ]
@@ -102,7 +100,7 @@ async function getVenueData() {
 }
 
 export default async function VenuePage() {
-  const { heroImage, spaceImages, roomImages, teamImages, isadoraImage, inclusionsImages, calendlyUrl, featureVideoUrl, venueTourUrl, terraceVideoUrl } = await getVenueData()
+  const { heroImage, spaceImages, roomImages, isadoraImage, inclusionsImages, calendlyUrl, featureVideoUrl, venueTourUrl, terraceVideoUrl } = await getVenueData()
 
   return (
     <>
@@ -124,8 +122,7 @@ export default async function VenuePage() {
         heading={<>The lights that went viral.<br /><em>See why.</em></>}
       />
       <Accommodations roomImages={roomImages} />
-      <OwnerStory image={isadoraImage} />
-      <TeamSection teamImages={teamImages} />
+      <PeopleTeaser image={isadoraImage} />
       <Inclusions accentImages={inclusionsImages} />
       <DetailsSection />
       <FinalCTA calendlyUrl={calendlyUrl} />

@@ -142,19 +142,25 @@ export default function SchemaMarkup() {
         '@type': 'PriceSpecification',
         priceCurrency: 'USD',
         price: '950',
-        name: 'Elopement package (up to 12 guests)',
+        name: 'Elopement package (Mon–Wed, up to 12 guests, from)',
       },
       {
         '@type': 'PriceSpecification',
         priceCurrency: 'USD',
-        price: '6000',
-        name: 'One-day event (weekday)',
+        price: '7000',
+        name: 'The Midweek Wedding (Tue/Wed, from)',
       },
       {
         '@type': 'PriceSpecification',
         priceCurrency: 'USD',
-        price: '10000',
-        name: 'Full weekend (starting price)',
+        price: '12000',
+        name: 'The Wedding Day (Saturday, from)',
+      },
+      {
+        '@type': 'PriceSpecification',
+        priceCurrency: 'USD',
+        price: '16000',
+        name: 'The Estate Weekend (Fri–Sun, from)',
       },
     ],
   }
@@ -167,10 +173,21 @@ export default function SchemaMarkup() {
     name: 'Isadora Martin-Dye',
     jobTitle: 'Owner and Founder',
     description: 'Isadora Martin-Dye bought the derelict 1801 Rixey Manor estate after finding it on Zillow, restored it by hand, and has run it as a Virginia wedding venue since 2014.',
-    url: 'https://www.rixeymanor.com/venue#team',
+    url: 'https://www.rixeymanor.com/history#team',
     worksFor: { '@type': 'Organization', name: 'Rixey Manor', url: 'https://www.rixeymanor.com' },
     nationality: { '@type': 'Country', name: 'United Kingdom' },
     homeLocation: { '@type': 'Place', name: 'Rixeyville, Virginia, USA' },
+  }
+
+  // WebSite node — the standard entity anchor for the site. No SearchAction
+  // because there's no on-site search to wire it to.
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Rixey Manor',
+    url: 'https://www.rixeymanor.com',
+    inLanguage: 'en-US',
+    publisher: { '@type': 'Organization', name: 'Rixey Manor', url: 'https://www.rixeymanor.com' },
   }
 
   return (
@@ -178,6 +195,10 @@ export default function SchemaMarkup() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
       <script
         type="application/ld+json"
