@@ -44,10 +44,10 @@ export default function PeopleTeaser({ image }) {
               years.
             </p>
             <p className="body-copy">
-              The house goes back much further. It began as a plain working farmhouse, and
-              the grand columned front everyone photographs was only added in the early 1900s,
-              built for Margaret Rixey's wedding to Jim Dyer. It is a good story, and it is
-              worth the full read.
+              The house goes back much further. It began as a plain working farmhouse called
+              Pleasant Hill, and the grand columned front everyone photographs was only added
+              around 1921, for Margaret Rixey's wedding to Jim Dyer. It is a good story, and
+              it is worth the full read.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">

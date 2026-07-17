@@ -58,17 +58,41 @@ export default function ManorHistory({ images = {} }) {
         <div className="flex flex-col gap-6">
           <FadeUp delay={60}>
             <p className="body-copy">
-              Rixey Manor started as farmland. The Rixey family held the land through a grant
-              that reached back to the years after the Revolutionary War, but the house itself
-              was a plain working farmhouse, not the white-columned mansion people picture
-              today. For most of its life this was a family farm, hogs and all.
+              Rixey Manor started as farmland, and the house had another name: Pleasant Hill.
+              The lane still carries it. The Rixey family held the land through a grant that
+              reached back to the years after the Revolutionary War, but the house itself was
+              a plain working farmhouse, not the white-columned mansion people picture today.
+              For most of its life this was a family farm, hogs and all.
             </p>
           </FadeUp>
 
-          <Figure
-            image={images['history-farmhouse']}
-            caption="The original farmhouse, before the front we know today."
-          />
+          {images['history-farmhouse'] && (
+            <FadeUp delay={80}>
+              <figure className="my-4">
+                <div className="relative w-full aspect-[4/3] bg-[var(--sage-light)] overflow-hidden">
+                  <Image
+                    src={images['history-farmhouse'].url}
+                    alt={images['history-farmhouse'].alt_text || 'AI-assisted reconstruction of Pleasant Hill, the original Rixey Manor farmhouse, before its columned front was added'}
+                    fill
+                    className="object-cover"
+                    style={{ objectPosition: images['history-farmhouse'].object_position || 'center center' }}
+                    sizes="(max-width: 768px) 100vw, 768px"
+                  />
+                </div>
+                <figcaption
+                  className="mt-3"
+                  style={{ fontFamily: 'var(--font-ui)' }}
+                >
+                  <span className="block text-[13px] text-[var(--ink-mid)]">
+                    Pleasant Hill, the farmhouse that became Rixey Manor, as it looked before the columned front was added around 1921.
+                  </span>
+                  <span className="block mt-1 text-[12px] text-[var(--ink-light)]">
+                    An AI-assisted reconstruction by Isadora, a historian by training. Built from the surviving architectural evidence, old photographs, and documentary research, then rendered with AI used only to visualise the research, not to invent it.
+                  </span>
+                </figcaption>
+              </figure>
+            </FadeUp>
+          )}
           <Figure
             image={images['history-pig-farm']}
             caption="A working farm through and through, around 1930."
@@ -116,15 +140,16 @@ export default function ManorHistory({ images = {} }) {
           <FadeUp delay={140}>
             <p className="body-copy">
               The grand columned front that everyone photographs is not as old as it looks. It
-              was added in the early 1900s, and it was built for a wedding: Margaret Rixey's
-              marriage to Jim Dyer. The same steps where couples now line up for their
-              portraits were raised for the two of them.
+              is a Classical Revival addition, finished around 1921, and it was built for a
+              wedding: Margaret Rixey's marriage to Jim Dyer. It went up just in time, and the
+              same steps where couples now line up for their portraits were raised for the two
+              of them.
             </p>
           </FadeUp>
 
           <Figure
             image={images['history-construction']}
-            caption="Building the new front, brick by brick, in the early 1900s."
+            caption="Raising the new Classical Revival front, brick by brick, around 1921."
           />
           <Figure
             image={images['history-margaret-wedding']}
