@@ -87,7 +87,7 @@ export default function ManorHistory({ images = {} }) {
                     Pleasant Hill, the farmhouse that became Rixey Manor, as it looked before the columned front was added for the 1928 wedding.
                   </span>
                   <span className="block mt-1 text-[12px] text-[var(--ink-light)]">
-                    An AI-assisted reconstruction by Isadora, a historian by training who also teaches responsible AI use. Built from the surviving architectural evidence, old photographs, and documentary research, with AI used only to visualise the research, not to invent it, exactly the standard she teaches: use the tool, disclose it, never let it make things up.
+                    An AI-assisted reconstruction by Isadora, a British historian who also teaches responsible AI use. Built from the surviving architectural evidence, old photographs, and documentary research, with AI used only to visualise the research, not to invent it, exactly the standard she teaches: use the tool, disclose it, never let it make things up.
                   </span>
                 </figcaption>
               </figure>
@@ -105,17 +105,30 @@ export default function ManorHistory({ images = {} }) {
           <div className="my-12 border-l-2 border-[var(--sage)] pl-6 lg:pl-8 py-1">
             <div className="flex flex-col gap-5">
               <p className="body-copy">
-                We tell the harder part too. Virginia farms of this era were, in all
-                likelihood, built and worked in part by enslaved people, and we will not
-                pretend this one was an exception. A plaque on the old blacksmith shop stands
-                in their memory. We cannot undo that history, and we will not paper over it.
-                What we can decide is what this place is now: somewhere every couple, of any
-                race, religion, or orientation, is safe, celebrated, and genuinely welcome.
+                We tell the harder part too, and now we can tell it plainly. The family who
+                held this estate were Virginia farmers and Confederates. Richard Henry Lewis,
+                who married into the Rixey family and died at Rosedale, in his day part of this
+                estate, rode with the Black Horse Cavalry. His family enslaved people. One of
+                them we can name: a craftsman called Henry, who made the spurs that cavalry
+                wore into the war. Most of the others we cannot name yet.
               </p>
               <p className="body-copy">
-                When we weigh a decision about Rixey today, we sometimes ask whether it would
-                make the estate's original owners turn in their graves. When the answer is a
-                firm yes, we know we are pointing the right way.
+                That "yet" matters to us. Isadora is a British historian, and she is still
+                researching this house and the people bound to it. The aim of that work is not
+                the owners, whose names are easy to find. It is the enslaved men, women and
+                children whose labour and whose lives were written out of the record, and who
+                deserve to have their stories told too. As we recover names, they will go here.
+              </p>
+              <p className="body-copy">
+                We cannot undo this history, and we will not paper over it. A plaque on the
+                old blacksmith shop stands in their memory. What we can decide is what this
+                place is now: somewhere every couple, of any race, religion, or orientation,
+                is safe, celebrated, and genuinely welcome.
+              </p>
+              <p className="body-copy">
+                When we weigh a decision about Rixey today, we ask whether it would make the
+                estate's original owners turn in their graves. When the answer is a firm yes,
+                we know we are pointing the right way.
               </p>
               <p className="body-copy">
                 That welcome is not just a feeling. What we commit to for LGBTQ+ couples and
