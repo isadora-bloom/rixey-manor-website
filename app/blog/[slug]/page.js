@@ -54,7 +54,7 @@ export default async function BlogPostPage({ params }) {
     author: {
       '@type': 'Person',
       name: post.author || 'Isadora Martin-Dye',
-      url: 'https://www.rixeymanor.com/venue#team',
+      url: 'https://www.rixeymanor.com/history#team',
     },
     publisher: {
       '@type': 'Organization',

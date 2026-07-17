@@ -31,6 +31,7 @@ export default function Footer() {
           <nav className="flex flex-col gap-3">
             {[
               { label: 'The Venue', href: '/venue' },
+              { label: 'Our History & Team', href: '/history' },
               { label: 'Pricing', href: '/pricing' },
               { label: 'What it costs', href: '/what-it-costs' },
               { label: 'Only at Rixey', href: '/extras' },

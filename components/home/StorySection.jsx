@@ -78,7 +78,7 @@ export default function StorySection({ isadoraImage }) {
             </cite>
           </blockquote>
 
-          <Link href="/venue#team" className="text-link">
+          <Link href="/history#team" className="text-link">
             Meet the full team →
           </Link>
         </FadeUp>

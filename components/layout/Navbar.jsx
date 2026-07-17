@@ -13,10 +13,17 @@ const navLinks = [
     sub: [
       { label: 'The Spaces',      href: '/venue#spaces' },
       { label: 'Accommodations',  href: '/venue#accommodations' },
-      { label: 'Our Story',       href: '/venue#story' },
-      { label: 'The Team',        href: '/venue#team' },
       { label: "What's Included", href: '/venue#included' },
       { label: 'Details',         href: '/venue#details' },
+    ],
+  },
+  {
+    label: 'Our Story',
+    href: '/history',
+    sub: [
+      { label: 'The Estate',           href: '/history#heritage' },
+      { label: 'How Rixey Came to Be', href: '/history#story' },
+      { label: 'The Team',             href: '/history#team' },
     ],
   },
   {
