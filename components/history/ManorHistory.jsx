@@ -99,36 +99,40 @@ export default function ManorHistory({ images = {} }) {
           />
         </div>
 
-        {/* The acknowledgement — restored and refined, and kept honest to the
-            farmhouse framing above. Set apart so it reads as considered. */}
+        {/* The acknowledgement. House rule: any mention of slavery or the estate's
+            hard history is immediately followed by the commitment (the "turn in
+            their graves" pivot), never left hanging on its own. Structured along
+            the Montpelier / National Trust interpretation rubric: name the
+            enslaved, centre them over the owners, invite descendants, keep
+            researching. Set apart so it reads as considered. */}
         <FadeUp delay={100}>
           <div className="my-12 border-l-2 border-[var(--sage)] pl-6 lg:pl-8 py-1">
             <div className="flex flex-col gap-5">
               <p className="body-copy">
-                We tell the harder part too, and now we can tell it plainly. The family who
-                held this estate were Virginia farmers and Confederates. Richard Henry Lewis,
-                who married into the Rixey family and died at Rosedale, in his day part of this
+                Every estate of this age in Virginia was built on the labour of enslaved
+                people, and we will not pretend this one was any different. The family who
+                held it were Virginia farmers and Confederates. Richard Henry Lewis, who
+                married into the Rixey family and died at Rosedale, in his day part of this
                 estate, rode with the Black Horse Cavalry. His family enslaved people. One of
                 them we can name: a craftsman called Henry, who made the spurs that cavalry
-                wore into the war. Most of the others we cannot name yet.
+                wore into the war.
               </p>
               <p className="body-copy">
-                That "yet" matters to us. Isadora is a British historian, and she is still
-                researching this house and the people bound to it. The aim of that work is not
-                the owners, whose names are easy to find. It is the enslaved men, women and
-                children whose labour and whose lives were written out of the record, and who
-                deserve to have their stories told too. As we recover names, they will go here.
+                We cannot undo any of that, and we will not paper over it. What we can decide
+                is what this place is now. When we weigh a decision about Rixey today, we ask
+                whether it would make the estate's original owners turn in their graves, and
+                when the answer is a firm yes, we know we are pointing the right way. This is
+                now somewhere every couple, of any race, religion, or orientation, is safe,
+                celebrated, and genuinely welcome.
               </p>
               <p className="body-copy">
-                We cannot undo this history, and we will not paper over it. A plaque on the
-                old blacksmith shop stands in their memory. What we can decide is what this
-                place is now: somewhere every couple, of any race, religion, or orientation,
-                is safe, celebrated, and genuinely welcome.
-              </p>
-              <p className="body-copy">
-                When we weigh a decision about Rixey today, we ask whether it would make the
-                estate's original owners turn in their graves. When the answer is a firm yes,
-                we know we are pointing the right way.
+                The rest is unfinished work. Isadora is a British historian, and she is still
+                researching this house and the people bound to it. The aim is not the owners,
+                whose names are easy to find. It is the enslaved men, women and children whose
+                lives were written out of the record and who deserve to have their stories
+                told too. A plaque on the old blacksmith shop stands in their memory, and as
+                we recover names, they will go here. If you are descended from anyone enslaved
+                on this land, we would be honoured to hear from you.
               </p>
               <p className="body-copy">
                 That welcome is not just a feeling. What we commit to for LGBTQ+ couples and
