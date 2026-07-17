@@ -47,6 +47,16 @@ const SLOT_CONFIG = {
   'availability-winter':       { label: 'Winter',                  aspect: '4/3',  group: 'Availability' },
   // FAQ
   'faq-banner':                { label: 'FAQ banner',              aspect: '21/7', group: 'FAQ' },
+  // History & Team (/history). Isadora + Grace photos are managed under the Venue group.
+  'history-hero':              { label: 'History hero (banner)',                 aspect: '21/7', group: 'History' },
+  'history-farmhouse':         { label: 'Original farmhouse / Pleasant Hill (AI reconstruction shows by default)', aspect: '4/3', group: 'History' },
+  'history-pig-farm':          { label: 'Pig farm (c. 1930)',                    aspect: '3/2',  group: 'History' },
+  'history-construction':      { label: 'Building the front (c. 1921)',          aspect: '3/2',  group: 'History' },
+  'history-margaret-wedding':  { label: 'Margaret & Jim wedding on the steps',   aspect: '4/3',  group: 'History' },
+  'history-anniversary':       { label: '50th anniversary (same steps)',         aspect: '4/3',  group: 'History' },
+  'history-family':            { label: 'Rixey family',                          aspect: '3/2',  group: 'History' },
+  'history-coat-of-arms':      { label: 'Rixey coat of arms',                    aspect: '1/1',  group: 'History' },
+  'history-team-bartenders':   { label: 'Team: Bartenders / Cousin Adam',        aspect: '1/1',  group: 'History' },
 }
 
 const POSITION_OPTIONS = [
@@ -63,7 +73,7 @@ const POSITION_OPTIONS = [
   { value: 'right top',     label: 'Top-right' },
 ]
 
-const GROUPS = ['Homepage', 'Venue', 'Rooms', 'Pricing', 'Availability', 'FAQ']
+const GROUPS = ['Homepage', 'Venue', 'History', 'Rooms', 'Pricing', 'Availability', 'FAQ']
 
 function btnStyle(bg, color = 'white') {
   return {
