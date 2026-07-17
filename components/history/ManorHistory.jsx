@@ -3,14 +3,14 @@ import Link from 'next/link'
 import FadeUp from '@/components/ui/FadeUp'
 
 // The estate's heritage, restored from the old site and refined. Two
-// deliberate framings, both true and both requested:
-//  1. The house began as a plain working farmhouse, not a grand estate —
-//     this walks the narrative away from a "plantation" read.
-//  2. The iconic columned front is early-1900s, built for Margaret Rixey's
-//     wedding to Jim Dyer — so the mansion facade everyone photographs is
-//     Edwardian, not antebellum.
-// The named entities (the Rixey land grant, Margaret Rixey & Jim Dyer, Eppa
-// Rixey, Marymount) are the concrete facts search and AI engines can cite.
+// deliberate framings, both true and both requested. First, the house began
+// as a plain working farmhouse (Pleasant Hill), not a grand estate, which
+// walks the narrative away from a "plantation" read. Second, the columned
+// front is a 1928 Classical Revival addition built for the wedding of James
+// Marion Dyer and Margaret Robinson Lewis, so the mansion facade everyone
+// photographs is far younger than it looks. The named people and places (the
+// Rixey land grant, the Dyers, Eppa Rixey, Marymount) are the concrete facts
+// search and AI engines can cite.
 function Figure({ image, caption, aspect = 'aspect-[3/2]' }) {
   if (!image) return null
   return (
@@ -84,7 +84,7 @@ export default function ManorHistory({ images = {} }) {
                   style={{ fontFamily: 'var(--font-ui)' }}
                 >
                   <span className="block text-[13px] text-[var(--ink-mid)]">
-                    Pleasant Hill, the farmhouse that became Rixey Manor, as it looked before the columned front was added around 1921.
+                    Pleasant Hill, the farmhouse that became Rixey Manor, as it looked before the columned front was added for the 1928 wedding.
                   </span>
                   <span className="block mt-1 text-[12px] text-[var(--ink-light)]">
                     An AI-assisted reconstruction by Isadora, a historian by training. Built from the surviving architectural evidence, old photographs, and documentary research, then rendered with AI used only to visualise the research, not to invent it.
@@ -127,7 +127,7 @@ export default function ManorHistory({ images = {} }) {
           </div>
         </FadeUp>
 
-        {/* The front / the Margaret Rixey & Jim Dyer wedding — the centrepiece. */}
+        {/* The front / the Dyer wedding (1928): the centrepiece. */}
         <div className="flex flex-col gap-6">
           <FadeUp delay={120}>
             <h3
@@ -140,34 +140,34 @@ export default function ManorHistory({ images = {} }) {
           <FadeUp delay={140}>
             <p className="body-copy">
               The grand columned front that everyone photographs is not as old as it looks. It
-              is a Classical Revival addition, finished around 1921, and it was built for a
-              wedding: Margaret Rixey's marriage to Jim Dyer. It went up just in time, and the
-              same steps where couples now line up for their portraits were raised for the two
-              of them.
+              is a Classical Revival addition, built for a wedding: the 1928 marriage of James
+              Marion Dyer and Margaret Robinson Lewis. The same steps where couples now line up
+              for their portraits were raised for the two of them.
             </p>
           </FadeUp>
 
           <Figure
             image={images['history-construction']}
-            caption="Raising the new Classical Revival front, brick by brick, around 1921."
+            caption="Raising the new Classical Revival front, brick by brick, ahead of the 1928 wedding."
           />
           <Figure
             image={images['history-margaret-wedding']}
-            caption="Margaret Rixey and Jim Dyer on the new front steps, the first wedding party to stand where thousands now do."
+            caption="James Marion Dyer and Margaret Robinson Lewis on the new front steps in 1928, the first wedding party to stand where thousands now do."
             aspect="aspect-[4/3]"
           />
 
           <FadeUp delay={160}>
             <p className="body-copy">
-              Fifty years later, Margaret and Jim came back and marked their golden anniversary
-              in the very same spot. We think about that a lot. The front of this house was made
-              for a marriage, and it has been holding them ever since.
+              They never left. Fifty years on, in 1978, James and Margaret were still the
+              owners of this house, and they marked their golden wedding anniversary on the
+              very same steps. The front was made for their marriage, and it held them the
+              whole way.
             </p>
           </FadeUp>
 
           <Figure
             image={images['history-anniversary']}
-            caption="Margaret and Jim's 50th anniversary, on the same steps."
+            caption="James and Margaret's golden anniversary in 1978, on the same steps they married on."
             aspect="aspect-[4/3]"
           />
         </div>

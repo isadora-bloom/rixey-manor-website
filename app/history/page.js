@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic'
 export async function generateMetadata() {
   const ogImage = await getOgImage('history')
   const title = 'Our History & Team — A 1801 Virginia Estate — Rixey Manor'
-  const description = "The story of Rixey Manor: a working Virginia farmhouse originally called Pleasant Hill, whose Classical Revival columned front was added around 1921 for Margaret Rixey's wedding to Jim Dyer, its ties to Eppa Rixey and Marymount University, and how Isadora Martin-Dye restored the derelict estate into an inclusive Northern Virginia wedding venue. Meet the team who run your day."
+  const description = "The story of Rixey Manor: a working Virginia farmhouse originally called Pleasant Hill, whose Classical Revival columned front was added in 1928 for the wedding of James Marion Dyer and Margaret Robinson Lewis, its ties to Eppa Rixey and Marymount University, and how Isadora Martin-Dye restored the derelict estate into an inclusive Northern Virginia wedding venue. Meet the team who run your day."
   return {
     title: { absolute: title },
     description,
@@ -93,7 +93,7 @@ async function getHistoryData() {
       // history-farmhouse slot overrides it.
       'history-farmhouse':        siteImages['history-farmhouse'] || {
         url: '/assets/history-pleasant-hill.webp',
-        alt_text: 'AI-assisted reconstruction of Pleasant Hill, the original Rixey Manor farmhouse, before its Classical Revival columned front was added around 1921.',
+        alt_text: 'AI-assisted reconstruction of Pleasant Hill, the original Rixey Manor farmhouse, before its Classical Revival columned front was added for the 1928 wedding.',
         object_position: null,
       },
       'history-pig-farm':         siteImages['history-pig-farm'],
