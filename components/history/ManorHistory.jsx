@@ -111,9 +111,9 @@ export default function ManorHistory({ images = {} }) {
               <p className="body-copy">
                 Every estate of this age in Virginia was built on the labour of enslaved
                 people, and we will not pretend this one was any different. The family who
-                held it were Virginia farmers and Confederates. Richard Henry Lewis, who
-                married into the Rixey family and died at Rosedale, in his day part of this
-                estate, rode with the Black Horse Cavalry. His family enslaved people. One of
+                came to hold this estate were Virginia farmers. One of them, Richard Henry
+                Lewis, who married into the Rixey family and died at Rosedale, then part of
+                the Rixey estate, rode for the Confederacy with the Black Horse Cavalry. His family enslaved people. One of
                 them we can name: a craftsman called Henry, who made the spurs that cavalry
                 wore into the war.
               </p>
