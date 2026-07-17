@@ -87,7 +87,7 @@ export default function ManorHistory({ images = {} }) {
                     Pleasant Hill, the farmhouse that became Rixey Manor, as it looked before the columned front was added for the 1928 wedding.
                   </span>
                   <span className="block mt-1 text-[12px] text-[var(--ink-light)]">
-                    An AI-assisted reconstruction by Isadora, a historian by training. Built from the surviving architectural evidence, old photographs, and documentary research, then rendered with AI used only to visualise the research, not to invent it.
+                    An AI-assisted reconstruction by Isadora, a historian by training who also teaches responsible AI use. Built from the surviving architectural evidence, old photographs, and documentary research, with AI used only to visualise the research, not to invent it, exactly the standard she teaches: use the tool, disclose it, never let it make things up.
                   </span>
                 </figcaption>
               </figure>
@@ -178,10 +178,20 @@ export default function ManorHistory({ images = {} }) {
               className="text-[22px] lg:text-[26px] italic text-[var(--ink)] mt-8 mb-1"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              The Rixey family, still here.
+              Handed down the female line.
             </h3>
           </FadeUp>
-          <FadeUp delay={180}>
+          <FadeUp delay={170}>
+            <p className="body-copy">
+              Here is the thread we love most. Through the generations the estate mostly
+              passed down through the women of the Rixey family, not the usual way these
+              things went in Virginia. The family kept it into the mid-1990s. So when Isadora
+              bought the derelict house in 2014 and made it hers, she was, without setting out
+              to, carrying on a place that has nearly always been in women's hands. It still
+              is.
+            </p>
+          </FadeUp>
+          <FadeUp delay={185}>
             <p className="body-copy">
               The Rixey name is still woven through this place, and the family are still part
               of our lives. They are our neighbors. They have worked here, celebrated here,
