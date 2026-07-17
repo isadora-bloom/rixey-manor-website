@@ -135,6 +135,13 @@ export default function ManorHistory({ images = {} }) {
                 on this land, we would be honoured to hear from you.
               </p>
               <p className="body-copy">
+                And we keep it standing. Some of the skill in the oldest parts of this house,
+                the carving, the joinery, the brickwork, was the work of enslaved hands. The
+                surest way we know to honour it is to make sure the building is never again
+                left derelict and at risk of being lost, the way it once was. It came close.
+                Not again.
+              </p>
+              <p className="body-copy">
                 That welcome is not just a feeling. What we commit to for LGBTQ+ couples and
                 families, disabled couples, couples with chronic illness, and neurodivergent
                 couples is named in writing, in every contract.{' '}
