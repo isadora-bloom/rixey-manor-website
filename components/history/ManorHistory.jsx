@@ -1,167 +1,35 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import FadeUp from '@/components/ui/FadeUp'
+import Figure from '@/components/history/Figure'
 
-// The estate's heritage, restored from the old site and refined. Two
-// deliberate framings, both true and both requested. First, the house began
-// as a plain working farmhouse (Pleasant Hill), not a grand estate, which
-// walks the narrative away from a "plantation" read. Second, the columned
-// front is a 1928 Classical Revival addition built for the wedding of James
-// Marion Dyer and Margaret Robinson Lewis, so the mansion facade everyone
-// photographs is far younger than it looks. The named people and places (the
-// Rixey land grant, the Dyers, Eppa Rixey, Marymount) are the concrete facts
+// The love story of the house: the columned front that couples photograph was
+// built for a wedding, held one marriage for fifty years, and passed down the
+// women of the Rixey family into Isadora's hands. This is what a visitor is
+// actually looking at today. The estate's harder, older history (the farmhouse
+// origins, slavery, the Confederate thread) lives in a separate section that
+// comes after this and after the team, by the owner's decision: earn belief in
+// the people and the place first, then meet the reckoning head on. The named
+// people and places (the Dyers, Eppa Rixey, Marymount) are the concrete facts
 // search and AI engines can cite.
-function Figure({ image, caption, aspect = 'aspect-[3/2]' }) {
-  if (!image) return null
-  return (
-    <FadeUp>
-      <figure className="my-4">
-        <div className={`relative w-full ${aspect} bg-[var(--sage-light)] overflow-hidden`}>
-          <Image
-            src={image.url}
-            alt={image.alt_text || caption || 'Historic photograph of Rixey Manor'}
-            fill
-            className="object-cover"
-            style={{ objectPosition: image.object_position || 'center center' }}
-            sizes="(max-width: 768px) 100vw, 768px"
-          />
-        </div>
-        {caption && (
-          <figcaption
-            className="mt-3 text-[12px] text-[var(--ink-light)]"
-            style={{ fontFamily: 'var(--font-ui)' }}
-          >
-            {caption}
-          </figcaption>
-        )}
-      </figure>
-    </FadeUp>
-  )
-}
-
 export default function ManorHistory({ images = {} }) {
   return (
     <section id="heritage" className="section-cream py-24 lg:py-32 px-6 lg:px-10">
       <div className="max-w-3xl mx-auto">
 
         <FadeUp>
-          <p className="eyebrow mb-6">Since 1801</p>
+          <p className="eyebrow mb-6">The House</p>
           <h2
             className="text-[30px] lg:text-[42px] leading-[1.1] text-[var(--ink)] mb-10"
             style={{ fontFamily: 'var(--font-display)' }}
           >
-            It started as a farmhouse.
-            <em> The mansion came later.</em>
+            The front was built
+            <em> for a wedding.</em>
           </h2>
-        </FadeUp>
-
-        <div className="flex flex-col gap-6">
-          <FadeUp delay={60}>
-            <p className="body-copy">
-              Rixey Manor started as farmland, and the house had another name: Pleasant Hill.
-              The lane still carries it. The Rixey family held the land through a grant that
-              reached back to the years after the Revolutionary War, but the house itself was
-              a plain working farmhouse, not the white-columned mansion people picture today.
-              For most of its life this was a family farm, hogs and all.
-            </p>
-          </FadeUp>
-
-          {images['history-farmhouse'] && (
-            <FadeUp delay={80}>
-              <figure className="my-4">
-                <div className="relative w-full aspect-[4/3] bg-[var(--sage-light)] overflow-hidden">
-                  <Image
-                    src={images['history-farmhouse'].url}
-                    alt={images['history-farmhouse'].alt_text || 'AI-assisted reconstruction of Pleasant Hill, the original Rixey Manor farmhouse, before its columned front was added'}
-                    fill
-                    className="object-cover"
-                    style={{ objectPosition: images['history-farmhouse'].object_position || 'center center' }}
-                    sizes="(max-width: 768px) 100vw, 768px"
-                  />
-                </div>
-                <figcaption
-                  className="mt-3"
-                  style={{ fontFamily: 'var(--font-ui)' }}
-                >
-                  <span className="block text-[13px] text-[var(--ink-mid)]">
-                    Pleasant Hill, the farmhouse that became Rixey Manor, as it looked before the columned front was added for the 1928 wedding.
-                  </span>
-                  <span className="block mt-1 text-[12px] text-[var(--ink-light)]">
-                    An AI-assisted reconstruction by Isadora, a British historian who also teaches responsible AI use. Built from the surviving architectural evidence, old photographs, and documentary research, with AI used only to visualise the research, not to invent it, exactly the standard she teaches: use the tool, disclose it, never let it make things up.
-                  </span>
-                </figcaption>
-              </figure>
-            </FadeUp>
-          )}
-          <Figure
-            image={images['history-pig-farm']}
-            caption="A working farm through and through, around 1930."
-          />
-        </div>
-
-        {/* The acknowledgement. House rule: any mention of slavery or the estate's
-            hard history is immediately followed by the commitment (the "turn in
-            their graves" pivot), never left hanging on its own. Structured along
-            the Montpelier / National Trust interpretation rubric: name the
-            enslaved, centre them over the owners, invite descendants, keep
-            researching. Set apart so it reads as considered. */}
-        <FadeUp delay={100}>
-          <div className="my-12 border-l-2 border-[var(--sage)] pl-6 lg:pl-8 py-1">
-            <div className="flex flex-col gap-5">
-              <p className="body-copy">
-                Every estate of this age in Virginia was built on the labour of enslaved
-                people, and we will not pretend this one was any different. The family who
-                came to hold this estate were Virginia farmers. One of them, Richard Henry
-                Lewis, who married into the Rixey family and died at Rosedale, then part of
-                the Rixey estate, rode for the Confederacy with the Black Horse Cavalry. His family enslaved people. One of
-                them we can name: a craftsman called Henry, who made the spurs that cavalry
-                wore into the war.
-              </p>
-              <p className="body-copy">
-                We cannot undo any of that, and we will not paper over it. What we can decide
-                is what this place is now. When we weigh a decision about Rixey today, we ask
-                whether it would make the estate's original owners turn in their graves, and
-                when the answer is a firm yes, we know we are pointing the right way. This is
-                now somewhere every couple, of any race, religion, or orientation, is safe,
-                celebrated, and genuinely welcome.
-              </p>
-              <p className="body-copy">
-                The rest is unfinished work. Isadora is a British historian, and she is still
-                researching this house and the people bound to it. The aim is not the owners,
-                whose names are easy to find. It is the enslaved men, women and children whose
-                lives were written out of the record and who deserve to have their stories
-                told too. A plaque on the old blacksmith shop stands in their memory, and as
-                we recover names, they will go here. If you are descended from anyone enslaved
-                on this land, we would be honoured to hear from you.
-              </p>
-              <p className="body-copy">
-                And we keep it standing. Some of the skill in the oldest parts of this house,
-                the carving, the joinery, the brickwork, was the work of enslaved hands. The
-                surest way we know to honour it is to make sure the building is never again
-                left derelict and at risk of being lost, the way it once was. It came close.
-                Not again.
-              </p>
-              <p className="body-copy">
-                That welcome is not just a feeling. What we commit to for LGBTQ+ couples and
-                families, disabled couples, couples with chronic illness, and neurodivergent
-                couples is named in writing, in every contract.{' '}
-                <Link href="/inclusion" className="text-link">See exactly what we promise →</Link>
-              </p>
-            </div>
-          </div>
         </FadeUp>
 
         {/* The front / the Dyer wedding (1928): the centrepiece. */}
         <div className="flex flex-col gap-6">
-          <FadeUp delay={120}>
-            <h3
-              className="text-[22px] lg:text-[28px] italic text-[var(--ink)] mt-6 mb-1"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              The famous front was built for a wedding.
-            </h3>
-          </FadeUp>
-          <FadeUp delay={140}>
+          <FadeUp delay={60}>
             <p className="body-copy">
               The grand columned front that everyone photographs is not as old as it looks. It
               is a Classical Revival addition, built for a wedding: the 1928 marriage of James
@@ -180,7 +48,7 @@ export default function ManorHistory({ images = {} }) {
             aspect="aspect-[4/3]"
           />
 
-          <FadeUp delay={160}>
+          <FadeUp delay={80}>
             <p className="body-copy">
               They never left. Fifty years on, in 1978, James and Margaret were still the
               owners of this house, and they marked their golden wedding anniversary on the
@@ -197,7 +65,7 @@ export default function ManorHistory({ images = {} }) {
         </div>
 
         <div className="flex flex-col gap-6">
-          <FadeUp delay={160}>
+          <FadeUp delay={100}>
             <h3
               className="text-[22px] lg:text-[26px] italic text-[var(--ink)] mt-8 mb-1"
               style={{ fontFamily: 'var(--font-display)' }}
@@ -205,7 +73,7 @@ export default function ManorHistory({ images = {} }) {
               Handed down the female line.
             </h3>
           </FadeUp>
-          <FadeUp delay={170}>
+          <FadeUp delay={110}>
             <p className="body-copy">
               Here is the thread we love most. Through the generations the estate mostly
               passed down through the women of the Rixey family, not the usual way these
@@ -215,7 +83,7 @@ export default function ManorHistory({ images = {} }) {
               is.
             </p>
           </FadeUp>
-          <FadeUp delay={185}>
+          <FadeUp delay={125}>
             <p className="body-copy">
               The Rixey name is still woven through this place, and the family are still part
               of our lives. They are our neighbors. They have worked here, celebrated here,
@@ -226,7 +94,7 @@ export default function ManorHistory({ images = {} }) {
 
           <Figure image={images['history-family']} />
 
-          <FadeUp delay={200}>
+          <FadeUp delay={140}>
             <h3
               className="text-[22px] lg:text-[26px] italic text-[var(--ink)] mt-6 mb-1"
               style={{ fontFamily: 'var(--font-display)' }}
@@ -234,7 +102,7 @@ export default function ManorHistory({ images = {} }) {
               A name you may already know.
             </h3>
           </FadeUp>
-          <FadeUp delay={220}>
+          <FadeUp delay={160}>
             <p className="body-copy">
               The wider Rixey legacy is worth a detour. If you studied at Marymount
               University you will know Rixey House, one of the cornerstone buildings on
@@ -246,7 +114,7 @@ export default function ManorHistory({ images = {} }) {
         </div>
 
         {images['history-coat-of-arms'] && (
-          <FadeUp delay={240}>
+          <FadeUp delay={180}>
             <figure className="mt-12 flex flex-col items-center text-center">
               <div className="relative w-40 h-40 lg:w-48 lg:h-48">
                 <Image

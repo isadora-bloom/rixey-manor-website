@@ -4,9 +4,10 @@ import { getOgImage } from '@/lib/getPageSeo'
 import { supabaseServer } from '@/lib/supabaseServer'
 import FadeUp from '@/components/ui/FadeUp'
 import AnchorNav from '@/components/layout/AnchorNav'
-import ManorHistory from '@/components/history/ManorHistory'
 import OwnerStory from '@/components/venue/OwnerStory'
 import FullTeam from '@/components/history/FullTeam'
+import ManorHistory from '@/components/history/ManorHistory'
+import HonestHistory from '@/components/history/HonestHistory'
 import FinalCTA from '@/components/home/FinalCTA'
 const supabase = supabaseServer()
 
@@ -64,9 +65,10 @@ const aboutSchema = {
 }
 
 const HISTORY_ANCHORS = [
-  { label: 'The Estate', href: '#heritage' },
-  { label: 'Our Story',  href: '#story' },
-  { label: 'The Team',   href: '#team' },
+  { label: 'Our Story', href: '#story' },
+  { label: 'The Team',  href: '#team' },
+  { label: 'The House', href: '#heritage' },
+  { label: 'Our History', href: '#history' },
 ]
 
 async function getHistoryData() {
@@ -129,13 +131,13 @@ export default async function HistoryPage() {
               className="text-[42px] lg:text-[58px] leading-[1.05] text-[var(--ink)] mb-6"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              A farmhouse, a wedding,<br />
+              The people, a wedding,<br />
               <em>and a house worth saving.</em>
             </h1>
             <p className="body-copy max-w-xl">
-              Rixey Manor has been standing since 1801. What follows is where it came from,
-              why the front you picture is younger than it looks, the family whose name it
-              still carries, and the people who look after it now.
+              Rixey Manor has been standing since 1801. What follows is the people who look
+              after it now, the wedding its columned front was built for, and, told straight,
+              where the house came from.
             </p>
           </FadeUp>
         </div>
@@ -156,9 +158,10 @@ export default async function HistoryPage() {
         </div>
       )}
 
-      <ManorHistory images={historyImages} />
       <OwnerStory image={isadoraImage} />
       <FullTeam teamImages={teamImages} />
+      <ManorHistory images={historyImages} />
+      <HonestHistory images={historyImages} />
       <FinalCTA calendlyUrl={calendlyUrl} />
     </>
   )
